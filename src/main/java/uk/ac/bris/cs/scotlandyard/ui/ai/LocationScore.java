@@ -10,6 +10,8 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.pow;
+
 public class LocationScore implements Score{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final ImmutableList<Integer> sources;
@@ -76,7 +78,19 @@ public class LocationScore implements Score{
     }
 
     @Nonnull @Override public Double getMrXScore() {
-        return Collections.min(filteredDistanceToSourceList.get(0)).doubleValue();
+        var detectiveDistancesToMrX = filteredDistanceToSourceList.get(0);
+        Collections.sort(detectiveDistancesToMrX);
+        List<Double> weightsList = detectiveDistancesToMrX.stream()
+                .map(value -> pow(2, -value))
+                .collect(Collectors.toList());
+        Double weightsListSum = weightsList.stream().reduce(0.0,Double::sum);
+        weightsList = weightsList.stream().map(value -> value/weightsListSum).collect(Collectors.toList());
+        Double totalScore = 0.0;
+        for(int i = 0; i < detectiveDistancesToMrX.size(); i++) {
+            Double unweightedScore = 1-pow(2, 1-detectiveDistancesToMrX.get(i));
+            totalScore += weightsList.get(i)*unweightedScore;
+        }
+        return totalScore;
     }
     @Nonnull @Override public Double getDetectivesScore() {
         return 0.0;
