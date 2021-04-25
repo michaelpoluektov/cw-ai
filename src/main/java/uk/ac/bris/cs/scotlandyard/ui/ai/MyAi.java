@@ -32,8 +32,25 @@ public class MyAi implements Ai {
 		for(Piece piece : board.getPlayers()) {
 			if(piece.isDetective()) detectivesLocation.add(board.getDetectiveLocation((Piece.Detective) piece).get());
 		}
-		LocationScore idk = new LocationScore(graph, mrXLocation, ImmutableList.copyOf(detectivesLocation));
+		ArrayList<Integer> store = new ArrayList<>();
+		Move random = moves.get(new Random().nextInt(moves.size()));
+		int destination = getMoveDestination(random);
+		store.add(destination);
+		LocationScore idk = new LocationScore(graph, ImmutableList.copyOf(store), ImmutableList.copyOf(detectivesLocation));
 		System.out.println(idk.getMrXScore());
-		return moves.get(new Random().nextInt(moves.size()));
+		return random;
+	}
+	public int getMoveDestination(Move move) {
+		return move.visit(new Move.Visitor<Integer>() {
+			@Override
+			public Integer visit(Move.SingleMove singleMove) {
+				return singleMove.destination;
+			}
+
+			@Override
+			public Integer visit(Move.DoubleMove doubleMove) {
+				return doubleMove.destination2;
+			}
+		});
 	}
 }
