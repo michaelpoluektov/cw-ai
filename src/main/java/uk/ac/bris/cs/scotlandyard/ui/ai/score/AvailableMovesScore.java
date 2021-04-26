@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AvailableMovesScore extends Score {
+public class AvailableMovesScore extends AbstractScore {
     private final Board board;
     private final double availableMovesExp = 1.25;
     public AvailableMovesScore(

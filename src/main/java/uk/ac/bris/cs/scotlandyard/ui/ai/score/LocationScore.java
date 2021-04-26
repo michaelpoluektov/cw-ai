@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
 
-public class LocationScore extends Score{
+public class LocationScore extends AbstractScore{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final ImmutableList<Integer> sources;
     private final ImmutableList<Integer> destinations;

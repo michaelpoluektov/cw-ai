@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketsScore extends Score {
+public class TicketsScore extends AbstractScore {
     private final Board board;
     private final double doubleTicketsWeight = 0;
     private final double busTicketsWeight = 0;
