@@ -1,0 +1,31 @@
+title = "Scoring constants"
+
+[availablemoves]
+weight = 0
+exp = 1.25
+
+[location]
+weight = 0
+exp = 2.0
+
+[tickets]
+weight = 0
+	[tickets.double]
+	weight = 0
+	exp = 0
+
+	[tickets.secret]
+	weight = 0
+	exp = 0
+
+	[tickets.underground]
+	weight = 0
+	exp = 0
+
+	[tickets.bus]
+	weight = 0
+	exp = 0
+
+	[tickets.taxi]
+	weight = 0
+	exp = 0

@@ -19,7 +19,7 @@ public class LocationScore extends AbstractScore{
     private final ImmutableList<Integer> destinations;
     private final Integer nodeSize;
     private final List<List<Short>> filteredDistanceToSourceList;
-    private final double locationScoreExp = 2;
+    private final double locationScoreExp = constants.getDouble("location.exp");
     public LocationScore(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph,
                          ImmutableList<Integer> sources,
                          ImmutableList<Integer> destinations) {

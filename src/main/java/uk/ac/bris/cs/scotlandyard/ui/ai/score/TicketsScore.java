@@ -9,11 +9,11 @@ import java.util.List;
 
 public class TicketsScore extends AbstractScore {
     private final Board board;
-    private final double doubleTicketsWeight = 0;
-    private final double busTicketsWeight = 0;
-    private final double taxiTicketsWeight = 0;
-    private final double secretTicketsWeight = 0;
-    private final double undergroundTicketsWeight = 0;
+    private final double doubleTicketsWeight = constants.getDouble("tickets.double.weight");
+    private final double busTicketsWeight = constants.getDouble("tickets.bus.weight");
+    private final double taxiTicketsWeight = constants.getDouble("tickets.taxi.weight");
+    private final double secretTicketsWeight = constants.getDouble("tickets.secret.weight");
+    private final double undergroundTicketsWeight = constants.getDouble("tickets.underground.weight");
     public TicketsScore(
             Board board) {
         this.board = board;
