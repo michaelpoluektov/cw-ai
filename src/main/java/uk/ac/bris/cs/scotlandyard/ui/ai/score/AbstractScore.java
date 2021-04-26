@@ -4,7 +4,7 @@ import uk.ac.bris.cs.scotlandyard.model.Board;
 
 import javax.annotation.Nonnull;
 
-public abstract class Score {
+public abstract class AbstractScore {
     /*
     @param: GameState to score
 
