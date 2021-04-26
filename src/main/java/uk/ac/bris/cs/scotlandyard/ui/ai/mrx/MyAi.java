@@ -1,11 +1,9 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai;
+package uk.ac.bris.cs.scotlandyard.ui.ai.mrx;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 
@@ -16,10 +14,11 @@ import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.LocationScore;
 
 public class MyAi implements Ai {
 
-	@Nonnull @Override public String name() { return "Name me!"; }
+	@Nonnull @Override public String name() { return "MrX one step lookahead"; }
 
 	@Nonnull @Override public Move pickMove(
 			@Nonnull Board board,

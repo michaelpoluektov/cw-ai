@@ -1,4 +1,4 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai;
+package uk.ac.bris.cs.scotlandyard.ui.ai.score;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -13,12 +13,13 @@ import java.util.stream.Collectors;
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
 
-public class LocationScore implements Score{
+public class LocationScore extends Score{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final ImmutableList<Integer> sources;
     private final ImmutableList<Integer> destinations;
     private final Integer nodeSize;
     private final List<List<Short>> filteredDistanceToSourceList;
+    private final double locationScoreExp = 2;
     public LocationScore(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph,
                          ImmutableList<Integer> sources,
                          ImmutableList<Integer> destinations) {
@@ -54,7 +55,7 @@ public class LocationScore implements Score{
         Short[] distanceToSource = new Short[nodeSize];
         HashSet<Integer> unvisitedNodes = Sets.newHashSet();
         Short distanceOfClosestNodeToSource;
-        Integer closestNodeToSource = null;
+        Integer closestNodeToSource = source;
         for(int i = 1; i <= nodeSize; i++) unvisitedNodes.add(i);
         unvisitedNodes.remove(source);
         for(int i = 0; i < nodeSize; i++) distanceToSource[i] = Short.MAX_VALUE; // OUT OF BOUNDS!?
@@ -82,15 +83,15 @@ public class LocationScore implements Score{
         var detectiveDistancesToMrX = filteredDistanceToSourceList.get(0);
         Collections.sort(detectiveDistancesToMrX);
         List<Double> weightsList = detectiveDistancesToMrX.stream()
-                .map(value -> pow(2, -value)/(1-pow(2,-1)))
+                .map(value -> pow(locationScoreExp, -value)/(1-pow(locationScoreExp,-1)))
                 .collect(Collectors.toList());
         Double weightsListSum = weightsList.stream().reduce(0.0,Double::sum);
         weightsList = weightsList.stream().map(value -> value/weightsListSum).collect(Collectors.toList());
 
 
-        Double totalScore = 0.0;
+        double totalScore = 0.0;
         for(int i = 0; i < detectiveDistancesToMrX.size(); i++) {
-            Double unweightedScore = 1-pow(2, 1-detectiveDistancesToMrX.get(i));
+            Double unweightedScore = 1-pow(locationScoreExp, 1-detectiveDistancesToMrX.get(i));
             totalScore += weightsList.get(i)*unweightedScore;
         }
         return totalScore;
