@@ -11,10 +11,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class LocationScore {
+public abstract class Dijkstra {
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final Integer nodeSize;
-    public LocationScore(Board board) {
+    public Dijkstra(Board board) {
         this.graph = board.getSetup().graph;
         this.nodeSize = graph.nodes().size();
     }
@@ -24,7 +24,7 @@ public abstract class LocationScore {
         for(Integer source : sources) {
             List<Integer> distanceToSource = new ArrayList<>(Collections.nCopies(nodeSize, Integer.MAX_VALUE));
             Set<Integer> unvisitedNodes = IntStream.rangeClosed(1, nodeSize).boxed().collect(Collectors.toSet());
-            Set<Integer> noDistanceDestinations = Set.copyOf(destinations);
+            Set<Integer> noDistanceDestinations = new HashSet<>(destinations);
             distanceToSource.set(source-1, 0);
             Integer closestNodeToSource = source;
             while(!unvisitedNodes.isEmpty()) {
@@ -39,6 +39,7 @@ public abstract class LocationScore {
                 for(Integer node : graph.adjacentNodes(closestNodeToSource)) {
                     if(distanceOfClosestNodeToSource + 1 < distanceToSource.get(node - 1)) {
                         distanceToSource.set(node - 1, distanceOfClosestNodeToSource + 1);
+                        noDistanceDestinations.remove(node);
                     }
                 }
             }

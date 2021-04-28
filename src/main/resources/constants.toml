@@ -1,11 +1,11 @@
 title = "Scoring constants"
 
 [availablemoves]
-weight = 0
+weight = 1.0
 exp = 1.25
 
 [location]
-weight = 0
+weight = 2.0
 exp = 2.0
 
 [tickets]

@@ -1,9 +1,11 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.score;
+package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -13,10 +15,11 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.pow;
 
-public class MrXLocationScore extends LocationScore implements Score{
+public class MrXLocationScore extends Dijkstra implements IntermediateScore {
     private final Integer location;
     private final ImmutableList<Integer> detectiveLocations;
     private final Double locationScoreExp;
+    private final Double locationScoreWeight;
     public MrXLocationScore(Toml constants, Board board, Integer location) {
         super(board);
         this.location = location;
@@ -27,6 +30,7 @@ public class MrXLocationScore extends LocationScore implements Score{
                 .map(Optional::get)
                 .collect(ImmutableList.toImmutableList());
         this.locationScoreExp = constants.getDouble("location.exp");
+        this.locationScoreWeight = constants.getDouble("location.weight");
     }
 
     @Nonnull
@@ -48,5 +52,11 @@ public class MrXLocationScore extends LocationScore implements Score{
             totalScore += weightsList.get(i)*unweightedScore;
         }
         return totalScore;
+    }
+
+    @Nonnull
+    @Override
+    public Double getWeight() {
+        return locationScoreWeight;
     }
 }
