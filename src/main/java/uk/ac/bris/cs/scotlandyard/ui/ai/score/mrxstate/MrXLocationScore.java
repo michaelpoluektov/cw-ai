@@ -2,12 +2,14 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
 import com.moandjiezana.toml.Toml;
+import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -53,10 +55,12 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
         }
         return totalScore;
     }
-
     @Nonnull
     @Override
-    public Double getWeight() {
+    public Double getWeight(){
         return locationScoreWeight;
     }
+
+
+
 }

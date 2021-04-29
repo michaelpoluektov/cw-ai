@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 import com.moandjiezana.toml.Toml;
+import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
@@ -23,14 +24,17 @@ public class MrXAvailableMovesScore implements IntermediateScore {
     public Double getScore() {
         List<Move> availableSingleMoves = new ArrayList<>();
         for(Move move : board.getAvailableMoves()) {
-            if(move.getClass() == Move.DoubleMove.class) availableSingleMoves.add(move);
+            if(move.getClass() == Move.SingleMove.class) availableSingleMoves.add(move); //should this add only single moves?
         }
-        return 1 - Math.pow(availableMovesExp, -availableSingleMoves.size());
-    }
+        double score = 1 - Math.pow(availableMovesExp, -availableSingleMoves.size());
+        return score;
 
+    }
     @Nonnull
     @Override
-    public Double getWeight() {
+    public Double getWeight(){
         return availableMovesWeight;
     }
+
+
 }
