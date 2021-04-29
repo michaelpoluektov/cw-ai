@@ -1,8 +1,5 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score;
 
-import io.atlassian.fugue.Pair;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrxTicketScore;
-
 import javax.annotation.Nonnull;
 import java.util.List;
 
@@ -13,9 +10,8 @@ public class StateScore {
         double totalScore = 0.0;
         double totalWeights = 0.0;
         for(IntermediateScore score : intermediateScores) {
-            totalScore += score.getScore() * score.getWeight();
+            totalScore += score.getScore()* score.getWeight();
             totalWeights += score.getWeight();
-
         }
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
