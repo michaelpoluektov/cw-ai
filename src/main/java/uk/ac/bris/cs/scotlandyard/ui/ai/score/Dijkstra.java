@@ -27,7 +27,7 @@ public abstract class Dijkstra {
             Set<Integer> noDistanceDestinations = new HashSet<>(destinations);
             distanceToSource.set(source-1, 0);
             Integer closestNodeToSource = source;
-            while(!unvisitedNodes.isEmpty()) {
+            while(!noDistanceDestinations.isEmpty()) { // check this
                 Integer distanceOfClosestNodeToSource = Integer.MAX_VALUE;
                 for(int i = 0; i < nodeSize; i++) {
                     if(distanceToSource.get(i) < distanceOfClosestNodeToSource && unvisitedNodes.contains(i + 1)) {
