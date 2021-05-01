@@ -32,14 +32,14 @@ public class MyAi implements Ai {
 				.collect(ImmutableList.toImmutableList());
 
 		Map.Entry<Move,Double> bestSingleEntry = getBestMove(singleMoves, board);
-		System.out.println("Move score: "+bestSingleEntry.getValue());
+		System.out.println("Best single move score: "+bestSingleEntry.getValue());
 		if(bestSingleEntry.getValue() < constants.getDouble("double.threshold")){
 			ImmutableList<Move> doubleMoves = board.getAvailableMoves().stream()
 					.filter(move -> move instanceof Move.DoubleMove)
 					.collect(ImmutableList.toImmutableList());
 			Map.Entry<Move, Double> bestDoubleEntry = getBestMove(doubleMoves, board);
 			if(bestDoubleEntry.getValue() > bestSingleEntry.getValue() + constants.getDouble("double.minOffset")) {
-				System.out.println("Move score: "+bestDoubleEntry.getValue());
+				System.out.println("Best double move score: "+bestDoubleEntry.getValue());
 				return bestDoubleEntry.getKey();
 			}
 		}
@@ -53,7 +53,6 @@ public class MyAi implements Ai {
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
 			intermediateScores.add(new MrXLocationScore(constants, board, moveDestination));
 			intermediateScores.add(new MrXAvailableMovesScore(constants, board));
-			intermediateScores.add(new MrXTicketScore(constants, board));
 			scoredMoves.put(move, StateScore.getTotalScore(intermediateScores));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
