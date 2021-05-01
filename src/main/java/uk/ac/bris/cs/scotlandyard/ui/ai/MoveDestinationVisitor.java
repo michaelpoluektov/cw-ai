@@ -2,7 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai;
 
 import uk.ac.bris.cs.scotlandyard.model.Move;
 
-public class moveDestinationVisitor implements Move.Visitor<Integer>{
+public class MoveDestinationVisitor implements Move.Visitor<Integer>{
     @Override
     public Integer visit(Move.SingleMove move) {
         return move.destination;
