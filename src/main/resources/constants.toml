@@ -1,24 +1,31 @@
 title = "Scoring constants"
 
-[availablemoves]
-weight = 1.0
-exp = 1.25
+[availableMoves]
+weight = 3.0
+exp = 1.15
 
 [location]
-weight = 3.0
-exp = 2.0
+weight = 7.0
+exp = 2.5
 
 [tickets]
-weight = 1.0
+weight = 0.3
 
 	[tickets.underground]
-	weight = 0
-	exp = 0
+	weight = 0.30
+	exp = 3.0
 
 	[tickets.bus]
-	weight = 0
-	exp = 0
+	weight = 0.2
+	exp = 3.0
 
 	[tickets.taxi]
-	weight = 0
-	exp = 0
+	weight = 0.2
+	exp = 3.0
+
+[double]
+threshold = 0.4
+minOffset = 0.2
+
+[secret]
+threshold = 0.0

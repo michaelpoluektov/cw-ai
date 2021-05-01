@@ -27,10 +27,27 @@ public class MyAi implements Ai {
 			@Nonnull Board board,
 			Pair<Long, TimeUnit> timeoutPair) {
 		// returns a random move, replace with your own implementation
-		ImmutableList<Move> moves = board.getAvailableMoves().stream()
+		ImmutableList<Move> singleMoves = board.getAvailableMoves().stream()
 				.filter(move -> move instanceof Move.SingleMove)
 				.collect(ImmutableList.toImmutableList());
+
+		Map.Entry<Move,Double> bestSingleEntry = getBestMove(singleMoves, board);
+		System.out.println("Move score: "+bestSingleEntry.getValue());
+		if(bestSingleEntry.getValue() < constants.getDouble("double.threshold")){
+			ImmutableList<Move> doubleMoves = board.getAvailableMoves().stream()
+					.filter(move -> move instanceof Move.DoubleMove)
+					.collect(ImmutableList.toImmutableList());
+			Map.Entry<Move, Double> bestDoubleEntry = getBestMove(doubleMoves, board);
+			if(bestDoubleEntry.getValue() > bestSingleEntry.getValue() + constants.getDouble("double.minOffset")) {
+				System.out.println("Move score: "+bestDoubleEntry.getValue());
+				return bestDoubleEntry.getKey();
+			}
+		}
+		return bestSingleEntry.getKey();
+	}
+	private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
 		HashMap<Move, Double> scoredMoves = new HashMap<>();
+
 		for(Move move : moves) {
 			List<IntermediateScore> intermediateScores = new ArrayList<>(2);
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
@@ -39,8 +56,6 @@ public class MyAi implements Ai {
 			intermediateScores.add(new MrXTicketScore(constants, board));
 			scoredMoves.put(move, StateScore.getTotalScore(intermediateScores));
 		}
-		Map.Entry maxScore = Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
-		System.out.println("Move score: "+maxScore.getValue());
-		return (Move) maxScore.getKey();
+		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
 	}
 }

@@ -56,6 +56,7 @@ public class MrXTicketScore implements IntermediateScore {
         double taxiTicketScore = 1 - Math.pow(taxiTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.TAXI));
         double undergroundTicketScore = 1 - Math.pow(undergroundTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.UNDERGROUND));
         double weightSum = busTicketWeight + taxiTicketWeight + undergroundTicketWeight;
+        if(weightSum == 0) throw new IllegalArgumentException("Can't divide total score by 0");
         double totalScore = busTicketScore * busTicketWeight
                 + taxiTicketScore * taxiTicketWeight
                 + undergroundTicketScore * undergroundTicketWeight;

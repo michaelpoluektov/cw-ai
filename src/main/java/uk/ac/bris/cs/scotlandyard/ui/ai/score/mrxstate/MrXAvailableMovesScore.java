@@ -14,8 +14,8 @@ public class MrXAvailableMovesScore implements IntermediateScore {
     private final Double availableMovesWeight;
     public MrXAvailableMovesScore(Toml constants, Board board) {
         this.board = board;
-        this.availableMovesExp = constants.getDouble("availablemoves.exp");
-        this.availableMovesWeight = constants.getDouble("availablemoves.weight");
+        this.availableMovesExp = constants.getDouble("availableMoves.exp");
+        this.availableMovesWeight = constants.getDouble("availableMoves.weight");
     }
 
     @Nonnull
