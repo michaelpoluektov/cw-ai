@@ -1,11 +1,5 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.mrx;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nonnull;
-
-
 import com.google.common.collect.ImmutableList;
 import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
@@ -14,12 +8,15 @@ import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveDestinationVisitor;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXAvailableMovesScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
 
-public class MyAi implements Ai {
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+public class NStep implements Ai {
 	private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
 	@Nonnull @Override public String name() { return "MrX one step lookahead - deterministic"; }
 
