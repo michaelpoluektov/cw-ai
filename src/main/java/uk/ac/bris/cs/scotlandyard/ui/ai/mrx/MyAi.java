@@ -51,7 +51,7 @@ public class MyAi implements Ai {
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
 			Board advancedBoard = ((Board.GameState) board).advance(move);
 			MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-			scoredMoves.put(move, advancedMiniBoard.getBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
+			scoredMoves.put(move, advancedMiniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
 					ScoringClassEnum.MRXLOCATION));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());

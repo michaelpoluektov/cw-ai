@@ -106,7 +106,22 @@ public class MiniBoard {
                 constants);
     }
 
-    public Double getBoardScore(ScoringClassEnum... scoringClasses) {
+    public enum winner {
+        MRX,
+        DETECTIVES,
+        NONE
+    }
+
+    public winner getWinner() {
+        if(detectiveLocations.contains(mrXLocation) || getNodeDestinations(mrXLocation).size() == 0) {
+            return winner.DETECTIVES;
+        } else if(round == setup.rounds.size() && mrXToMove) return winner.MRX;
+        else return winner.NONE;
+    }
+
+    public Double getMrXBoardScore(ScoringClassEnum... scoringClasses) {
+        if(detectiveLocations.contains(mrXLocation) || getNodeDestinations(mrXLocation).size() == 0) return 0.0;
+        if(round == setup.rounds.size() && mrXToMove) return 1.0;
         double totalScore = 0.0;
         double totalWeights = 0.0;
         for(ScoringClassEnum scoringClass : scoringClasses) {
@@ -116,5 +131,9 @@ public class MiniBoard {
         }
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
+    }
+
+    public Double getDetectivesBoardScore(ScoringClassEnum... scoringClasses) {
+        return 1-getMrXBoardScore(scoringClasses);
     }
 }
