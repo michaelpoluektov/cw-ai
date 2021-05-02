@@ -12,12 +12,12 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
+import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveDestinationVisitor;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.StateScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXAvailableMovesScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXTicketScore;
 
 public class MyAi implements Ai {
 	private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
@@ -47,13 +47,12 @@ public class MyAi implements Ai {
 	}
 	private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
 		HashMap<Move, Double> scoredMoves = new HashMap<>();
-
 		for(Move move : moves) {
-			List<IntermediateScore> intermediateScores = new ArrayList<>(2);
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
-			intermediateScores.add(new MrXLocationScore(constants, board, moveDestination));
-			intermediateScores.add(new MrXAvailableMovesScore(constants, board));
-			scoredMoves.put(move, StateScore.getTotalScore(intermediateScores));
+			Board advancedBoard = ((Board.GameState) board).advance(move);
+			MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
+			scoredMoves.put(move, advancedMiniBoard.getBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
+					ScoringClassEnum.MRXLOCATION));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
 	}

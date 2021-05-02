@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
+import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
@@ -20,17 +21,12 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
     private final ImmutableList<Integer> detectiveLocations;
     private final Double locationScoreExp;
     private final Double locationScoreWeight;
-    public MrXLocationScore(Toml constants, Board board, Integer location) {
-        super(board);
-        this.location = location;
-        this.detectiveLocations = board.getPlayers().stream()
-                .filter(Piece::isDetective)
-                .map(piece -> board.getDetectiveLocation((Piece.Detective) piece))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(ImmutableList.toImmutableList());
-        this.locationScoreExp = constants.getDouble("location.exp");
-        this.locationScoreWeight = constants.getDouble("location.weight");
+    public MrXLocationScore(MiniBoard miniBoard) {
+        super(miniBoard);
+        this.location = miniBoard.getMrXLocation();
+        this.detectiveLocations = miniBoard.getDetectiveLocations();
+        this.locationScoreExp = miniBoard.getConstants().getDouble("location.exp");
+        this.locationScoreWeight = miniBoard.getConstants().getDouble("location.weight");
     }
 
     @Nonnull

@@ -2,6 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
+import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
@@ -9,23 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MrXAvailableMovesScore implements IntermediateScore {
-    private final Board board;
+    private final MiniBoard miniBoard;
     private final Double availableMovesExp;
     private final Double availableMovesWeight;
-    public MrXAvailableMovesScore(Toml constants, Board board) {
-        this.board = board;
-        this.availableMovesExp = constants.getDouble("availableMoves.exp");
-        this.availableMovesWeight = constants.getDouble("availableMoves.weight");
+    public MrXAvailableMovesScore(MiniBoard miniBoard) {
+        this.miniBoard = miniBoard;
+        this.availableMovesExp = miniBoard.getConstants().getDouble("availableMoves.exp");
+        this.availableMovesWeight = miniBoard.getConstants().getDouble("availableMoves.weight");
     }
 
     @Nonnull
     @Override
     public Double getScore() {
-        List<Move> availableSingleMoves = new ArrayList<>();
-        for(Move move : board.getAvailableMoves()) {
-            if(move.getClass() == Move.DoubleMove.class) availableSingleMoves.add(move);
-        }
-        return 1 - Math.pow(availableMovesExp, -availableSingleMoves.size());
+        return 1 - Math.pow(availableMovesExp, -miniBoard.getNodeDestinations(miniBoard.getMrXLocation()).size());
     }
 
     @Nonnull

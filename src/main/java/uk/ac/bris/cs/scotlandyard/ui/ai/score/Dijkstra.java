@@ -6,6 +6,7 @@ import com.google.common.graph.ImmutableValueGraph;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,8 +15,8 @@ import java.util.stream.IntStream;
 public abstract class Dijkstra {
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final Integer nodeSize;
-    public Dijkstra(Board board) {
-        this.graph = board.getSetup().graph;
+    public Dijkstra(MiniBoard miniBoard) {
+        this.graph = miniBoard.getSetup().graph;
         this.nodeSize = graph.nodes().size();
     }
 
