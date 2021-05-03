@@ -48,9 +48,32 @@ public class NStep implements Ai {
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
 			Board advancedBoard = ((Board.GameState) board).advance(move);
 			MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-			scoredMoves.put(move, advancedMiniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
-					ScoringClassEnum.MRXLOCATION));
+			scoredMoves.put(move, Maximise(advancedMiniBoard, 0));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
+	}
+
+	private Double Maximise(MiniBoard miniBoard, Integer depth) {
+		if (!miniBoard.getMrXToMove()) throw new IllegalArgumentException("Passed board is not MrX to move!");
+		if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
+				ScoringClassEnum.MRXLOCATION);
+		double maxScore = 0.0;
+		for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
+			Double advancedScore = Minimise(miniBoard.advanceMrX(destination), depth - 1);
+			if(maxScore < advancedScore) maxScore = advancedScore;
+		}
+		return maxScore;
+	}
+
+	private Double Minimise(MiniBoard miniBoard, Integer depth) {
+		if (miniBoard.getMrXToMove()) throw new IllegalArgumentException("Passed board is MrX to move!");
+		if (depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
+				ScoringClassEnum.MRXLOCATION);
+		double minScore = 0.0;
+		for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getDetectiveLocations().get(0))) {
+			Double advancedScore = Maximise(miniBoard.advanceMrX(destination), depth - 1);
+			if(minScore > advancedScore) minScore = advancedScore;
+		}
+		return minScore;
 	}
 }
