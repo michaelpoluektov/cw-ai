@@ -132,8 +132,4 @@ public class MiniBoard {
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
     }
-
-    public Double getDetectivesBoardScore(ScoringClassEnum... scoringClasses) {
-        return 1-getMrXBoardScore(scoringClasses);
-    }
 }
