@@ -21,7 +21,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
 
 public class OneStep implements Ai {
 	private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
-	@Nonnull @Override public String name() { return "MrX N step lookahead- deterministic"; }
+	@Nonnull @Override public String name() { return "MrX one step lookahead - deterministic"; }
 
 	@Nonnull @Override public Move pickMove(
 			@Nonnull Board board,

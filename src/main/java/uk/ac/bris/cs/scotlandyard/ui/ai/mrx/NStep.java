@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class NStep implements Ai {
 	private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
-	@Nonnull @Override public String name() { return "MrX one step lookahead - deterministic"; }
+	@Nonnull @Override public String name() { return "MrX N-step lookahead - deterministic"; }
 
 	@Nonnull @Override public Move pickMove(
 			@Nonnull Board board,
@@ -43,16 +43,16 @@ public class NStep implements Ai {
 	private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
 		HashMap<Move, Double> scoredMoves = new HashMap<>();
 		for(Move move : moves) {
+			System.out.println("Rated one possibility.");
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
 			Board advancedBoard = ((Board.GameState) board).advance(move);
 			MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-			scoredMoves.put(move, MiniMax(advancedMiniBoard, 5, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+			scoredMoves.put(move, MiniMax(advancedMiniBoard, 3));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
 	}
-	private Double MiniMax(MiniBoard miniBoard, Integer depth, Boolean mrXToMove, Double alpha, Double beta){
-		Double updatedAlpha = alpha;
-		Double updatedBeta  = beta;
+	private Double MiniMax(MiniBoard miniBoard, Integer depth){
+		Boolean mrXToMove = miniBoard.getMrXToMove();
 		if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
 				ScoringClassEnum.MRXLOCATION);
 		if(miniBoard.getWinner() == MiniBoard.winner.MRX) return 1.0;
@@ -60,22 +60,16 @@ public class NStep implements Ai {
 		if(mrXToMove){
 			double maxScore = Double.NEGATIVE_INFINITY;
 			for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-				Double advancedScore = MiniMax(miniBoard.advanceMrX(destination),
-						depth -1, false, updatedAlpha, beta);
+				Double advancedScore = MiniMax(miniBoard.advanceMrX(destination), depth -1);
 				if(maxScore < advancedScore) maxScore = advancedScore;
-				updatedAlpha = Double.max(updatedAlpha,advancedScore);
-				if(beta <= updatedAlpha) break;
 			}
 			return maxScore;
 		}
 		else{
 			double minScore = Double.POSITIVE_INFINITY;
 			for(MiniBoard advancedBoard : detectiveAdvancedBoards(miniBoard, miniBoard.getDetectiveLocations())) {
-				Double advancedScore = MiniMax(advancedBoard,
-						depth - 1, true, alpha, updatedBeta);
+				Double advancedScore = MiniMax(advancedBoard, depth - 1);
 				if(minScore > advancedScore) minScore = advancedScore;
-				updatedBeta = Double.min(updatedBeta, advancedScore);
-				if(updatedBeta >= alpha) break;
 			}
 			return minScore;
 		}
