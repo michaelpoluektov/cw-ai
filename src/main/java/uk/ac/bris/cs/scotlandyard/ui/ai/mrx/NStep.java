@@ -32,6 +32,7 @@ public class NStep implements Ai {
 			ImmutableList<Move> doubleMoves = board.getAvailableMoves().stream()
 					.filter(move -> move instanceof Move.DoubleMove)
 					.collect(ImmutableList.toImmutableList());
+			if(doubleMoves.isEmpty()) return bestSingleEntry.getKey();
 			Map.Entry<Move, Double> bestDoubleEntry = getBestMove(doubleMoves, board);
 			if(bestDoubleEntry.getValue() > bestSingleEntry.getValue() + constants.getDouble("double.minOffset")) {
 				System.out.println("Best double move score: "+bestDoubleEntry.getValue());
@@ -47,7 +48,7 @@ public class NStep implements Ai {
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
 			Board advancedBoard = ((Board.GameState) board).advance(move);
 			MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-			scoredMoves.put(move, MiniMax(advancedMiniBoard, 6));
+			scoredMoves.put(move, MiniMax(advancedMiniBoard, 3));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
 	}
