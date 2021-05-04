@@ -13,6 +13,8 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PruningNStep implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
@@ -23,19 +25,24 @@ public class PruningNStep implements Ai {
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
         // returns a random move, replace with your own implementation
-        ImmutableList<Move> singleMoves = board.getAvailableMoves().stream()
+        ImmutableList<Move> singleMoves = ImmutableList.copyOf(board.getAvailableMoves().stream()
                 .filter(move -> move instanceof Move.SingleMove)
-                .collect(ImmutableList.toImmutableList());
+                .collect(Collectors.toMap(move -> ((Move.SingleMove) move).destination, Function.identity(),
+                        (move1, move2) -> move1))
+                .values());
 
         Map.Entry<Move,Double> bestSingleEntry = getBestMove(singleMoves, board);
         System.out.println("Best single move score: "+bestSingleEntry.getValue());
         if(bestSingleEntry.getValue() < constants.getDouble("double.threshold")){
-            ImmutableList<Move> doubleMoves = board.getAvailableMoves().stream()
+            ImmutableList<Move> doubleMoves = ImmutableList.copyOf(board.getAvailableMoves().stream()
                     .filter(move -> move instanceof Move.DoubleMove)
-                    .collect(ImmutableList.toImmutableList());
+                    .collect(Collectors.toMap(move -> ((Move.DoubleMove) move).destination2, Function.identity(),
+                            (move1, move2) -> move1))
+                    .values());
             if(doubleMoves.isEmpty()) return bestSingleEntry.getKey();
             Map.Entry<Move, Double> bestDoubleEntry = getBestMove(doubleMoves, board);
-            if(bestDoubleEntry.getValue() > bestSingleEntry.getValue() + constants.getDouble("double.minOffset")) {
+            if(bestDoubleEntry.getValue() > bestSingleEntry.getValue() + constants.getDouble("double.minOffset") ||
+                    bestSingleEntry.getValue() == 0) {
                 System.out.println("Best double move score: "+bestDoubleEntry.getValue());
                 return bestDoubleEntry.getKey();
             }
@@ -45,11 +52,11 @@ public class PruningNStep implements Ai {
     private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
         HashMap<Move, Double> scoredMoves = new HashMap<>();
         for(Move move : moves) {
-            System.out.println("Rated one possibility.");
+            System.out.println("Rating move: "+move);
             Integer moveDestination = move.visit(new MoveDestinationVisitor());
             Board advancedBoard = ((Board.GameState) board).advance(move);
             MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-            scoredMoves.put(move, MiniMax(advancedMiniBoard, 3, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+            scoredMoves.put(move, MiniMax(advancedMiniBoard, 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
         }
         return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
     }
