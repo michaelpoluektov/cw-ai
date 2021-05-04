@@ -56,14 +56,14 @@ public class PruningNStep implements Ai {
             Integer moveDestination = move.visit(new MoveDestinationVisitor());
             Board advancedBoard = ((Board.GameState) board).advance(move);
             MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-            scoredMoves.put(move, MiniMax(advancedMiniBoard, 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+            scoredMoves.put(move, MiniMax(advancedMiniBoard, 4,
+                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
         }
         return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
     }
     private Double MiniMax(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
         Boolean mrXToMove = miniBoard.getMrXToMove();
-        if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
-                ScoringClassEnum.MRXLOCATION);
+        if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXWINNER);
         if(miniBoard.getWinner() == MiniBoard.winner.MRX) return 1.0;
         else if(miniBoard.getWinner() == MiniBoard.winner.DETECTIVES) return 0.0;
         if(mrXToMove){
@@ -108,28 +108,4 @@ public class PruningNStep implements Ai {
         }
         return ImmutableList.copyOf(returnedList);
     }
-
-	/*private Double Maximise(MiniBoard miniBoard, Integer depth) {
-		if (!miniBoard.getMrXToMove()) throw new IllegalArgumentException("Passed board is not MrX to move!");
-		if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
-				ScoringClassEnum.MRXLOCATION);
-		double maxScore = 0.0;
-		for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-			Double advancedScore = Minimise(miniBoard.advanceMrX(destination), depth - 1);
-			if(maxScore < advancedScore) maxScore = advancedScore;
-		}
-		return maxScore;
-	}
-
-	private Double Minimise(MiniBoard miniBoard, Integer depth) {
-		if (miniBoard.getMrXToMove()) throw new IllegalArgumentException("Passed board is MrX to move!");
-		if (depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
-				ScoringClassEnum.MRXLOCATION);
-		double minScore = 0.0;
-		for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getDetectiveLocations().get(0))) {
-			Double advancedScore = Maximise(miniBoard.advanceMrX(destination), depth - 1);
-			if(minScore > advancedScore) minScore = advancedScore;
-		}
-		return minScore;
-	}*/
 }
