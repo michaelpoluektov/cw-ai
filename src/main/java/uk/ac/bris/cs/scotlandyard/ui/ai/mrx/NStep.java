@@ -11,9 +11,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MoveDestinationVisitor;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class NStep implements Ai {
@@ -48,12 +46,59 @@ public class NStep implements Ai {
 			Integer moveDestination = move.visit(new MoveDestinationVisitor());
 			Board advancedBoard = ((Board.GameState) board).advance(move);
 			MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-			scoredMoves.put(move, Maximise(advancedMiniBoard, 0));
+			scoredMoves.put(move, MiniMax(advancedMiniBoard, 5, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
 		}
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
 	}
+	private Double MiniMax(MiniBoard miniBoard, Integer depth, Boolean mrXToMove, Double alpha, Double beta){
+		if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
+				ScoringClassEnum.MRXLOCATION);
+		if(mrXToMove){
+			double maxScore = Double.NEGATIVE_INFINITY;
+			for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
+				Double advancedScore = MiniMax(miniBoard.advanceMrX(destination),
+						depth -1, false, alpha, beta);
+				if(maxScore < advancedScore) maxScore = advancedScore;
+				alpha = Double.max(alpha,advancedScore);
+				if(beta <= alpha) break;
+			}
+			return maxScore;
+		}
+		else{
+			double minScore = Double.POSITIVE_INFINITY;
+			for(MiniBoard advancedBoard : detectiveAdvancedBoards(miniBoard, miniBoard.getDetectiveLocations())) {
+				Double advancedScore = MiniMax(advancedBoard,
+						depth - 1, true, alpha, beta);
+				if(minScore > advancedScore) minScore = advancedScore;
+				beta = Double.min(beta, advancedScore);
+				if(beta >= alpha) break;
+			}
+			return minScore;
+		}
+	}
 
-	private Double Maximise(MiniBoard miniBoard, Integer depth) {
+	private ImmutableList<MiniBoard> detectiveAdvancedBoards(MiniBoard miniBoard,
+															 ImmutableList<Integer> unmovedDetectives) {
+		List<MiniBoard> returnedList = new ArrayList<>();
+		List<Integer> newUnmovedDetectives = new ArrayList<>(unmovedDetectives);
+		if (unmovedDetectives.isEmpty()) {
+			returnedList.add(miniBoard);
+		} else {
+			ImmutableList<MiniBoard> advancedMiniBoards = miniBoard.getNodeDestinations(newUnmovedDetectives.get(0))
+					.stream()
+					.map(destination -> miniBoard.advanceDetective(newUnmovedDetectives.get(0),
+							destination,
+							newUnmovedDetectives.size() == 1))
+					.collect(ImmutableList.toImmutableList());
+			newUnmovedDetectives.remove(0);
+			for (MiniBoard advancedMiniBoard : advancedMiniBoards)
+				returnedList.addAll(detectiveAdvancedBoards(advancedMiniBoard,
+						ImmutableList.copyOf(newUnmovedDetectives)));
+		}
+		return ImmutableList.copyOf(returnedList);
+	}
+
+	/*private Double Maximise(MiniBoard miniBoard, Integer depth) {
 		if (!miniBoard.getMrXToMove()) throw new IllegalArgumentException("Passed board is not MrX to move!");
 		if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
 				ScoringClassEnum.MRXLOCATION);
@@ -75,5 +120,5 @@ public class NStep implements Ai {
 			if(minScore > advancedScore) minScore = advancedScore;
 		}
 		return minScore;
-	}
+	}*/
 }

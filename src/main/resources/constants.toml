@@ -9,7 +9,7 @@ weight = 7.0
 exp = 2.0
 
 [tickets]
-weight = 0.3
+weight = 0.5
 
 	[tickets.underground]
 	weight = 0.30
