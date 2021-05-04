@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class PruningNStep implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull
-    @Override public String name() { return "MrX Pruning N-step lookahead - deterministic"; }
+    @Override public String name() { return "MrX pruning N-step lookahead - deterministic"; }
 
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
@@ -62,7 +62,7 @@ public class PruningNStep implements Ai {
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
             for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-                Double advancedScore = MiniMax(miniBoard.advanceMrX(destination), depth -1, alpha, beta);
+                Double advancedScore = MiniMax(miniBoard.advanceMrX(destination), depth - 1, alpha, beta);
                 if(maxScore < advancedScore) maxScore = advancedScore;
                 alpha = Double.max(alpha, advancedScore);
                 if(beta <= alpha) break;
