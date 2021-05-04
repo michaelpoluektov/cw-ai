@@ -120,8 +120,8 @@ public class MiniBoard {
     }
 
     public Double getMrXBoardScore(ScoringClassEnum... scoringClasses) {
-        if(detectiveLocations.contains(mrXLocation) || getNodeDestinations(mrXLocation).size() == 0) return 0.0;
-        if(round == setup.rounds.size() && mrXToMove) return 1.0;
+        if(getWinner() == winner.DETECTIVES) return 0.0;
+        if(getWinner() == winner.MRX) return 1.0;
         double totalScore = 0.0;
         double totalWeights = 0.0;
         for(ScoringClassEnum scoringClass : scoringClasses) {

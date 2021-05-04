@@ -51,16 +51,20 @@ public class NStep implements Ai {
 		return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
 	}
 	private Double MiniMax(MiniBoard miniBoard, Integer depth, Boolean mrXToMove, Double alpha, Double beta){
+		Double updatedAlpha = alpha;
+		Double updatedBeta  = beta;
 		if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXAVAILABLEMOVES,
 				ScoringClassEnum.MRXLOCATION);
+		if(miniBoard.getWinner() == MiniBoard.winner.MRX) return 1.0;
+		else if(miniBoard.getWinner() == MiniBoard.winner.DETECTIVES) return 0.0;
 		if(mrXToMove){
 			double maxScore = Double.NEGATIVE_INFINITY;
 			for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
 				Double advancedScore = MiniMax(miniBoard.advanceMrX(destination),
-						depth -1, false, alpha, beta);
+						depth -1, false, updatedAlpha, beta);
 				if(maxScore < advancedScore) maxScore = advancedScore;
-				alpha = Double.max(alpha,advancedScore);
-				if(beta <= alpha) break;
+				updatedAlpha = Double.max(updatedAlpha,advancedScore);
+				if(beta <= updatedAlpha) break;
 			}
 			return maxScore;
 		}
@@ -68,10 +72,10 @@ public class NStep implements Ai {
 			double minScore = Double.POSITIVE_INFINITY;
 			for(MiniBoard advancedBoard : detectiveAdvancedBoards(miniBoard, miniBoard.getDetectiveLocations())) {
 				Double advancedScore = MiniMax(advancedBoard,
-						depth - 1, true, alpha, beta);
+						depth - 1, true, alpha, updatedBeta);
 				if(minScore > advancedScore) minScore = advancedScore;
-				beta = Double.min(beta, advancedScore);
-				if(beta >= alpha) break;
+				updatedBeta = Double.min(updatedBeta, advancedScore);
+				if(updatedBeta >= alpha) break;
 			}
 			return minScore;
 		}
