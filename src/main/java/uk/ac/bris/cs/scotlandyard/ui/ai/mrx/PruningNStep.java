@@ -74,7 +74,7 @@ public class PruningNStep implements Ai {
                 Double advancedScore = MiniMax(advancedBoard, depth - 1, alpha, beta);
                 if(minScore > advancedScore) minScore = advancedScore;
                 beta = Double.min(beta, advancedScore);
-                if(beta >= alpha) break;
+                if(beta <= alpha) break;
             }
             return minScore;
         }
