@@ -1,13 +1,8 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
-import com.moandjiezana.toml.Toml;
-import uk.ac.bris.cs.scotlandyard.model.Board;
-import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MrXAvailableMovesScore implements IntermediateScore {
     private final MiniBoard miniBoard;

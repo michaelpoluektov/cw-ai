@@ -9,7 +9,6 @@ import uk.ac.bris.cs.scotlandyard.model.Piece;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
 
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 

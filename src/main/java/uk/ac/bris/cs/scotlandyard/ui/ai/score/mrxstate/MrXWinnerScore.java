@@ -16,9 +16,8 @@ public class MrXWinnerScore implements IntermediateScore {
         switch(winner) {
             case MRX: return 1.0;
             case DETECTIVES: return 0.0;
-            case NONE: return 0.5;
+            default: return 0.5;
         }
-        return 0.0;
     }
 
     @Nonnull

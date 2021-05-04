@@ -1,10 +1,8 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score;
 
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXAvailableMovesScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXTicketScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXWinnerScore;
 
 public enum ScoringClassEnum {

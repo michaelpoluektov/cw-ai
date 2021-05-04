@@ -30,24 +30,7 @@ public class MrXTicketScore implements IntermediateScore {
         this.mrXTickets = board.getPlayerTickets(Piece.MrX.MRX).get();
 
     }
-    /*private Double genericTicketScore(ScotlandYard.Ticket ticket){
-        int numberOfDetective = board.getPlayers().size() - 1;
-        int numberOfTicket = MrXTickets.getCount(ticket);
-        double score;
-        final double scoreForTaxiBus = 1 - Math.pow((1 + 0.5 * numberOfDetective), -numberOfTicket);
-        if(ticket == ScotlandYard.Ticket.BUS){
-            score = scoreForTaxiBus;
-        }
-        else if(ticket == ScotlandYard.Ticket.TAXI){
-            score = scoreForTaxiBus;
-        }
-        else{
-            score = 1 - Math.pow(undergroundTicketExp, -numberOfTicket);
-        }
-        return score;
-    }
 
-     */
     @Nonnull
     @Override
     public Double getScore() {
