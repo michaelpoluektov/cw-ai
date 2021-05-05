@@ -1,11 +1,10 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.mrx;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
-import uk.ac.bris.cs.scotlandyard.model.Ai;
-import uk.ac.bris.cs.scotlandyard.model.Board;
-import uk.ac.bris.cs.scotlandyard.model.Move;
+import uk.ac.bris.cs.scotlandyard.model.*;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveDestinationVisitor;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
@@ -24,7 +23,6 @@ public class PruningNStep implements Ai {
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
-        // returns a random move, replace with your own implementation
         ImmutableList<Move> singleMoves = ImmutableList.copyOf(board.getAvailableMoves().stream()
                 .filter(move -> move instanceof Move.SingleMove)
                 .collect(Collectors.toMap(move -> ((Move.SingleMove) move).destination, Function.identity(),
@@ -49,6 +47,24 @@ public class PruningNStep implements Ai {
         }
         return bestSingleEntry.getKey();
     }
+
+    private ImmutableSet<Integer> getSingleMoveDestinations(ImmutableSet<Move> moves) {
+        return moves.stream()
+                .filter(move -> move instanceof Move.SingleMove)
+                .map(move -> ((Move.SingleMove) move).destination)
+                .distinct()
+                .collect(ImmutableSet.toImmutableSet());
+    }
+
+    private ImmutableSet<Integer> getDoubleMoveDestinations(ImmutableSet<Move> moves) {
+        return moves.stream()
+                .filter(move -> move instanceof Move.DoubleMove)
+                .map(move -> ((Move.DoubleMove) move).destination2)
+                .distinct()
+                .filter(destination -> getSingleMoveDestinations(moves).contains(destination))
+                .collect(ImmutableSet.toImmutableSet());
+    }
+
     private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
         HashMap<Move, Double> scoredMoves = new HashMap<>();
         for(Move move : moves) {
@@ -56,16 +72,19 @@ public class PruningNStep implements Ai {
             Integer moveDestination = move.visit(new MoveDestinationVisitor());
             Board advancedBoard = ((Board.GameState) board).advance(move);
             MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-            scoredMoves.put(move, MiniMax(advancedMiniBoard, 4,
+            scoredMoves.put(move, MiniMax(advancedMiniBoard, 5,
                     Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
         }
         return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
     }
+
     private Double MiniMax(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
+        MiniBoard.winner winner = miniBoard.getWinner();
+        if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
+        if(winner == MiniBoard.winner.MRX) return 1.0;
+        if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXLOCATION,
+                ScoringClassEnum.MRXAVAILABLEMOVES);
         Boolean mrXToMove = miniBoard.getMrXToMove();
-        if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXWINNER);
-        if(miniBoard.getWinner() == MiniBoard.winner.MRX) return 1.0;
-        else if(miniBoard.getWinner() == MiniBoard.winner.DETECTIVES) return 0.0;
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
             for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
@@ -78,34 +97,17 @@ public class PruningNStep implements Ai {
         }
         else{
             double minScore = Double.POSITIVE_INFINITY;
-            for(MiniBoard advancedBoard : detectiveAdvancedBoards(miniBoard, miniBoard.getDetectiveLocations())) {
-                Double advancedScore = MiniMax(advancedBoard, depth - 1, alpha, beta);
+            Integer source = miniBoard.getDetectiveLocations().get(miniBoard.getUnmovedDetectiveLocations().size()-1);
+            for(Integer destination : miniBoard.getNodeDestinations(source)) {
+                Double advancedScore = MiniMax(miniBoard.advanceDetective(source, destination),
+                        depth - 1,
+                        alpha,
+                        beta);
                 if(minScore > advancedScore) minScore = advancedScore;
                 beta = Double.min(beta, advancedScore);
                 if(beta <= alpha) break;
             }
             return minScore;
         }
-    }
-
-    private ImmutableList<MiniBoard> detectiveAdvancedBoards(MiniBoard miniBoard,
-                                                             ImmutableList<Integer> unmovedDetectives) {
-        List<MiniBoard> returnedList = new ArrayList<>();
-        List<Integer> newUnmovedDetectives = new ArrayList<>(unmovedDetectives);
-        if (unmovedDetectives.isEmpty()) {
-            returnedList.add(miniBoard);
-        } else {
-            ImmutableList<MiniBoard> advancedMiniBoards = miniBoard.getNodeDestinations(newUnmovedDetectives.get(0))
-                    .stream()
-                    .map(destination -> miniBoard.advanceDetective(newUnmovedDetectives.get(0),
-                            destination,
-                            newUnmovedDetectives.size() == 1))
-                    .collect(ImmutableList.toImmutableList());
-            newUnmovedDetectives.remove(0);
-            for (MiniBoard advancedMiniBoard : advancedMiniBoards)
-                returnedList.addAll(detectiveAdvancedBoards(advancedMiniBoard,
-                        ImmutableList.copyOf(newUnmovedDetectives)));
-        }
-        return ImmutableList.copyOf(returnedList);
     }
 }
