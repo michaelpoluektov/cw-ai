@@ -22,11 +22,23 @@ public class MiniBoard {
     private final GameSetup setup;
     private final Boolean mrXToMove;
     private final Toml constants;
+
+    public MiniBoard(Board board, Toml constants){
+        this(board, constants, board.getAvailableMoves().asList().get(0).source(), true);
+        if(!(board.getAvailableMoves().asList().get(0).commencedBy() == Piece.MrX.MRX)) {
+            throw new IllegalArgumentException("Passed board is detectives to move!");
+        }
+    }
+
     public MiniBoard(Board board, Integer location, Toml constants) {
+        this(board, constants, location, false);
         if(board.getAvailableMoves().asList().get(0).commencedBy() == Piece.MrX.MRX) {
             throw new IllegalArgumentException("Passed board is MRX to move!");
         }
-        this.mrXLocation = location;
+    }
+
+    private MiniBoard(Board board, Toml constants, Integer mrXLocation, Boolean mrXToMove) {
+        this.mrXLocation = mrXLocation;
         this.unmovedDetectiveLocations = board.getAvailableMoves().stream()
                 .map(Move::source)
                 .distinct()
@@ -39,11 +51,11 @@ public class MiniBoard {
                 .filter(detective -> !unmovedDetectiveLocations.contains(detective))
                 .collect(ImmutableList.toImmutableList());
         this.setup = board.getSetup();
-        this.mrXToMove = false;
-        // Actual round not used, reveals and game end based on log size
+        this.mrXToMove = mrXToMove;
         this.round = board.getMrXTravelLog().size();
         this.constants = constants;
     }
+
     private MiniBoard(Integer mrXLocation, 
                       ImmutableList<Integer> unmovedDetectiveLocations,
                       ImmutableList<Integer> movedDetectiveLocations,
