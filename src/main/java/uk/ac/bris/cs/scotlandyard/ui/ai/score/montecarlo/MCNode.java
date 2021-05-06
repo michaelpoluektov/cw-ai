@@ -7,7 +7,6 @@ import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -15,32 +14,28 @@ public class MCNode {
     private final MiniBoard miniBoard;
     private Integer plays;
     private Integer score;
-    private final Optional<MCNode> parent;
-    private Optional<ImmutableSet<MCNode>> children;
+    private final MCNode parent;
+    private ImmutableSet<MCNode> children;
 
     protected MCNode(Board board, Toml constants) {
         this.miniBoard = new MiniBoard(board, constants);
         this.plays = 0;
         this.score = 0;
-        this.parent = Optional.empty();
-        ArrayList<MCNode> tempChildren = new ArrayList<>();
-        ImmutableSet<MiniBoard> advancedMiniBoards = board.getAvailableMoves().stream()
+        this.parent = null;
+        this.children = board.getAvailableMoves().stream()
                 .filter(move -> move instanceof Move.SingleMove)
                 .map(move -> ((Move.SingleMove) move).destination)
                 .map(miniBoard::advanceMrX)
+                .map(miniBoard1 -> new MCNode(miniBoard1, this))
                 .collect(ImmutableSet.toImmutableSet());
-        for(MiniBoard advancedMiniBoard : advancedMiniBoards){
-            tempChildren.add(new MCNode(advancedMiniBoard, this)); //This might work
-        }
-        this.children = Optional.of(ImmutableSet.copyOf(tempChildren));
     }
 
     protected MCNode(MiniBoard miniBoard, MCNode parent) {
         this.miniBoard = miniBoard;
         this.plays = 0;
         this.score = 0;
-        this.parent = Optional.of(parent);
-        this.children = Optional.empty();
+        this.parent = parent;
+        this.children = ImmutableSet.of();
     }
 
     public Integer getPlays() {
@@ -55,16 +50,20 @@ public class MCNode {
         return miniBoard;
     }
 
+    public Optional<MCNode> getParent() {
+        return Optional.ofNullable(parent);
+    }
+
     public Boolean isLeaf() {
         return children.isEmpty();
     }
 
     public void backPropagate(Boolean hasMrXWon) {
-        this.plays ++;
-        if(this.parent.isEmpty()) this.score ++;
+        plays++;
+        if(getParent().isEmpty()) score++;
         else {
-            if(this.parent.get().getMiniBoard().getMrXToMove() == hasMrXWon) this.score ++;
-            this.parent.get().backPropagate(hasMrXWon);
+            if(parent.getMiniBoard().getMrXToMove() == hasMrXWon) score++;
+            parent.backPropagate(hasMrXWon);
         }
     }
 
@@ -79,8 +78,8 @@ public class MCNode {
     }
     public void populateChildren() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
-        this.children = Optional.of(miniBoard.getAllMiniBoards().stream()
+        this.children = miniBoard.getAllMiniBoards().stream()
                 .map(value -> new MCNode(value, this))
-                .collect(ImmutableSet.toImmutableSet()));
+                .collect(ImmutableSet.toImmutableSet());
     }
 }

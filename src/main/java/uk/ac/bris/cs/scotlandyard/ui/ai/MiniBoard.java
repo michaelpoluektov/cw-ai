@@ -176,6 +176,7 @@ public class MiniBoard {
         }
         else {
             Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
+            if(getNodeDestinations(unmovedLocation).isEmpty()) return ImmutableSet.of(this);
             return getNodeDestinations(unmovedLocation).stream()
                     .map(destination -> advanceDetective(unmovedLocation, destination))
                     .collect(ImmutableSet.toImmutableSet());
