@@ -156,4 +156,21 @@ public class MiniBoard {
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
     }
+    public ImmutableSet<MiniBoard> getAllMiniBoards(){
+        ArrayList<MiniBoard> storageForMiniBoards = new ArrayList<>();
+        if(mrXToMove){
+            for(Integer destination : getNodeDestinations(mrXLocation)){
+                MiniBoard advanced = advanceMrX(destination);
+                storageForMiniBoards.add(advanced);
+            }
+        }
+        else{
+            Integer unMovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
+            for(Integer destination : getNodeDestinations(unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() -1))){
+                MiniBoard advanced = advanceDetective(unMovedLocation, destination);
+                storageForMiniBoards.add(advanced);
+            }
+        }
+        return ImmutableSet.copyOf(storageForMiniBoards);
+    }
 }
