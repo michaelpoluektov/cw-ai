@@ -71,14 +71,14 @@ public class MCNode {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
-            ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAllMiniBoards().asList();
+            ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
             rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
         }
         backPropagate(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX);
     }
     public void populateChildren() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
-        this.children = miniBoard.getAllMiniBoards().stream()
+        this.children = miniBoard.getAdvancedMiniBoards().stream()
                 .map(value -> new MCNode(value, this))
                 .collect(ImmutableSet.toImmutableSet());
     }

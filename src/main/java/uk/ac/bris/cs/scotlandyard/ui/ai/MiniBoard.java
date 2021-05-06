@@ -122,13 +122,7 @@ public class MiniBoard {
         }
     }
 
-    public MiniBoard advanceDetective(Integer source, Integer destination) {
-        if(!unmovedDetectiveLocations.contains(source)) {
-            throw new IllegalArgumentException("No movable detective there!");
-        }
-        if(!getNodeDestinations(source).contains(destination) || mrXToMove) {
-            throw new IllegalArgumentException("Illegal move!");
-        }
+    private MiniBoard uncheckedAdvance(Integer source, Integer destination) {
         ArrayList<Integer> newUnmovedDetectiveLocation = new ArrayList<>(unmovedDetectiveLocations);
         newUnmovedDetectiveLocation.remove(source);
         ArrayList<Integer> newMovedDetectiveLocation = new ArrayList<>(movedDetectiveLocations);
@@ -140,6 +134,17 @@ public class MiniBoard {
                 newUnmovedDetectiveLocation.isEmpty(),
                 round,
                 constants);
+    }
+
+    public MiniBoard advanceDetective(Integer source, Integer destination) {
+        if(!unmovedDetectiveLocations.contains(source)) {
+            throw new IllegalArgumentException("No movable detective there!");
+        }
+        if(!getNodeDestinations(source).contains(destination) || mrXToMove) {
+            throw new IllegalArgumentException("Illegal move!");
+        }
+        // Separate method created to not repeat same code for specific case in getAdvancedMiniBoard()
+        return uncheckedAdvance(source, destination);
     }
 
     public enum winner {
@@ -168,7 +173,7 @@ public class MiniBoard {
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
     }
-    public ImmutableSet<MiniBoard> getAllMiniBoards() {
+    public ImmutableSet<MiniBoard> getAdvancedMiniBoards() {
         if(mrXToMove) {
             return getNodeDestinations(mrXLocation).stream()
                     .map(this::advanceMrX)
@@ -176,8 +181,11 @@ public class MiniBoard {
         }
         else {
             Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
-            if(getNodeDestinations(unmovedLocation).isEmpty()) return ImmutableSet.of(this);
-            return getNodeDestinations(unmovedLocation).stream()
+            // Handles very specific case when detective is cornered by other detectives and can not make a move
+            if(getNodeDestinations(unmovedLocation).isEmpty()) {
+                return ImmutableSet.of(uncheckedAdvance(unmovedLocation, unmovedLocation));
+            }
+            else return getNodeDestinations(unmovedLocation).stream()
                     .map(destination -> advanceDetective(unmovedLocation, destination))
                     .collect(ImmutableSet.toImmutableSet());
         }
