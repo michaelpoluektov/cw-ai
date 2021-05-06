@@ -65,6 +65,28 @@ public class PruningNStep implements Ai {
                 .collect(ImmutableSet.toImmutableSet());
     }
 
+    private Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations, Board board) {
+        HashMap<Integer, Double> scoredDestinations = new HashMap<>();
+        MiniBoard miniBoard = new MiniBoard(board, constants);
+        System.out.print("Rating destinations: ");
+        for(Integer destination : destinations) {
+            System.out.print(destination + " ");
+            MiniBoard advancedMiniBoard = miniBoard.advanceMrX(destination);
+            scoredDestinations.put(destination,
+                    MiniMax(advancedMiniBoard, 5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+        }
+        Map.Entry<Integer, Double> bestEntry =
+                Collections.max(scoredDestinations.entrySet(), Map.Entry.comparingByValue());
+        System.out.println("\nBest destination is " + bestEntry.getKey() + " with score " + bestEntry.getValue());
+        return bestEntry;
+    }
+
+    private ImmutableSet<Move> getMovesWithDestination(ImmutableSet<Move> allMoves, Integer destination) {
+        return allMoves.stream()
+                .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))
+                .collect(ImmutableSet.toImmutableSet());
+    }
+
     private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
         HashMap<Move, Double> scoredMoves = new HashMap<>();
         for(Move move : moves) {
