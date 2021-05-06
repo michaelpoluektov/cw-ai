@@ -2,9 +2,14 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
+import javafx.scene.Parent;
+import org.checkerframework.checker.units.qual.A;
 import uk.ac.bris.cs.scotlandyard.model.Board;
+import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 public class MCNode {
@@ -19,7 +24,16 @@ public class MCNode {
         this.plays = 0;
         this.score = 0;
         this.parent = Optional.empty();
-        //INITIALISE CHILDREN
+        ArrayList<MCNode> tempChildren = new ArrayList<>();
+        ImmutableSet<MiniBoard> advancedMiniBoards = board.getAvailableMoves().stream()
+                .filter(move -> move instanceof Move.SingleMove)
+                .map(move -> ((Move.SingleMove) move).destination)
+                .map(miniBoard::advanceMrX)
+                .collect(ImmutableSet.toImmutableSet());
+        for(MiniBoard advancedMiniBoard : advancedMiniBoards){
+            tempChildren.add(new MCNode(advancedMiniBoard, this)); //This might work
+        }
+        this.children = Optional.of(ImmutableSet.copyOf(tempChildren));
     }
 
     protected MCNode(MiniBoard miniBoard, MCNode parent) {
