@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.montecarlo;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import javafx.scene.Parent;
@@ -11,6 +12,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Random;
 
 public class MCNode {
     private final MiniBoard miniBoard;
@@ -56,6 +58,10 @@ public class MCNode {
         return miniBoard;
     }
 
+    public Boolean isLeaf() {
+        return children.isEmpty();
+    }
+
     public void backPropagate(Boolean hasMrXWon) {
         this.plays ++;
         if(this.parent.isEmpty()) this.score ++;
@@ -63,5 +69,15 @@ public class MCNode {
             if(this.parent.get().getMiniBoard().getMrXToMove() == hasMrXWon) this.score ++;
             this.parent.get().backPropagate(hasMrXWon);
         }
+    }
+
+    public void rollout() {
+        if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
+        MiniBoard rollingMiniBoard = getMiniBoard();
+        while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
+            ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAllMiniBoards().asList();
+            rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
+        }
+        backPropagate(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX);
     }
 }

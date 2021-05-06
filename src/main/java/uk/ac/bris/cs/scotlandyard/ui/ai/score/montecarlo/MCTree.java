@@ -9,7 +9,6 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 public class MCTree {
     MCNode rootNode;
     public MCTree(Board board, Toml constants){
-        MCNode root = new MCNode(board, constants);
-        rootNode = root;
+        rootNode = new MCNode(board, constants);
     }
 }
