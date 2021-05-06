@@ -3,14 +3,11 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.montecarlo;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
-import javafx.scene.Parent;
-import org.checkerframework.checker.units.qual.A;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
 
@@ -79,5 +76,11 @@ public class MCNode {
             rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
         }
         backPropagate(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX);
+    }
+    public void populateChildren() {
+        if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
+        this.children = Optional.of(miniBoard.getAllMiniBoards().stream()
+                .map(value -> new MCNode(value, this))
+                .collect(ImmutableSet.toImmutableSet()));
     }
 }
