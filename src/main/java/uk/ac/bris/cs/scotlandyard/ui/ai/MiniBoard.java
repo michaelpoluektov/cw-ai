@@ -126,7 +126,7 @@ public class MiniBoard {
                 ImmutableList.copyOf(newMovedDetectiveLocation),
                 setup,
                 newUnmovedDetectiveLocation.isEmpty(),
-                round + 1,
+                round,
                 constants);
     }
 
