@@ -54,7 +54,7 @@ public class MCNode {
         return Optional.ofNullable(parent);
     }
     public ImmutableSet<MCNode> getChildren(){
-        return this.children;
+        return children;
     }
 
     public Boolean isLeaf() {
