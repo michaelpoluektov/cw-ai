@@ -12,15 +12,15 @@ import java.util.Random;
 
 public class MCNode {
     private final MiniBoard miniBoard;
-    private Integer plays;
-    private Integer score;
+    private Float plays;
+    private Float score;
     private final MCNode parent;
     private ImmutableSet<MCNode> children;
 
     protected MCNode(Board board, Toml constants) {
         this.miniBoard = new MiniBoard(board, constants);
-        this.plays = 0;
-        this.score = 0;
+        this.plays = (float) 0;
+        this.score = (float) 0;
         this.parent = null;
         this.children = board.getAvailableMoves().stream()
                 .filter(move -> move instanceof Move.SingleMove)
@@ -32,17 +32,17 @@ public class MCNode {
 
     protected MCNode(MiniBoard miniBoard, MCNode parent) {
         this.miniBoard = miniBoard;
-        this.plays = 0;
-        this.score = 0;
+        this.plays = (float) 0;
+        this.score = (float) 0;
         this.parent = parent;
         this.children = ImmutableSet.of();
     }
 
-    public Integer getPlays() {
+    public Float getPlays() {
         return plays;
     }
 
-    public Integer getScore() {
+    public Float getScore() {
         return score;
     }
 
@@ -81,5 +81,11 @@ public class MCNode {
         this.children = miniBoard.getAdvancedMiniBoards().stream()
                 .map(value -> new MCNode(value, this))
                 .collect(ImmutableSet.toImmutableSet());
+    }
+    public Double UTCScore(){
+        if(getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
+        Double exploitation = (double) this.score/this.plays;
+        Double exploration = Math.sqrt(2) * Math.sqrt(Math.log(this.parent.plays)/this.plays);
+        return exploitation + exploration;
     }
 }
