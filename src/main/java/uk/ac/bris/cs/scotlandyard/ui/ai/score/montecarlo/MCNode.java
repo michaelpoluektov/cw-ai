@@ -53,6 +53,9 @@ public class MCNode {
     public Optional<MCNode> getParent() {
         return Optional.ofNullable(parent);
     }
+    public ImmutableSet<MCNode> getChildren(){
+        return this.children;
+    }
 
     public Boolean isLeaf() {
         return children.isEmpty();
