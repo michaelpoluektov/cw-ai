@@ -39,10 +39,11 @@ public class MiniBoard {
 
     private MiniBoard(Board board, Toml constants, Integer mrXLocation, Boolean mrXToMove) {
         this.mrXLocation = mrXLocation;
-        this.unmovedDetectiveLocations = board.getAvailableMoves().stream()
+        if(!mrXToMove) this.unmovedDetectiveLocations = board.getAvailableMoves().stream()
                 .map(Move::source)
                 .distinct()
                 .collect(ImmutableList.toImmutableList());
+        else this.unmovedDetectiveLocations = ImmutableList.of();
         this.movedDetectiveLocations = board.getPlayers().stream()
                 .filter(Piece::isDetective)
                 .map(piece -> board.getDetectiveLocation((Piece.Detective) piece))
