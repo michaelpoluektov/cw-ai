@@ -1,4 +1,4 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.score.montecarlo;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;

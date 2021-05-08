@@ -16,8 +16,8 @@ public enum ScoringClassEnum {
             case MRXAVAILABLEMOVES: return new MrXAvailableMovesScore(miniBoard);
             case MRXLOCATION: return new MrXLocationScore(miniBoard);
             case MRXWINNER: return new MrXWinnerScore(miniBoard);
-            //case MRXTICKET: return new MrXTicketScore(miniBoard);
+            case MRXTICKET: throw new UnsupportedOperationException("Ticket score is no longer supported!");
+            default: throw new IllegalArgumentException("No constructor available for: " + this);
         }
-        throw new IllegalArgumentException("No constructor available for:" + this);
     }
 }

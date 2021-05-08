@@ -1,10 +1,9 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.score.montecarlo;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 
 import java.util.Optional;
-import java.util.Random;
 
 public class MCTree {
     MCNode rootNode;

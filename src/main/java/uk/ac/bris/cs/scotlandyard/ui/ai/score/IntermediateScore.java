@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 public interface IntermediateScore {
     /*
-    @param: GameState or attributes of that GameState to score
+    @param: MiniBoard to score
 
     Return: Score evaluating the GameState from the agent's perspective, from 0 (least favorable) to 1 (most favorable)
     */
