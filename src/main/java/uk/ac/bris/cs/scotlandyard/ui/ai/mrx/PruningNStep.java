@@ -8,6 +8,8 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.*;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveDestinationVisitor;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
 
 import javax.annotation.Nonnull;
@@ -26,14 +28,15 @@ public class PruningNStep implements Ai {
         Double doubleOffset = constants.getDouble("double.minOffset");
         ImmutableSet<Move> availableMoves = board.getAvailableMoves();
         ImmutableSet<Integer> singleMoveDestinations = getSingleMoveDestinations(availableMoves);
-        Map.Entry<Integer, Double> bestSingleEntry = getBestDestination(singleMoveDestinations, board);
+        LocationPicker miniMax = new MiniMax(board, constants);
+        Map.Entry<Integer, Double> bestSingleEntry = miniMax.getBestDestination(singleMoveDestinations);
         ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
         Double bestSingleValue = bestSingleEntry.getValue();
         Move bestSingleMove = getBestSingleMove(singleMoves, board);
         if(bestSingleValue < doubleThreshold){
             ImmutableSet<Integer> doubleMoveDestinations = getDoubleMoveDestinations(availableMoves);
             if(!doubleMoveDestinations.isEmpty()) {
-                Map.Entry<Integer, Double> bestDoubleEntry = getBestDestination(doubleMoveDestinations, board);
+                Map.Entry<Integer, Double> bestDoubleEntry = miniMax.getBestDestination(doubleMoveDestinations);
                 Double bestDoubleValue = bestDoubleEntry.getValue();
                 if(bestDoubleValue > bestSingleValue + doubleOffset || bestSingleValue == 0) {
                     ImmutableSet<Move> doubleMoves = getDoubleMovesWithDestination(availableMoves, bestDoubleEntry.getKey());
@@ -72,22 +75,6 @@ public class PruningNStep implements Ai {
                 .distinct()
                 .filter(destination -> !getSingleMoveDestinations(moves).contains(destination))
                 .collect(ImmutableSet.toImmutableSet());
-    }
-
-    private Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations, Board board) {
-        HashMap<Integer, Double> scoredDestinations = new HashMap<>();
-        MiniBoard miniBoard = new MiniBoard(board, constants);
-        System.out.print("Rating destinations: ");
-        for(Integer destination : destinations) {
-            System.out.print(destination + " ");
-            MiniBoard advancedMiniBoard = miniBoard.advanceMrX(destination);
-            scoredDestinations.put(destination,
-                    MiniMax(advancedMiniBoard, 5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
-        }
-        Map.Entry<Integer, Double> bestEntry =
-                Collections.max(scoredDestinations.entrySet(), Map.Entry.comparingByValue());
-        System.out.println("\nBest destination is " + bestEntry.getKey() + " with score " + bestEntry.getValue());
-        return bestEntry;
     }
 
     private ImmutableSet<Move> getSingleMovesWithDestination(ImmutableSet<Move> allMoves, Integer destination) {
@@ -161,37 +148,4 @@ public class PruningNStep implements Ai {
         }
         return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
     }*/
-
-    private Double MiniMax(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
-        MiniBoard.winner winner = miniBoard.getWinner();
-        if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
-        if(winner == MiniBoard.winner.MRX) return 1.0;
-        if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXLOCATION,
-                ScoringClassEnum.MRXAVAILABLEMOVES);
-        Boolean mrXToMove = miniBoard.getMrXToMove();
-        if(mrXToMove){
-            double maxScore = Double.NEGATIVE_INFINITY;
-            for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-                Double advancedScore = MiniMax(miniBoard.advanceMrX(destination), depth - 1, alpha, beta);
-                if(maxScore < advancedScore) maxScore = advancedScore;
-                alpha = Double.max(alpha, advancedScore);
-                if(beta <= alpha) break;
-            }
-            return maxScore;
-        }
-        else{
-            double minScore = Double.POSITIVE_INFINITY;
-            Integer source = miniBoard.getDetectiveLocations().get(miniBoard.getUnmovedDetectiveLocations().size()-1);
-            for(Integer destination : miniBoard.getNodeDestinations(source)) {
-                Double advancedScore = MiniMax(miniBoard.advanceDetective(source, destination),
-                        depth - 1,
-                        alpha,
-                        beta);
-                if(minScore > advancedScore) minScore = advancedScore;
-                beta = Double.min(beta, advancedScore);
-                if(beta <= alpha) break;
-            }
-            return minScore;
-        }
-    }
 }
