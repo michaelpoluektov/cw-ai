@@ -14,9 +14,11 @@ import java.util.Map;
 public class MiniMax implements LocationPicker{
     private final Board board;
     private final Toml constants;
-    public MiniMax(Board board, Toml constants) {
+    private final Integer steps;
+    public MiniMax(Board board, Toml constants, Integer steps) {
         this.board = board;
         this.constants = constants;
+        this.steps = steps;
     }
     @Nonnull
     @Override
@@ -34,7 +36,7 @@ public class MiniMax implements LocationPicker{
 
     private void addRankedMove(HashMap<Integer, Double> map, MiniBoard miniBoard, Integer destination) {
         Double score = scoreMiniBoard(miniBoard.advanceMrX(destination),
-                5,
+                steps,
                 Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
         System.out.print(destination + " [" + String.format("%.2f", score) + "] ");

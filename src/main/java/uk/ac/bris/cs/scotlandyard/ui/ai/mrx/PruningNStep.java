@@ -28,7 +28,7 @@ public class PruningNStep implements Ai {
         Double doubleOffset = constants.getDouble("double.minOffset");
         ImmutableSet<Move> availableMoves = board.getAvailableMoves();
         ImmutableSet<Integer> singleMoveDestinations = getSingleMoveDestinations(availableMoves);
-        LocationPicker miniMax = new MiniMax(board, constants);
+        LocationPicker miniMax = new MiniMax(board, constants, 6);
         Map.Entry<Integer, Double> bestSingleEntry = miniMax.getBestDestination(singleMoveDestinations);
         ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
         Double bestSingleValue = bestSingleEntry.getValue();
@@ -44,19 +44,6 @@ public class PruningNStep implements Ai {
                 }
             }
         }
-            /*ImmutableList<Move> doubleMoves = ImmutableList.copyOf(board.getAvailableMoves().stream()
-                    .filter(move -> move instanceof Move.DoubleMove)
-                    .collect(Collectors.toMap(move -> ((Move.DoubleMove) move).destination2, Function.identity(),
-                            (move1, move2) -> move1))
-                    .values());
-            if(doubleMoves.isEmpty()) return bestSingleEntry.getKey();
-            Map.Entry<Move, Double> bestDoubleEntry = getBestMove(doubleMoves, board);
-            if(bestDoubleEntry.getValue() > bestSingleEntry.getValue() + constants.getDouble("double.minOffset") ||
-                    bestSingleEntry.getValue() == 0) {
-                System.out.println("Best double move score: "+bestDoubleEntry.getValue());
-                return bestDoubleEntry.getKey();
-            }
-        }*/
         return bestSingleMove;
     }
 
@@ -134,18 +121,4 @@ public class PruningNStep implements Ai {
                 .findAny().orElseGet(() -> movesWithDestination.stream().findAny().orElseThrow());
         else return movesWithDestination.stream().findAny().orElseThrow();
     }
-
-
-    /*private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
-        HashMap<Move, Double> scoredMoves = new HashMap<>();
-        for(Move move : moves) {
-            System.out.println("Rating move: "+move);
-            Integer moveDestination = move.visit(new MoveDestinationVisitor());
-            Board advancedBoard = ((Board.GameState) board).advance(move);
-            MiniBoard advancedMiniBoard = new MiniBoard(advancedBoard, moveDestination, constants);
-            scoredMoves.put(move, MiniMax(advancedMiniBoard, 5,
-                    Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
-        }
-        return Collections.max(scoredMoves.entrySet(), Map.Entry.comparingByValue());
-    }*/
 }
