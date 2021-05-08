@@ -24,12 +24,18 @@ public class MiniMax implements LocationPicker{
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         MiniBoard miniBoard = new MiniBoard(board, constants);
         System.out.print("Rating destinations: ");
-        for(Integer destination : destinations) {
+        destinations.parallelStream()
+                .forEach(destination -> scoredDestinations.put(destination,
+                        scoreMiniBoard(miniBoard.advanceMrX(destination),
+                                5,
+                                Double.NEGATIVE_INFINITY,
+                                Double.POSITIVE_INFINITY)));
+        /*for(Integer destination : destinations) {
             System.out.print(destination + " ");
             MiniBoard advancedMiniBoard = miniBoard.advanceMrX(destination);
             scoredDestinations.put(destination,
                     scoreMiniBoard(advancedMiniBoard, 5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
-        }
+        }*/
         Map.Entry<Integer, Double> bestEntry =
                 Collections.max(scoredDestinations.entrySet(), Map.Entry.comparingByValue());
         System.out.println("\nBest destination is " + bestEntry.getKey() + " with score " + bestEntry.getValue());
