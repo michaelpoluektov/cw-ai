@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.mrx;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.moandjiezana.toml.Toml;
@@ -21,12 +22,26 @@ public class PruningNStep implements Ai {
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
+        Double doubleThreshold = constants.getDouble("double.threshold");
+        Double doubleOffset = constants.getDouble("double.minOffset");
         ImmutableSet<Move> availableMoves = board.getAvailableMoves();
         ImmutableSet<Integer> singleMoveDestinations = getSingleMoveDestinations(availableMoves);
-        Map.Entry<Integer,Double> bestSingleEntry = getBestDestination(singleMoveDestinations, board);
-        Move bestSingleMove = getBestMove(getMovesWithDestination(availableMoves, bestSingleEntry.getKey()), board);
-        /*if(bestSingleEntry.getValue() < constants.getDouble("double.threshold")){
-            ImmutableList<Move> doubleMoves = ImmutableList.copyOf(board.getAvailableMoves().stream()
+        Map.Entry<Integer, Double> bestSingleEntry = getBestDestination(singleMoveDestinations, board);
+        ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
+        Double bestSingleValue = bestSingleEntry.getValue();
+        Move bestSingleMove = getBestSingleMove(singleMoves, board);
+        if(bestSingleValue < doubleThreshold){
+            ImmutableSet<Integer> doubleMoveDestinations = getDoubleMoveDestinations(availableMoves);
+            if(!doubleMoveDestinations.isEmpty()) {
+                Map.Entry<Integer, Double> bestDoubleEntry = getBestDestination(doubleMoveDestinations, board);
+                Double bestDoubleValue = bestDoubleEntry.getValue();
+                if(bestDoubleValue > bestSingleValue + doubleOffset || bestSingleValue == 0) {
+                    ImmutableSet<Move> doubleMoves = getDoubleMovesWithDestination(availableMoves, bestDoubleEntry.getKey());
+                    return getBestDoubleMove(doubleMoves, board);
+                }
+            }
+        }
+            /*ImmutableList<Move> doubleMoves = ImmutableList.copyOf(board.getAvailableMoves().stream()
                     .filter(move -> move instanceof Move.DoubleMove)
                     .collect(Collectors.toMap(move -> ((Move.DoubleMove) move).destination2, Function.identity(),
                             (move1, move2) -> move1))
@@ -55,7 +70,7 @@ public class PruningNStep implements Ai {
                 .filter(move -> move instanceof Move.DoubleMove)
                 .map(move -> ((Move.DoubleMove) move).destination2)
                 .distinct()
-                .filter(destination -> getSingleMoveDestinations(moves).contains(destination))
+                .filter(destination -> !getSingleMoveDestinations(moves).contains(destination))
                 .collect(ImmutableSet.toImmutableSet());
     }
 
@@ -75,10 +90,16 @@ public class PruningNStep implements Ai {
         return bestEntry;
     }
 
-    private ImmutableSet<Move> getMovesWithDestination(ImmutableSet<Move> allMoves, Integer destination) {
+    private ImmutableSet<Move> getSingleMovesWithDestination(ImmutableSet<Move> allMoves, Integer destination) {
         return allMoves.stream()
                 .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))
                 .filter(move -> move instanceof Move.SingleMove)
+                .collect(ImmutableSet.toImmutableSet());
+    }
+
+    private ImmutableSet<Move> getDoubleMovesWithDestination(ImmutableSet<Move> allMoves, Integer destination) {
+        return allMoves.stream()
+                .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))
                 .collect(ImmutableSet.toImmutableSet());
     }
 
@@ -95,7 +116,7 @@ public class PruningNStep implements Ai {
                 .findAny();
     }
 
-    private Move getBestMove(ImmutableSet<Move> movesWithDestination, Board board) {
+    private Move getBestSingleMove(ImmutableSet<Move> movesWithDestination, Board board) {
         Board.TicketBoard mrXTicketBoard = board.getPlayerTickets(Piece.MrX.MRX).orElseThrow();
         Boolean isReveal;
         try {
@@ -109,6 +130,24 @@ public class PruningNStep implements Ai {
         } else return getBestNonSecretMove(movesWithDestination, mrXTicketBoard)
                 .orElseGet(() -> getSecretMove(movesWithDestination).orElseThrow());
     }
+
+    private Move getBestDoubleMove(ImmutableSet<Move> movesWithDestination, Board board) {
+        Board.TicketBoard mrXTicketBoard = board.getPlayerTickets(Piece.MrX.MRX).orElseThrow();
+        Boolean isReveal;
+        try {
+            isReveal = board.getSetup().rounds.get(board.getMrXTravelLog().size() - 1);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            isReveal = false;
+        }
+        if(isReveal) return movesWithDestination.stream()
+                .filter(move -> move.tickets().iterator().next() == ScotlandYard.Ticket.SECRET)
+                .findAny().orElseGet(() -> movesWithDestination.stream().findAny().orElseThrow());
+        else if (board.getSetup().rounds.get(board.getMrXTravelLog().size())) return movesWithDestination.stream()
+                .filter(move -> ImmutableList.copyOf(move.tickets()).get(1) == ScotlandYard.Ticket.SECRET)
+                .findAny().orElseGet(() -> movesWithDestination.stream().findAny().orElseThrow());
+        else return movesWithDestination.stream().findAny().orElseThrow();
+    }
+
 
     /*private Map.Entry<Move, Double> getBestMove(ImmutableList<Move> moves, Board board){
         HashMap<Move, Double> scoredMoves = new HashMap<>();

@@ -109,8 +109,8 @@ public class MiniBoard {
 
     public MiniBoard advanceMrX(Integer destination) {
         if(getWinner() != winner.NONE) throw new UnsupportedOperationException("Can not advance board with winner!");
-        if(!getNodeDestinations(mrXLocation).contains(destination) || !mrXToMove) {
-            throw new IllegalArgumentException("Illegal move!");
+        if(!mrXToMove) {
+            throw new IllegalArgumentException("Not MRX to move!");
         } else {
             // IMPORTANT: moved and unmoved locations are swapped
             return new MiniBoard(destination,
