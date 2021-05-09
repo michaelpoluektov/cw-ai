@@ -35,7 +35,7 @@ public class MiniMax implements LocationPicker{
     }
 
     private void addRankedMove(HashMap<Integer, Double> map, MiniBoard miniBoard, Integer destination) {
-        Double score = scoreMiniBoard(miniBoard.advanceMrX(destination),
+        Double score = runMiniMax(miniBoard.advanceMrX(destination),
                 steps,
                 Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
@@ -43,7 +43,7 @@ public class MiniMax implements LocationPicker{
         map.put(destination, score);
     }
 
-    private Double scoreMiniBoard(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
+    private Double runMiniMax(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
         MiniBoard.winner winner = miniBoard.getWinner();
         if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
         if(winner == MiniBoard.winner.MRX) return 1.0;
@@ -53,7 +53,7 @@ public class MiniMax implements LocationPicker{
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
             for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-                Double advancedScore = scoreMiniBoard(miniBoard.advanceMrX(destination), depth - 1, alpha, beta);
+                Double advancedScore = runMiniMax(miniBoard.advanceMrX(destination), depth - 1, alpha, beta);
                 if(maxScore < advancedScore) maxScore = advancedScore;
                 alpha = Double.max(alpha, advancedScore);
                 if(beta <= alpha) break;
@@ -64,7 +64,7 @@ public class MiniMax implements LocationPicker{
             double minScore = Double.POSITIVE_INFINITY;
             Integer source = miniBoard.getDetectiveLocations().get(miniBoard.getUnmovedDetectiveLocations().size()-1);
             for(Integer destination : miniBoard.getNodeDestinations(source)) {
-                Double advancedScore = scoreMiniBoard(miniBoard.advanceDetective(source, destination),
+                Double advancedScore = runMiniMax(miniBoard.advanceDetective(source, destination),
                         depth - 1,
                         alpha,
                         beta);
