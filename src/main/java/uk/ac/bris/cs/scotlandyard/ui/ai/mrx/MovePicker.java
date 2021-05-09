@@ -1,4 +1,4 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.mrx.move;
+package uk.ac.bris.cs.scotlandyard.ui.ai.mrx;
 
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;

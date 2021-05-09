@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 public class TicketComparator implements Comparator<ScotlandYard.Ticket> {
     private final Board.TicketBoard ticketBoard;
-    public TicketComparator(Board.TicketBoard ticketBoard) {
+    protected TicketComparator(Board.TicketBoard ticketBoard) {
         this.ticketBoard = ticketBoard;
     }
     @Override

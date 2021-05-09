@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class Dijkstra {
-    protected List<List<Integer>> getDistances(ImmutableList<Integer> sources,
+    protected final List<List<Integer>> getDistances(ImmutableList<Integer> sources,
                                                ImmutableList<Integer> destinations,
                                                MiniBoard miniBoard) {
         final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph = miniBoard.getSetup().graph;

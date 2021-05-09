@@ -7,13 +7,16 @@ import java.util.Optional;
 
 public class MCTree {
     MCNode rootNode;
-    public MCTree(Board board, Toml constants){
+
+    protected MCTree(Board board, Toml constants){
         rootNode = new MCNode(board, constants);
     }
+
     public MCNode getRootNode(){
         return this.rootNode;
     }
-    public MCNode properGate(MCNode node){
+
+    public MCNode properGate(MCNode node){ // what
         if(!node.getChildren().isEmpty()){
             Optional<MCNode> bestNode = Optional.empty();
             Double bestUTC = Double.NEGATIVE_INFINITY;

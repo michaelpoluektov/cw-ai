@@ -1,4 +1,4 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.mrx.move;
+package uk.ac.bris.cs.scotlandyard.ui.ai.mrx;
 
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
@@ -15,7 +15,7 @@ public class DefaultMovePicker implements MovePicker {
     private final Board board;
     private final Double doubleThreshold;
     private final Double doubleOffset;
-    public DefaultMovePicker(Board board, Toml constants) {
+    protected DefaultMovePicker(Board board, Toml constants) {
         this.board = board;
         this.doubleThreshold = constants.getDouble("double.threshold");
         this.doubleOffset = constants.getDouble("double.minOffset");

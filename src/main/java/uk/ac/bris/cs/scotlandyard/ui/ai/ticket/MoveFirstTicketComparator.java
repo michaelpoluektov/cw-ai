@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public class MoveFirstTicketComparator implements Comparator<Move> {
     private final Board.TicketBoard ticketBoard;
-    public MoveFirstTicketComparator(Board.TicketBoard ticketBoard) {
+    protected MoveFirstTicketComparator(Board.TicketBoard ticketBoard) {
         this.ticketBoard = ticketBoard;
     }
     @Override

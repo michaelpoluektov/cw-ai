@@ -5,8 +5,6 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.*;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
-import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.move.DefaultMovePicker;
-import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.move.MovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXAvailableMovesScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
