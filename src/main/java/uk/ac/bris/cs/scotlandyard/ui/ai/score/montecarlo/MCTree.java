@@ -2,9 +2,13 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.montecarlo;
 
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
+import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
+
+
 
 public class MCTree {
     MCNode rootNode;
@@ -14,20 +18,34 @@ public class MCTree {
     public MCNode getRootNode(){
         return this.rootNode;
     }
+
     public MCNode properGate(MCNode node){
-        if(!node.getChildren().isEmpty()){
+
+        MCNode nodeToContinue = node;
+        while(!nodeToContinue.isLeaf() && nodeToContinue.getMiniBoard().getWinner() == MiniBoard.winner.NONE){
             Optional<MCNode> bestNode = Optional.empty();
             Double bestUTC = Double.NEGATIVE_INFINITY;
-            for(MCNode child : node.getChildren()){
-                if(child.UTCScore() > bestUTC) bestNode = Optional.of(child);
+            for(MCNode child : nodeToContinue.getChildren()){
+                Double score = child.UTCScore();
+                if(score > bestUTC){
+                    bestUTC = score;
+                    bestNode = Optional.of(child);
+                }
             }
-            bestNode.ifPresent(this::properGate);
+            if(bestNode.isEmpty()) throw new NoSuchElementException("No best move!");
+            nodeToContinue = bestNode.get();
         }
-        return node;
+        if(nodeToContinue.getPlays() == 0 || !(nodeToContinue.getMiniBoard().getWinner() == MiniBoard.winner.NONE)) return nodeToContinue;
+        else{
+            nodeToContinue.populateChildren();
+            return nodeToContinue.getChildren().asList().get(0);
+        }
+
     }
 
     public void singleSimulation(){
         MCNode nodeToRollFrom = properGate(rootNode);
         nodeToRollFrom.rollout();
+
     }
 }

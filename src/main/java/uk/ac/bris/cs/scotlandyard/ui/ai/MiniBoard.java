@@ -175,13 +175,13 @@ public class MiniBoard {
         return totalScore/totalWeights;
     }
     public ImmutableSet<MiniBoard> getAdvancedMiniBoards() {
-        if(mrXToMove) {
+        if(mrXToMove && getWinner() == winner.NONE) {
             return getNodeDestinations(mrXLocation).stream()
                     .map(this::advanceMrX)
                     .collect(ImmutableSet.toImmutableSet());
         }
-        else {
-            Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
+        else if(!mrXToMove && getWinner() == winner.NONE){
+            Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() -1);
             // Handles very specific case when detective is cornered by other detectives and can not make a move
             if(getNodeDestinations(unmovedLocation).isEmpty()) {
                 return ImmutableSet.of(uncheckedAdvance(unmovedLocation, unmovedLocation));
@@ -190,5 +190,9 @@ public class MiniBoard {
                     .map(destination -> advanceDetective(unmovedLocation, destination))
                     .collect(ImmutableSet.toImmutableSet());
         }
+        else{
+            throw new IllegalArgumentException("There is a winner");
+        }
+
     }
 }

@@ -72,6 +72,7 @@ public class MCNode {
 
     public void rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
+        if(!(plays == 0) && (this.getMiniBoard().getWinner() == MiniBoard.winner.NONE)) throw new UnsupportedOperationException("Can not rollout from visited node");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
@@ -81,12 +82,15 @@ public class MCNode {
     }
     public void populateChildren() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
-        this.children = miniBoard.getAdvancedMiniBoards().stream()
-                .map(value -> new MCNode(value, this))
-                .collect(ImmutableSet.toImmutableSet());
+        if(getMiniBoard().getWinner() == MiniBoard.winner.NONE){
+            this.children = miniBoard.getAdvancedMiniBoards().stream()
+                    .map(value -> new MCNode(value, this))
+                    .collect(ImmutableSet.toImmutableSet());
+        }
     }
     public Double UTCScore(){
         if(getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
+        if(this.getPlays() == 0) return Double.POSITIVE_INFINITY;
         Double exploitation = (double) this.score/this.plays;
         Double exploration = Math.sqrt(2) * Math.sqrt(Math.log(this.parent.plays)/this.plays);
         return exploitation + exploration;
