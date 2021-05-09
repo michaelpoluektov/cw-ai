@@ -123,9 +123,9 @@ public class MiniBoard {
     }
 
     private MiniBoard uncheckedAdvance(Integer source, Integer destination) {
-        ArrayList<Integer> newUnmovedDetectiveLocation = new ArrayList<>(unmovedDetectiveLocations);
+        final ArrayList<Integer> newUnmovedDetectiveLocation = new ArrayList<>(unmovedDetectiveLocations);
         newUnmovedDetectiveLocation.remove(source);
-        ArrayList<Integer> newMovedDetectiveLocation = new ArrayList<>(movedDetectiveLocations);
+        final ArrayList<Integer> newMovedDetectiveLocation = new ArrayList<>(movedDetectiveLocations);
         newMovedDetectiveLocation.add(destination);
         return new MiniBoard(mrXLocation,
                 ImmutableList.copyOf(newUnmovedDetectiveLocation),
@@ -179,7 +179,7 @@ public class MiniBoard {
                     .collect(ImmutableSet.toImmutableSet());
         }
         else {
-            Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
+            final Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
             // Handles very specific case when detective is cornered by other detectives and can not make a move
             if(getNodeDestinations(unmovedLocation).isEmpty()) {
                 return ImmutableSet.of(uncheckedAdvance(unmovedLocation, unmovedLocation));
