@@ -11,6 +11,8 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MoveDestinationVisitor;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
+import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.DefaultTicketPicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -32,7 +34,8 @@ public class PruningNStep implements Ai {
         Map.Entry<Integer, Double> bestSingleEntry = miniMax.getBestDestination(singleMoveDestinations);
         ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
         Double bestSingleValue = bestSingleEntry.getValue();
-        Move bestSingleMove = getBestSingleMove(singleMoves, board);
+        TicketPicker defaultPicker = new DefaultTicketPicker(board);
+        Move bestSingleMove = defaultPicker.getBestMove(singleMoves);
         if(bestSingleValue < doubleThreshold){
             ImmutableSet<Integer> doubleMoveDestinations = getDoubleMoveDestinations(availableMoves);
             if(!doubleMoveDestinations.isEmpty()) {
@@ -40,7 +43,7 @@ public class PruningNStep implements Ai {
                 Double bestDoubleValue = bestDoubleEntry.getValue();
                 if(bestDoubleValue > bestSingleValue + doubleOffset || bestSingleValue == 0) {
                     ImmutableSet<Move> doubleMoves = getDoubleMovesWithDestination(availableMoves, bestDoubleEntry.getKey());
-                    return getBestDoubleMove(doubleMoves, board);
+                    return defaultPicker.getBestMove(doubleMoves);
                 }
             }
         }
@@ -77,7 +80,7 @@ public class PruningNStep implements Ai {
                 .collect(ImmutableSet.toImmutableSet());
     }
 
-    public Optional<Move> getBestNonSecretMove(ImmutableSet<Move> movesWithDestinations, Board.TicketBoard ticketBoard) {
+    /*public Optional<Move> getBestNonSecretMove(ImmutableSet<Move> movesWithDestinations, Board.TicketBoard ticketBoard) {
         return movesWithDestinations.asList()
                 .stream()
                 .filter(move -> !Iterables.contains(move.tickets(), ScotlandYard.Ticket.SECRET))
@@ -120,5 +123,5 @@ public class PruningNStep implements Ai {
                 .filter(move -> ImmutableList.copyOf(move.tickets()).get(1) == ScotlandYard.Ticket.SECRET)
                 .findAny().orElseGet(() -> movesWithDestination.stream().findAny().orElseThrow());
         else return movesWithDestination.stream().findAny().orElseThrow();
-    }
+    }*/
 }
