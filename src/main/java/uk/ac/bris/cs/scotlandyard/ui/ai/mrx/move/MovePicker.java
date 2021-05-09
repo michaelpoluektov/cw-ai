@@ -8,4 +8,7 @@ import javax.annotation.Nonnull;
 
 public interface MovePicker {
     @Nonnull Move pickMove(LocationPicker locationPicker, TicketPicker ticketPicker);
+    // @param: LocaionPicker and TicketPicker used to pick each move in a subset of moves
+    //
+    // Return: Move
 }
