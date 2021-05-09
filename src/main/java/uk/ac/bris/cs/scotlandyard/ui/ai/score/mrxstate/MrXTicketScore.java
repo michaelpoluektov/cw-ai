@@ -4,11 +4,12 @@ import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 
-public class MrXTicketScore implements IntermediateScore {
+@Deprecated class MrXTicketScore implements IntermediateScore {
     private final Board.TicketBoard mrXTickets;
     private final double taxiTicketWeight;
     private final double taxiTicketExp;
@@ -33,21 +34,22 @@ public class MrXTicketScore implements IntermediateScore {
 
     @Nonnull
     @Override
-    public Double getScore() {
+    public Double getScore(MiniBoard miniBoard) {
         //int numberOfDetectives = board.getPlayers().size() - 1;
-        double busTicketScore = 1 - Math.pow(busTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.BUS));
-        double taxiTicketScore = 1 - Math.pow(taxiTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.TAXI));
-        double undergroundTicketScore = 1 - Math.pow(undergroundTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.UNDERGROUND));
-        double weightSum = busTicketWeight + taxiTicketWeight + undergroundTicketWeight;
+        final double busTicketScore = 1 - Math.pow(busTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.BUS));
+        final double taxiTicketScore = 1 - Math.pow(taxiTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.TAXI));
+        final double undergroundTicketScore =
+                1 - Math.pow(undergroundTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.UNDERGROUND));
+        final double weightSum = busTicketWeight + taxiTicketWeight + undergroundTicketWeight;
         if(weightSum == 0) throw new IllegalArgumentException("Can't divide total score by 0");
-        double totalScore = busTicketScore * busTicketWeight
+        final double totalScore = busTicketScore * busTicketWeight
                 + taxiTicketScore * taxiTicketWeight
                 + undergroundTicketScore * undergroundTicketWeight;
         return totalScore/weightSum;
     }
     @Nonnull
     @Override
-    public Double getWeight(){
+    public Double getWeight(MiniBoard miniBoard){
         return overallTicketWeight;
     }
 }

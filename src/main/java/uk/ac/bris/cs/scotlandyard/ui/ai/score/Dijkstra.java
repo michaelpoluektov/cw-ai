@@ -11,19 +11,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class Dijkstra {
-    private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
-    private final Integer nodeSize;
-    public Dijkstra(MiniBoard miniBoard) {
-        this.graph = miniBoard.getSetup().graph;
-        this.nodeSize = graph.nodes().size();
-    }
-
-    protected List<List<Integer>> getDistances(ImmutableList<Integer> sources, ImmutableList<Integer> destinations) {
-        List<List<Integer>> distances = new ArrayList<>(sources.size());
+    protected List<List<Integer>> getDistances(ImmutableList<Integer> sources,
+                                               ImmutableList<Integer> destinations,
+                                               MiniBoard miniBoard) {
+        final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph = miniBoard.getSetup().graph;
+        final Integer nodeSize = graph.nodes().size();
+        final List<List<Integer>> distances = new ArrayList<>(sources.size());
         for(Integer source : sources) {
-            List<Integer> distanceToSource = new ArrayList<>(Collections.nCopies(nodeSize, Integer.MAX_VALUE));
-            Set<Integer> unvisitedNodes = IntStream.rangeClosed(1, nodeSize).boxed().collect(Collectors.toSet());
-            Set<Integer> noDistanceDestinations = new HashSet<>(destinations);
+            final List<Integer> distanceToSource = new ArrayList<>(Collections.nCopies(nodeSize, Integer.MAX_VALUE));
+            final Set<Integer> unvisitedNodes = IntStream.rangeClosed(1, nodeSize).boxed().collect(Collectors.toSet());
+            final Set<Integer> noDistanceDestinations = new HashSet<>(destinations);
             distanceToSource.set(source-1, 0);
             Integer closestNodeToSource = source;
             while(!noDistanceDestinations.isEmpty()) { // check this

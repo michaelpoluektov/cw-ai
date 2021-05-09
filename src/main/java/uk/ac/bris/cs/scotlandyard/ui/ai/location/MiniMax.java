@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -15,10 +15,12 @@ public class MiniMax implements LocationPicker{
     private final Board board;
     private final Toml constants;
     private final Integer steps;
-    public MiniMax(Board board, Toml constants, Integer steps) {
+    private final IntermediateScore[] intermediateScores;
+    public MiniMax(Board board, Toml constants, Integer steps, IntermediateScore... intermediateScores) {
         this.board = board;
         this.constants = constants;
         this.steps = steps;
+        this.intermediateScores = intermediateScores;
     }
     @Nonnull
     @Override
@@ -47,8 +49,7 @@ public class MiniMax implements LocationPicker{
         MiniBoard.winner winner = miniBoard.getWinner();
         if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
         if(winner == MiniBoard.winner.MRX) return 1.0;
-        if(depth == 0) return miniBoard.getMrXBoardScore(ScoringClassEnum.MRXLOCATION,
-                ScoringClassEnum.MRXAVAILABLEMOVES);
+        if(depth == 0) return miniBoard.getMrXBoardScore(intermediateScores);
         Boolean mrXToMove = miniBoard.getMrXToMove();
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;

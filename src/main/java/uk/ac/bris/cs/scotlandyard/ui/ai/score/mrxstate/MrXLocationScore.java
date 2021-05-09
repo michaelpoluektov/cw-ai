@@ -13,34 +13,25 @@ import java.util.stream.Collectors;
 import static java.lang.Math.pow;
 
 public class MrXLocationScore extends Dijkstra implements IntermediateScore {
-    private final Integer location;
-    private final ImmutableList<Integer> detectiveLocations;
-    private final Double locationScoreExp;
-    private final Double locationScoreWeight;
-    public MrXLocationScore(MiniBoard miniBoard) {
-        super(miniBoard);
-        this.location = miniBoard.getMrXLocation();
-        this.detectiveLocations = miniBoard.getDetectiveLocations();
-        this.locationScoreExp = miniBoard.getConstants().getDouble("location.exp");
-        this.locationScoreWeight = miniBoard.getConstants().getDouble("location.weight");
-    }
 
     @Nonnull
     @Override
-    public Double getScore() {
-        ImmutableList<Integer> mrXLocationList = ImmutableList.of(location);
-        List<Integer> distanceToSource = getDistances(mrXLocationList, detectiveLocations).get(0);
+    public Double getScore(MiniBoard miniBoard) {
+        final Double locationScoreExp = miniBoard.getConstants().getDouble("location.exp");
+        final ImmutableList<Integer> mrXLocationList = ImmutableList.of(miniBoard.getMrXLocation());
+        final List<Integer> distanceToSource =
+                getDistances(mrXLocationList, miniBoard.getDetectiveLocations(), miniBoard).get(0);
         Collections.sort(distanceToSource);
         List<Double> weightsList = distanceToSource.stream()
                 .map(value -> pow(locationScoreExp, -value)/(1 - pow(locationScoreExp, -1)))
                 .collect(Collectors.toList());
-        Double weightsListSum = weightsList.stream().reduce(0.0,Double::sum);
+        final Double weightsListSum = weightsList.stream().reduce(0.0,Double::sum);
         weightsList = weightsList.stream().map(value -> value/weightsListSum).collect(Collectors.toList());
 
 
         double totalScore = 0.0;
         for(int i = 0; i < distanceToSource.size(); i++) {
-            Double unweightedScore = 1 - pow(locationScoreExp, 1 - distanceToSource.get(i));
+            final Double unweightedScore = 1 - pow(locationScoreExp, 1 - distanceToSource.get(i));
             totalScore += weightsList.get(i)*unweightedScore;
         }
         return totalScore;
@@ -48,7 +39,7 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
 
     @Nonnull
     @Override
-    public Double getWeight() {
-        return locationScoreWeight;
+    public Double getWeight(MiniBoard miniBoard) {
+        return miniBoard.getConstants().getDouble("location.weight");
     }
 }

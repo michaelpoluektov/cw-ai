@@ -8,7 +8,6 @@ import uk.ac.bris.cs.scotlandyard.model.GameSetup;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.ScoringClassEnum;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -161,15 +160,14 @@ public class MiniBoard {
         else return winner.NONE;
     }
 
-    public Double getMrXBoardScore(ScoringClassEnum... scoringClasses) {
+    public Double getMrXBoardScore(IntermediateScore... scoringObjects) {
         if(getWinner() == winner.DETECTIVES) return 0.0;
         if(getWinner() == winner.MRX) return 1.0;
         double totalScore = 0.0;
         double totalWeights = 0.0;
-        for(ScoringClassEnum scoringClass : scoringClasses) {
-            IntermediateScore scoringObject = scoringClass.getScoringObject(this);
-            totalWeights += scoringObject.getWeight();
-            totalScore += scoringObject.getScore()*scoringObject.getWeight();
+        for(IntermediateScore scoringObject : scoringObjects) {
+            totalWeights += scoringObject.getWeight(this);
+            totalScore += scoringObject.getScore(this)*scoringObject.getWeight(this);
         }
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
