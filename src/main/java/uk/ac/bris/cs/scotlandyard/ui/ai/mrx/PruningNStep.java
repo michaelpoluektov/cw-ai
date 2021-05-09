@@ -20,22 +20,20 @@ import java.util.concurrent.TimeUnit;
 
 public class PruningNStep implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
+    private final Double doubleThreshold = constants.getDouble("double.threshold");
+    private final Double doubleOffset = constants.getDouble("double.minOffset");
     @Nonnull
     @Override public String name() { return "MrX pruning N-step lookahead - deterministic"; }
 
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
-        Double doubleThreshold = constants.getDouble("double.threshold");
-        Double doubleOffset = constants.getDouble("double.minOffset");
+        LocationPicker miniMax = new MiniMax(board, constants, 6);
+        TicketPicker defaultPicker = new DefaultTicketPicker(board);
         ImmutableSet<Move> availableMoves = board.getAvailableMoves();
         ImmutableSet<Integer> singleMoveDestinations = getSingleMoveDestinations(availableMoves);
-        LocationPicker miniMax = new MiniMax(board, constants, 6);
         Map.Entry<Integer, Double> bestSingleEntry = miniMax.getBestDestination(singleMoveDestinations);
-        ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
         Double bestSingleValue = bestSingleEntry.getValue();
-        TicketPicker defaultPicker = new DefaultTicketPicker(board);
-        Move bestSingleMove = defaultPicker.getBestMove(singleMoves);
         if(bestSingleValue < doubleThreshold){
             ImmutableSet<Integer> doubleMoveDestinations = getDoubleMoveDestinations(availableMoves);
             if(!doubleMoveDestinations.isEmpty()) {
@@ -47,7 +45,8 @@ public class PruningNStep implements Ai {
                 }
             }
         }
-        return bestSingleMove;
+        ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
+        return defaultPicker.getBestMove(singleMoves);
     }
 
     private ImmutableSet<Integer> getSingleMoveDestinations(ImmutableSet<Move> moves) {
@@ -79,49 +78,4 @@ public class PruningNStep implements Ai {
                 .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))
                 .collect(ImmutableSet.toImmutableSet());
     }
-
-    /*public Optional<Move> getBestNonSecretMove(ImmutableSet<Move> movesWithDestinations, Board.TicketBoard ticketBoard) {
-        return movesWithDestinations.asList()
-                .stream()
-                .filter(move -> !Iterables.contains(move.tickets(), ScotlandYard.Ticket.SECRET))
-                .max(Comparator.comparingInt(move -> ticketBoard.getCount(move.tickets().iterator().next())));
-    }
-
-    public Optional<Move> getSecretMove(ImmutableSet<Move> movesWithDestination) {
-        return movesWithDestination.stream()
-                .filter(move -> Iterables.contains(move.tickets(), ScotlandYard.Ticket.SECRET))
-                .findAny();
-    }
-
-    private Move getBestSingleMove(ImmutableSet<Move> movesWithDestination, Board board) {
-        Board.TicketBoard mrXTicketBoard = board.getPlayerTickets(Piece.MrX.MRX).orElseThrow();
-        Boolean isReveal;
-        try {
-            isReveal = board.getSetup().rounds.get(board.getMrXTravelLog().size() - 1);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            isReveal = false;
-        }
-        if(isReveal) {
-            return getSecretMove(movesWithDestination)
-                    .orElseGet(() -> getBestNonSecretMove(movesWithDestination, mrXTicketBoard).orElseThrow());
-        } else return getBestNonSecretMove(movesWithDestination, mrXTicketBoard)
-                .orElseGet(() -> getSecretMove(movesWithDestination).orElseThrow());
-    }
-
-    private Move getBestDoubleMove(ImmutableSet<Move> movesWithDestination, Board board) {
-        Board.TicketBoard mrXTicketBoard = board.getPlayerTickets(Piece.MrX.MRX).orElseThrow();
-        Boolean isReveal;
-        try {
-            isReveal = board.getSetup().rounds.get(board.getMrXTravelLog().size() - 1);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            isReveal = false;
-        }
-        if(isReveal) return movesWithDestination.stream()
-                .filter(move -> move.tickets().iterator().next() == ScotlandYard.Ticket.SECRET)
-                .findAny().orElseGet(() -> movesWithDestination.stream().findAny().orElseThrow());
-        else if (board.getSetup().rounds.get(board.getMrXTravelLog().size())) return movesWithDestination.stream()
-                .filter(move -> ImmutableList.copyOf(move.tickets()).get(1) == ScotlandYard.Ticket.SECRET)
-                .findAny().orElseGet(() -> movesWithDestination.stream().findAny().orElseThrow());
-        else return movesWithDestination.stream().findAny().orElseThrow();
-    }*/
 }
