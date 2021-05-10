@@ -34,7 +34,7 @@ public class MonteCarlo implements LocationPicker {
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
         MCTree tree = new MCTree(board, constants);
-        while(currentTime < endTime + 300) {
+        while(currentTime < endTime - 300) {
             tree.runSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
