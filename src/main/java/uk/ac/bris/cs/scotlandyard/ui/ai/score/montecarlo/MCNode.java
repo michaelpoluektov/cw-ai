@@ -80,7 +80,12 @@ public class MCNode {
         }
         backPropagate(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX);
     }
+<<<<<<< Updated upstream:src/main/java/uk/ac/bris/cs/scotlandyard/ui/ai/score/montecarlo/MCNode.java
     public void populateChildren() {
+=======
+
+    protected void expandSingleChildren() {
+>>>>>>> Stashed changes:src/main/java/uk/ac/bris/cs/scotlandyard/ui/ai/location/montecarlo/MCNode.java
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE){
             this.children = miniBoard.getAdvancedMiniBoards().stream()
@@ -88,7 +93,16 @@ public class MCNode {
                     .collect(ImmutableSet.toImmutableSet());
         }
     }
+<<<<<<< Updated upstream:src/main/java/uk/ac/bris/cs/scotlandyard/ui/ai/score/montecarlo/MCNode.java
     public Double UTCScore(){
+=======
+    protected void setChildren(ImmutableSet<MCNode> children){
+        this.children = children;
+    }
+
+
+    protected final Double getUCTScore(){
+>>>>>>> Stashed changes:src/main/java/uk/ac/bris/cs/scotlandyard/ui/ai/location/montecarlo/MCNode.java
         if(getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
         if(this.getPlays() == 0) return Double.POSITIVE_INFINITY;
         Double exploitation = (double) this.score/this.plays;

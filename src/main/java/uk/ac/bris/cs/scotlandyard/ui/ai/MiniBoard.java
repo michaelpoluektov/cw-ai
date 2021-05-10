@@ -175,6 +175,7 @@ public class MiniBoard {
         return totalScore/totalWeights;
     }
     public ImmutableSet<MiniBoard> getAdvancedMiniBoards() {
+<<<<<<< Updated upstream
         if(mrXToMove && getWinner() == winner.NONE) {
             return getNodeDestinations(mrXLocation).stream()
                     .map(this::advanceMrX)
@@ -182,11 +183,18 @@ public class MiniBoard {
         }
         else if(!mrXToMove && getWinner() == winner.NONE){
             Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() -1);
+=======
+        if (mrXToMove) {
+            return getNodeDestinations(mrXLocation).stream()
+                    .map(this::advanceMrX)
+                    .collect(ImmutableSet.toImmutableSet());
+        } else {
+            final Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
+>>>>>>> Stashed changes
             // Handles very specific case when detective is cornered by other detectives and can not make a move
-            if(getNodeDestinations(unmovedLocation).isEmpty()) {
+            if (getNodeDestinations(unmovedLocation).isEmpty()) {
                 return ImmutableSet.of(uncheckedAdvance(unmovedLocation, unmovedLocation));
-            }
-            else return getNodeDestinations(unmovedLocation).stream()
+            } else return getNodeDestinations(unmovedLocation).stream()
                     .map(destination -> advanceDetective(unmovedLocation, destination))
                     .collect(ImmutableSet.toImmutableSet());
         }
@@ -195,4 +203,23 @@ public class MiniBoard {
         }
 
     }
+   /* public ImmutableSet<MiniBoard> getAdvancedDoubleMiniBoard(Board board){
+        ImmutableSet<Move>  allMoves = board.getAvailableMoves();
+        MoveDestinationVisitor visitor = new MoveDestinationVisitor();
+        ImmutableSet<Integer> nodeDestinations = allMoves.stream().map(move -> visitor.visit(move)).collect(ImmutableSet.toImmutableSet());
+        if(mrXToMove){
+            return allMoves.stream().map(move -> visitor.visit(move)).map(this::advanceMrX)
+                    .collect(ImmutableSet.toImmutableSet());
+        }
+        else{
+            final Integer unmovedLocation = unmovedDetectiveLocations.get(unmovedDetectiveLocations.size() - 1);
+            return nodeDestinations.stream()
+                    .map(destination -> advanceDetective(unmovedLocation, destination)) // not sure if getAvailbleMoves in board will get the available moves of the last detective?
+                    .collect(ImmutableSet.toImmutableSet());
+
+        }
+    }
+    }*/
+
+
 }
