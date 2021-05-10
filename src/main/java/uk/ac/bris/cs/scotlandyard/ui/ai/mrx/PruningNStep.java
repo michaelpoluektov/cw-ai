@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class PruningNStep implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull
-    @Override public String name() { return "MrX pruning N-step lookahead - deterministic"; }
+    @Override public String name() { return "Default pruning N-Step (D)"; }
 
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,

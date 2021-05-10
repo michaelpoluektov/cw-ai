@@ -10,7 +10,8 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import java.util.Optional;
 import java.util.Random;
 
-public class MCNode {
+public class MCNode implements Comparable<MCNode> {
+
     private final MiniBoard miniBoard;
     private Integer plays;
     private Integer score;
@@ -38,30 +39,31 @@ public class MCNode {
         this.children = ImmutableSet.of();
     }
 
-    public Integer getPlays() {
+    protected final Double getAverageScore() {
+        return (double) score/plays;
+    }
+
+    protected final Integer getPlays() {
         return plays;
     }
 
-    public Integer getScore() {
-        return score;
-    }
-
-    public MiniBoard getMiniBoard() {
+    protected final MiniBoard getMiniBoard() {
         return miniBoard;
     }
 
-    public Optional<MCNode> getParent() {
+    protected final Optional<MCNode> getParent() {
         return Optional.ofNullable(parent);
     }
-    public ImmutableSet<MCNode> getChildren(){
+
+    protected final ImmutableSet<MCNode> getChildren(){
         return children;
     }
 
-    public Boolean isLeaf() {
+    protected final Boolean isLeaf() {
         return children.isEmpty();
     }
 
-    public void backPropagate(Boolean hasMrXWon) {
+    protected void backPropagate(Boolean hasMrXWon) {
         plays++;
         if(getParent().isEmpty()) score++;
         else {
@@ -70,25 +72,34 @@ public class MCNode {
         }
     }
 
-    public void rollout() {
+    protected Boolean rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
             rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
         }
-        backPropagate(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX);
+        return rollingMiniBoard.getWinner() == MiniBoard.winner.MRX;
     }
-    public void populateChildren() {
+
+    protected void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
-        this.children = miniBoard.getAdvancedMiniBoards().stream()
-                .map(value -> new MCNode(value, this))
-                .collect(ImmutableSet.toImmutableSet());
+        if(miniBoard.getWinner() == MiniBoard.winner.NONE) {
+            this.children = miniBoard.getAdvancedMiniBoards().stream()
+                    .map(value -> new MCNode(value, this))
+                    .collect(ImmutableSet.toImmutableSet());
+        }
     }
-    public Double UTCScore(){
+
+    protected final Double getUCTScore(){
         if(getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
-        Double exploitation = (double) getScore()/getPlays();
-        Double exploration = Math.sqrt(2) * Math.sqrt(Math.log(parent.getPlays())/getPlays());
+        Double exploitation = getAverageScore();
+        Double exploration = Math.sqrt(2) * Math.sqrt(Math.log(parent.getPlays())/plays);
         return exploitation + exploration;
+    }
+
+    @Override
+    public int compareTo(MCNode node) {
+        return Double.compare(getUCTScore(), node.getUCTScore());
     }
 }
