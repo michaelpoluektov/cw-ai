@@ -22,8 +22,8 @@ public class PruningNStep implements Ai {
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
-        IntermediateScore locationScore = new MrXLocationScore();
-        IntermediateScore availableMovesScore = new MrXAvailableMovesScore();
+        IntermediateScore locationScore = MrXLocationScore.getInstance();
+        IntermediateScore availableMovesScore = MrXAvailableMovesScore.getInstance();
         LocationPicker miniMax = new MiniMax(board, constants, 6, locationScore, availableMovesScore);
         TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         MovePicker defaultMovePicker = new DefaultMovePicker(board, constants);

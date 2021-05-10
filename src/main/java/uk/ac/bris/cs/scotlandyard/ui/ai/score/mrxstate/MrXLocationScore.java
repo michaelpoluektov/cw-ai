@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 import static java.lang.Math.pow;
 
 public class MrXLocationScore extends Dijkstra implements IntermediateScore {
-
+    private static MrXLocationScore instance;
+    private MrXLocationScore() {}
     @Nonnull
     @Override
     public Double getScore(MiniBoard miniBoard) {
@@ -41,5 +42,10 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
     @Override
     public Double getWeight(MiniBoard miniBoard) {
         return miniBoard.getConstants().getDouble("location.weight");
+    }
+
+    public static MrXLocationScore getInstance() {
+        if(instance == null) instance = new MrXLocationScore();
+        return instance;
     }
 }

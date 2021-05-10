@@ -6,6 +6,8 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import javax.annotation.Nonnull;
 
 public class MrXWinnerScore implements IntermediateScore {
+    private static MrXWinnerScore instance;
+    private MrXWinnerScore() {}
     @Nonnull
     @Override
     public Double getScore(MiniBoard miniBoard) {
@@ -20,5 +22,10 @@ public class MrXWinnerScore implements IntermediateScore {
     @Override
     public Double getWeight(MiniBoard miniBoard) {
         return 1.0;
+    }
+
+    public static MrXWinnerScore getInstance() {
+        if(instance == null) instance = new MrXWinnerScore();
+        return instance;
     }
 }

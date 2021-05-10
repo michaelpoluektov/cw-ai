@@ -5,6 +5,8 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import javax.annotation.Nonnull;
 
 public class MrXAvailableMovesScore implements IntermediateScore {
+    private static MrXAvailableMovesScore instance;
+    private MrXAvailableMovesScore() {}
     @Nonnull
     @Override
     public Double getScore(MiniBoard miniBoard) {
@@ -16,5 +18,10 @@ public class MrXAvailableMovesScore implements IntermediateScore {
     @Override
     public Double getWeight(MiniBoard miniBoard) {
         return miniBoard.getConstants().getDouble("availableMoves.weight");
+    }
+
+    public static MrXAvailableMovesScore getInstance() {
+        if(instance == null) instance = new MrXAvailableMovesScore();
+        return instance;
     }
 }
