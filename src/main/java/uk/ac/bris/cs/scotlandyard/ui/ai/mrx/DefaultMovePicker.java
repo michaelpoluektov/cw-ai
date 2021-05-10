@@ -36,12 +36,12 @@ public class DefaultMovePicker implements MovePicker {
                 Double bestDoubleValue = bestDoubleEntry.getValue();
                 if(bestDoubleValue > bestSingleValue + doubleOffset || bestSingleValue == 0) {
                     ImmutableSet<Move> doubleMoves = getDoubleMovesWithDestination(availableMoves, bestDoubleEntry.getKey());
-                    return ticketPicker.getBestMove(doubleMoves);
+                    return ticketPicker.getBestMoveByTickets(doubleMoves);
                 }
             }
         }
         ImmutableSet<Move> singleMoves = getSingleMovesWithDestination(availableMoves, bestSingleEntry.getKey());
-        return ticketPicker.getBestMove(singleMoves);
+        return ticketPicker.getBestMoveByTickets(singleMoves);
     }
 
     private ImmutableSet<Integer> getSingleMoveDestinations(ImmutableSet<Move> moves) {

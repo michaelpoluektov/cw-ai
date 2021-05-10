@@ -6,7 +6,7 @@ import uk.ac.bris.cs.scotlandyard.model.Move;
 import javax.annotation.Nonnull;
 
 public interface TicketPicker {
-    @Nonnull Move getBestMove(ImmutableSet<Move> moves);
+    @Nonnull Move getBestMoveByTickets(ImmutableSet<Move> moves);
     // @param: ImmutableSet of all possible moves with a given destination
     //
     // Return: Best move based on tickets

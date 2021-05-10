@@ -30,7 +30,7 @@ public class DefaultTicketPicker implements TicketPicker {
     }
     @Nonnull
     @Override
-    public Move getBestMove(ImmutableSet<Move> moves) {
+    public Move getBestMoveByTickets(ImmutableSet<Move> moves) {
         Comparator<Move> firstTicketComparator = new MoveFirstTicketComparator(ticketBoard);
         if(moves.stream().anyMatch(move -> move instanceof Move.SingleMove)) {
             Stream<Move> singleMoves = moves.stream().filter(move -> move instanceof Move.SingleMove);
