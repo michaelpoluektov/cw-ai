@@ -1,6 +1,7 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
+import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
@@ -17,8 +18,8 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
     private MrXLocationScore() {}
     @Nonnull
     @Override
-    public Double getScore(MiniBoard miniBoard) {
-        final Double locationScoreExp = miniBoard.getConstants().getDouble("location.exp");
+    public Double getScore(MiniBoard miniBoard, Toml constants) {
+        final Double locationScoreExp = constants.getDouble("location.exp");
         final ImmutableList<Integer> mrXLocationList = ImmutableList.of(miniBoard.getMrXLocation());
         final List<Integer> distanceToSource =
                 getDistances(mrXLocationList, miniBoard.getDetectiveLocations(), miniBoard).get(0);
@@ -40,8 +41,8 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
 
     @Nonnull
     @Override
-    public Double getWeight(MiniBoard miniBoard) {
-        return miniBoard.getConstants().getDouble("location.weight");
+    public Double getWeight(Toml constants) {
+        return constants.getDouble("location.weight");
     }
 
     public static MrXLocationScore getInstance() {

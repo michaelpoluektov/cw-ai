@@ -20,23 +20,22 @@ public class MiniBoard {
     private final ImmutableList<Integer> movedDetectiveLocations;
     private final GameSetup setup;
     private final Boolean mrXToMove;
-    private final Toml constants;
 
     public MiniBoard(Board board, Toml constants){
-        this(board, constants, board.getAvailableMoves().asList().get(0).source(), true);
+        this(board, board.getAvailableMoves().asList().get(0).source(), true);
         if(!(board.getAvailableMoves().asList().get(0).commencedBy() == Piece.MrX.MRX)) {
             throw new IllegalArgumentException("Passed board is detectives to move!");
         }
     }
 
-    public MiniBoard(Board board, Integer location, Toml constants) {
-        this(board, constants, location, false);
+    public MiniBoard(Board board, Integer location) {
+        this(board, location, false);
         if(board.getAvailableMoves().asList().get(0).commencedBy() == Piece.MrX.MRX) {
             throw new IllegalArgumentException("Passed board is MRX to move!");
         }
     }
 
-    private MiniBoard(Board board, Toml constants, Integer mrXLocation, Boolean mrXToMove) {
+    private MiniBoard(Board board, Integer mrXLocation, Boolean mrXToMove) {
         this.mrXLocation = mrXLocation;
         if(!mrXToMove) this.unmovedDetectiveLocations = board.getAvailableMoves().stream()
                 .map(Move::source)
@@ -53,7 +52,6 @@ public class MiniBoard {
         this.setup = board.getSetup();
         this.mrXToMove = mrXToMove;
         this.round = board.getMrXTravelLog().size();
-        this.constants = constants;
     }
 
     private MiniBoard(Integer mrXLocation, 
@@ -61,15 +59,13 @@ public class MiniBoard {
                       ImmutableList<Integer> movedDetectiveLocations,
                       GameSetup setup,
                       Boolean mrXToMove,
-                      Integer round,
-                      Toml constants) {
+                      Integer round) {
         this.mrXLocation = mrXLocation;
         this.unmovedDetectiveLocations = unmovedDetectiveLocations;
         this.movedDetectiveLocations = movedDetectiveLocations;
         this.setup = setup;
         this.mrXToMove = mrXToMove;
         this.round = round;
-        this.constants = constants;
     }
     public Integer getMrXLocation() {
         return mrXLocation;
@@ -96,10 +92,6 @@ public class MiniBoard {
         return round;
     }
 
-    public Toml getConstants() {
-        return constants;
-    }
-    
     public ImmutableSet<Integer> getNodeDestinations(Integer source) {
         return ImmutableSet.copyOf(setup.graph.adjacentNodes(source).stream()
                 .filter(node -> !getDetectiveLocations().contains(node))
@@ -117,8 +109,7 @@ public class MiniBoard {
                     unmovedDetectiveLocations,
                     setup,
                     false,
-                    round + 1,
-                    constants);
+                    round + 1);
         }
     }
 
@@ -132,8 +123,7 @@ public class MiniBoard {
                 ImmutableList.copyOf(newMovedDetectiveLocation),
                 setup,
                 newUnmovedDetectiveLocation.isEmpty(),
-                round,
-                constants);
+                round);
     }
 
     public MiniBoard advanceDetective(Integer source, Integer destination) {
@@ -160,14 +150,14 @@ public class MiniBoard {
         else return winner.NONE;
     }
 
-    public Double getMrXBoardScore(IntermediateScore... scoringObjects) {
+    public Double getMrXBoardScore(Toml constants, IntermediateScore... scoringObjects) {
         if(getWinner() == winner.DETECTIVES) return 0.0;
         if(getWinner() == winner.MRX) return 1.0;
         double totalScore = 0.0;
         double totalWeights = 0.0;
         for(IntermediateScore scoringObject : scoringObjects) {
-            totalWeights += scoringObject.getWeight(this);
-            totalScore += scoringObject.getScore(this)*scoringObject.getWeight(this);
+            totalWeights += scoringObject.getWeight(constants);
+            totalScore += scoringObject.getScore(this, constants)*scoringObject.getWeight(constants);
         }
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
