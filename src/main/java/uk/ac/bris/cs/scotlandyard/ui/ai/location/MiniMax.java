@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
@@ -7,9 +8,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MiniMax implements LocationPicker{
     private final Board board;
@@ -46,15 +45,22 @@ public class MiniMax implements LocationPicker{
     }
 
     private Double runMiniMax(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
-        MiniBoard.winner winner = miniBoard.getWinner();
+        final MiniBoard.winner winner = miniBoard.getWinner();
         if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
         if(winner == MiniBoard.winner.MRX) return 1.0;
         if(depth == 0) return miniBoard.getMrXBoardScore(constants, intermediateScores);
-        Boolean mrXToMove = miniBoard.getMrXToMove();
+        final Boolean mrXToMove = miniBoard.getMrXToMove();
+        final Comparator<MiniBoard> scoreComparator = new MiniBoard.ScoreComparator(constants, intermediateScores);
+        final Comparator<MiniBoard> reversedScoreComparator =
+                new MiniBoard.ScoreComparator(constants, intermediateScores).reversed();
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
-            for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-                Double advancedScore = runMiniMax(miniBoard.advanceMrX(destination), depth - 1, alpha, beta);
+            ImmutableSet<MiniBoard> advancedMiniBoards = miniBoard.getAdvancedMiniBoards()
+                    .stream()
+                    .sorted(reversedScoreComparator)
+                    .collect(ImmutableSet.toImmutableSet());
+            for(MiniBoard advancedMiniBoard : advancedMiniBoards) {
+                Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
                 if(maxScore < advancedScore) maxScore = advancedScore;
                 alpha = Double.max(alpha, advancedScore);
                 if(beta <= alpha) break;
@@ -63,12 +69,12 @@ public class MiniMax implements LocationPicker{
         }
         else{
             double minScore = Double.POSITIVE_INFINITY;
-            Integer source = miniBoard.getDetectiveLocations().get(miniBoard.getUnmovedDetectiveLocations().size()-1);
-            for(Integer destination : miniBoard.getNodeDestinations(source)) {
-                Double advancedScore = runMiniMax(miniBoard.advanceDetective(source, destination),
-                        depth - 1,
-                        alpha,
-                        beta);
+            ImmutableSet<MiniBoard> advancedMiniBoards = miniBoard.getAdvancedMiniBoards()
+                    .stream()
+                    .sorted(scoreComparator)
+                    .collect(ImmutableSet.toImmutableSet());
+            for(MiniBoard advancedMiniBoard : advancedMiniBoards) {
+                Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
                 if(minScore > advancedScore) minScore = advancedScore;
                 beta = Double.min(beta, advancedScore);
                 if(beta <= alpha) break;
