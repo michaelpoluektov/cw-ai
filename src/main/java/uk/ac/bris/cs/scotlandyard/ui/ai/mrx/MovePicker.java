@@ -14,5 +14,5 @@ public interface MovePicker {
      * @see LocationPicker
      * @see TicketPicker
      */
-    @Nonnull Move pickMove(LocationPicker locationPicker, TicketPicker ticketPicker);
+    @Nonnull <T extends LocationPicker> Move pickMove(T locationPicker, TicketPicker ticketPicker);
 }
