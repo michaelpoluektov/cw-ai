@@ -1,16 +1,21 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
+import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
+import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class MCTree {
     private final MCNode rootNode;
+    private final Board board;
 
     protected MCTree(Board board, Toml constants){
         rootNode = new MCNode(board, constants);
+        this.board = board;
     }
 
     protected MCNode selectNode(MCNode node){ // what
@@ -23,6 +28,18 @@ public class MCTree {
 
     protected MCNode getRootNode() {
         return rootNode;
+    }
+    protected void expandDoubleChildren(){
+        ArrayList<MCNode> newChildren = new ArrayList<>(rootNode.getChildren());
+        ImmutableSet<MCNode> doubleChildren;
+        doubleChildren = board.getAvailableMoves().stream()
+                .filter(move -> move instanceof Move.DoubleMove)
+                .map(move -> ((Move.DoubleMove) move).destination2)
+                .map(rootNode.getMiniBoard()::advanceMrX)
+                .map(miniBoard1 -> new MCNode(miniBoard1, rootNode))
+                .collect(ImmutableSet.toImmutableSet());
+        newChildren.addAll(doubleChildren);
+        rootNode.setChildren(ImmutableSet.copyOf(newChildren));
     }
 
     protected void runSimulation() {

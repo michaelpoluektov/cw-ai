@@ -97,6 +97,9 @@ public class MCNode implements Comparable<MCNode> {
         Double exploration = Math.sqrt(2) * Math.sqrt(Math.log(parent.getPlays())/plays);
         return exploitation + exploration;
     }
+    protected final void setChildren(ImmutableSet<MCNode> children){
+        this.children = children;
+    }
 
     @Override
     public int compareTo(MCNode node) {
