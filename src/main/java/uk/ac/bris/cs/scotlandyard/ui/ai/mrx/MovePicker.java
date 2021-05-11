@@ -7,8 +7,10 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 import javax.annotation.Nonnull;
 
 public interface MovePicker {
+    /**
+     * @param locationPicker LocationPicker responsible for picking the best destination(s), uninfluenced by tickets
+     * @param ticketPicker TicketPicker responsible for picking the best move based on the tickets used in that move
+     * @return Best Move based on destination and used tickets
+     */
     @Nonnull Move pickMove(LocationPicker locationPicker, TicketPicker ticketPicker);
-    // @param: LocaionPicker and TicketPicker used to pick each move in a subset of moves
-    //
-    // Return: Move
 }
