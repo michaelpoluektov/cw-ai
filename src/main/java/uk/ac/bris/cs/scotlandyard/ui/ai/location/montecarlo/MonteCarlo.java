@@ -1,7 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
-import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
@@ -14,16 +13,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class MonteCarlo implements LocationPicker {
-    private final Board board;
-    private final Toml constants;
+    private final RootNode rootNode;
     private final Long endTime;
     private final IntermediateScore[] intermediateScores;
     public MonteCarlo(Board board,
-                      Toml constants,
                       Pair<Long, TimeUnit> timeoutPair,
                       IntermediateScore... intermediateScores) {
-        this.board = board;
-        this.constants = constants;
+        this.rootNode = new RootNode(board);
         this.endTime = System.currentTimeMillis()+timeoutPair.right().toMillis(timeoutPair.left());
         this.intermediateScores = intermediateScores;
     }
@@ -33,13 +29,12 @@ public class MonteCarlo implements LocationPicker {
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
-        Tree tree = new Tree(board);
         while(currentTime < endTime - 300) {
-            tree.runSimulation();
+            rootNode.runSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
         }
-        for(Node child : tree.getRootNode().getChildren()){
+        for(Node child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
         }
         Map.Entry<Integer, Double> bestEntry =
@@ -51,5 +46,9 @@ public class MonteCarlo implements LocationPicker {
                 + " with score "
                 + bestEntry.getValue());
         return bestEntry;
+    }
+
+    public void addChildren(ImmutableSet<Integer> destinations) {
+        rootNode.addChildren(destinations);
     }
 }

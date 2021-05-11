@@ -2,13 +2,13 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.moandjiezana.toml.Toml;
-import uk.ac.bris.cs.scotlandyard.model.Board;
-import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Node implements Comparable<Node> {
 
@@ -16,27 +16,14 @@ public class Node implements Comparable<Node> {
     private Integer plays;
     private Integer score;
     private final Node parent;
-    private ImmutableSet<Node> children;
-
-    protected Node(Board board) {
-        this.miniBoard = new MiniBoard(board);
-        this.plays = 0;
-        this.score = 0;
-        this.parent = null;
-        this.children = board.getAvailableMoves().stream()
-                .filter(move -> move instanceof Move.SingleMove)
-                .map(move -> ((Move.SingleMove) move).destination)
-                .map(miniBoard::advanceMrX)
-                .map(miniBoard1 -> new Node(miniBoard1, this))
-                .collect(ImmutableSet.toImmutableSet());
-    }
+    private final Set<Node> children;
 
     protected Node(MiniBoard miniBoard, Node parent) {
         this.miniBoard = miniBoard;
         this.plays = 0;
         this.score = 0;
         this.parent = parent;
-        this.children = ImmutableSet.of();
+        this.children = new HashSet<>();
     }
 
     protected final Double getAverageScore() {
@@ -55,8 +42,8 @@ public class Node implements Comparable<Node> {
         return Optional.ofNullable(parent);
     }
 
-    protected final ImmutableSet<Node> getChildren(){
-        return children;
+    protected ImmutableSet<Node> getChildren(){
+        return ImmutableSet.copyOf(children);
     }
 
     protected final Boolean isLeaf() {
@@ -85,9 +72,9 @@ public class Node implements Comparable<Node> {
     protected void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(miniBoard.getWinner() == MiniBoard.winner.NONE) {
-            this.children = miniBoard.getAdvancedMiniBoards().stream()
+            children.addAll(miniBoard.getAdvancedMiniBoards().stream()
                     .map(value -> new Node(value, this))
-                    .collect(ImmutableSet.toImmutableSet());
+                    .collect(Collectors.toSet()));
         }
     }
 

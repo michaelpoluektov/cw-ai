@@ -11,7 +11,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class DefaultMovePicker implements MovePicker {
+public class DefaultMovePicker implements MovePicker<LocationPicker> {
     private final Board board;
     private final Double doubleThreshold;
     private final Double doubleOffset;

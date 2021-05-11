@@ -6,7 +6,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 
 import javax.annotation.Nonnull;
 
-public interface MovePicker {
+public interface MovePicker<T extends LocationPicker> {
     /**
      * @param locationPicker LocationPicker responsible for picking the best destination(s), uninfluenced by tickets
      * @param ticketPicker TicketPicker responsible for picking the best move based on the tickets used in that move
@@ -14,5 +14,5 @@ public interface MovePicker {
      * @see LocationPicker
      * @see TicketPicker
      */
-    @Nonnull <T extends LocationPicker> Move pickMove(T locationPicker, TicketPicker ticketPicker);
+    @Nonnull Move pickMove(T locationPicker, TicketPicker ticketPicker);
 }
