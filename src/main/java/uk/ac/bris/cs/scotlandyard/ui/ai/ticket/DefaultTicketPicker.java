@@ -33,11 +33,13 @@ public class DefaultTicketPicker implements TicketPicker {
     public Move getBestMoveByTickets(ImmutableSet<Move> moves) {
         Comparator<Move> firstTicketComparator = new MoveTicketComparator(ticketBoard, 0);
         if(moves.stream().anyMatch(move -> move instanceof Move.SingleMove)) {
-            Stream<Move> singleMoves = moves.stream().filter(move -> move instanceof Move.SingleMove);
-            return singleMoves
+            ImmutableSet<Move> singleMoves = moves.stream()
+                    .filter(move -> move instanceof Move.SingleMove)
+                    .collect(ImmutableSet.toImmutableSet());
+            return singleMoves.stream()
                     .filter(move -> isReveal == Iterables.contains(move.tickets(), ScotlandYard.Ticket.SECRET))
                     .max(firstTicketComparator)
-                    .orElseGet(() -> singleMoves
+                    .orElseGet(() -> singleMoves.stream()
                             .max(firstTicketComparator)
                             .orElseThrow());
         } else {

@@ -53,8 +53,8 @@ public class MiniMax implements LocationPicker{
         Boolean mrXToMove = miniBoard.getMrXToMove();
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
-            for(Integer destination : miniBoard.getNodeDestinations(miniBoard.getMrXLocation())) {
-                Double advancedScore = runMiniMax(miniBoard.advanceMrX(destination), depth - 1, alpha, beta);
+            for(MiniBoard advancedMiniBoard : miniBoard.getAdvancedMiniBoards()) {
+                Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
                 if(maxScore < advancedScore) maxScore = advancedScore;
                 alpha = Double.max(alpha, advancedScore);
                 if(beta <= alpha) break;
@@ -63,12 +63,8 @@ public class MiniMax implements LocationPicker{
         }
         else{
             double minScore = Double.POSITIVE_INFINITY;
-            Integer source = miniBoard.getDetectiveLocations().get(miniBoard.getUnmovedDetectiveLocations().size()-1);
-            for(Integer destination : miniBoard.getNodeDestinations(source)) {
-                Double advancedScore = runMiniMax(miniBoard.advanceDetective(source, destination),
-                        depth - 1,
-                        alpha,
-                        beta);
+            for(MiniBoard advancedMiniBoard : miniBoard.getAdvancedMiniBoards()) {
+                Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
                 if(minScore > advancedScore) minScore = advancedScore;
                 beta = Double.min(beta, advancedScore);
                 if(beta <= alpha) break;
