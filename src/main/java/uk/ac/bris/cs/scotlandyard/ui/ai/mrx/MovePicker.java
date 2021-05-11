@@ -11,6 +11,8 @@ public interface MovePicker {
      * @param locationPicker LocationPicker responsible for picking the best destination(s), uninfluenced by tickets
      * @param ticketPicker TicketPicker responsible for picking the best move based on the tickets used in that move
      * @return Best Move based on destination and used tickets
+     * @see LocationPicker
+     * @see TicketPicker
      */
     @Nonnull Move pickMove(LocationPicker locationPicker, TicketPicker ticketPicker);
 }
