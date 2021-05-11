@@ -67,4 +67,18 @@ public class DefaultTicketPicker implements TicketPicker {
         }
         return Lists.newArrayList(move.tickets()).get(index);
     }
+    private static class MoveFirstTicketComparator implements Comparator<Move> {
+        private final Board.TicketBoard ticketBoard;
+        protected MoveFirstTicketComparator(Board.TicketBoard ticketBoard) {
+            this.ticketBoard = ticketBoard;
+        }
+        @Override
+        public int compare(Move o1, Move o2) {
+            return ticketBoard.getCount(firstTicket(o1)) - ticketBoard.getCount(firstTicket(o2));
+        }
+
+        private ScotlandYard.Ticket firstTicket(Move move) {
+            return move.tickets().iterator().next();
+        }
+    }
 }

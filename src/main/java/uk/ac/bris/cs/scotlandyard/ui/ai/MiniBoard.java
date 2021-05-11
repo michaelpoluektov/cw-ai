@@ -21,7 +21,7 @@ public class MiniBoard {
     private final GameSetup setup;
     private final Boolean mrXToMove;
 
-    public MiniBoard(Board board, Toml constants){
+    public MiniBoard(Board board){
         this(board, board.getAvailableMoves().asList().get(0).source(), true);
         if(!(board.getAvailableMoves().asList().get(0).commencedBy() == Piece.MrX.MRX)) {
             throw new IllegalArgumentException("Passed board is detectives to move!");

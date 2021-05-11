@@ -26,7 +26,7 @@ public class MiniMax implements LocationPicker{
     @Override
     public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations) {
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
-        MiniBoard miniBoard = new MiniBoard(board, constants);
+        MiniBoard miniBoard = new MiniBoard(board);
         System.out.print("Rating destinations: ");
         destinations.parallelStream()
                 .forEach(destination -> addRankedMove(scoredDestinations, miniBoard, destination));
