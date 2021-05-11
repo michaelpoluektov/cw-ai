@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
 
     @Nonnull
     @Override
-    public Double getScore(MiniBoard miniBoard, Toml constants) {
-        //int numberOfDetectives = board.getPlayers().size() - 1;
+    public Double getScore(MiniBoard miniBoard) {
         final double busTicketScore = 1 - Math.pow(busTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.BUS));
         final double taxiTicketScore = 1 - Math.pow(taxiTicketExp, -mrXTickets.getCount(ScotlandYard.Ticket.TAXI));
         final double undergroundTicketScore =
@@ -49,7 +48,7 @@ import javax.annotation.Nonnull;
     }
     @Nonnull
     @Override
-    public Double getWeight(Toml constants){
+    public Double getWeight(){
         return overallTicketWeight;
     }
 }

@@ -11,7 +11,7 @@ public class MrXWinnerScore implements IntermediateScore {
     private MrXWinnerScore() {}
     @Nonnull
     @Override
-    public Double getScore(MiniBoard miniBoard, Toml constants) {
+    public Double getScore(MiniBoard miniBoard) {
         switch(miniBoard.getWinner()) {
             case MRX: return 1.0;
             case DETECTIVES: return 0.0;
@@ -21,7 +21,7 @@ public class MrXWinnerScore implements IntermediateScore {
 
     @Nonnull
     @Override
-    public Double getWeight(Toml constants) {
+    public Double getWeight() {
         return 1.0;
     }
 

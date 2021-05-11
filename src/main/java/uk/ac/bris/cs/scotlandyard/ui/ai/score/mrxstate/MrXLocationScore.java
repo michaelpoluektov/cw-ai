@@ -14,12 +14,15 @@ import java.util.stream.Collectors;
 import static java.lang.Math.pow;
 
 public class MrXLocationScore extends Dijkstra implements IntermediateScore {
-    private static MrXLocationScore instance;
-    private MrXLocationScore() {}
+    private final Double locationScoreExp;
+    private final Double locationScoreWeight;
+    public MrXLocationScore(Toml constants) {
+        this.locationScoreExp = constants.getDouble("location.exp");
+        this.locationScoreWeight = constants.getDouble("location.weight");
+    }
     @Nonnull
     @Override
-    public Double getScore(MiniBoard miniBoard, Toml constants) {
-        final Double locationScoreExp = constants.getDouble("location.exp");
+    public Double getScore(MiniBoard miniBoard) {
         final ImmutableList<Integer> mrXLocationList = ImmutableList.of(miniBoard.getMrXLocation());
         final List<Integer> distanceToSource =
                 getDistances(mrXLocationList, miniBoard.getDetectiveLocations(), miniBoard).get(0);
@@ -41,12 +44,8 @@ public class MrXLocationScore extends Dijkstra implements IntermediateScore {
 
     @Nonnull
     @Override
-    public Double getWeight(Toml constants) {
-        return constants.getDouble("location.weight");
+    public Double getWeight() {
+        return locationScoreWeight;
     }
 
-    public static MrXLocationScore getInstance() {
-        if(instance == null) instance = new MrXLocationScore();
-        return instance;
-    }
 }

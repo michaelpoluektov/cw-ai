@@ -150,14 +150,14 @@ public class MiniBoard {
         else return winner.NONE;
     }
 
-    public Double getMrXBoardScore(Toml constants, IntermediateScore... scoringObjects) {
+    public Double getMrXBoardScore(IntermediateScore... scoringObjects) {
         if(getWinner() == winner.DETECTIVES) return 0.0;
         if(getWinner() == winner.MRX) return 1.0;
         double totalScore = 0.0;
         double totalWeights = 0.0;
         for(IntermediateScore scoringObject : scoringObjects) {
-            totalWeights += scoringObject.getWeight(constants);
-            totalScore += scoringObject.getScore(this, constants)*scoringObject.getWeight(constants);
+            totalWeights += scoringObject.getWeight();
+            totalScore += scoringObject.getScore(this)*scoringObject.getWeight();
         }
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
@@ -189,8 +189,8 @@ public class MiniBoard {
         }
         @Override
         public int compare(MiniBoard o1, MiniBoard o2) {
-            return Double.compare(o1.getMrXBoardScore(constants, intermediateScores),
-                    o2.getMrXBoardScore(constants, intermediateScores));
+            return Double.compare(o1.getMrXBoardScore(intermediateScores),
+                    o2.getMrXBoardScore(intermediateScores));
         }
     }
 }

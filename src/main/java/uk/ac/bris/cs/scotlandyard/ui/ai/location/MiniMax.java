@@ -99,7 +99,7 @@ public class MiniMax implements LocationPicker{
         MiniBoard.winner winner = miniBoard.getWinner();
         if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
         if(winner == MiniBoard.winner.MRX) return 1.0;
-        if(depth == 0) return miniBoard.getMrXBoardScore(constants, intermediateScores);
+        if(depth == 0) return miniBoard.getMrXBoardScore(intermediateScores);
         Boolean mrXToMove = miniBoard.getMrXToMove();
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
