@@ -31,7 +31,7 @@ public class DefaultTicketPicker implements TicketPicker {
     @Nonnull
     @Override
     public Move getBestMoveByTickets(ImmutableSet<Move> moves) {
-        Comparator<Move> firstTicketComparator = new MoveFirstTicketComparator(ticketBoard);
+        Comparator<Move> firstTicketComparator = new MoveTicketComparator(ticketBoard, 0);
         if(moves.stream().anyMatch(move -> move instanceof Move.SingleMove)) {
             Stream<Move> singleMoves = moves.stream().filter(move -> move instanceof Move.SingleMove);
             return singleMoves
@@ -67,18 +67,16 @@ public class DefaultTicketPicker implements TicketPicker {
         }
         return Lists.newArrayList(move.tickets()).get(index);
     }
-    private static class MoveFirstTicketComparator implements Comparator<Move> {
+    private class MoveTicketComparator implements Comparator<Move> {
         private final Board.TicketBoard ticketBoard;
-        protected MoveFirstTicketComparator(Board.TicketBoard ticketBoard) {
+        private final int index;
+        protected MoveTicketComparator(Board.TicketBoard ticketBoard, int index) {
             this.ticketBoard = ticketBoard;
+            this.index = index;
         }
         @Override
         public int compare(Move o1, Move o2) {
-            return ticketBoard.getCount(firstTicket(o1)) - ticketBoard.getCount(firstTicket(o2));
-        }
-
-        private ScotlandYard.Ticket firstTicket(Move move) {
-            return move.tickets().iterator().next();
+            return ticketBoard.getCount(getTicket(o1, index)) - ticketBoard.getCount(getTicket(o2, index));
         }
     }
 }

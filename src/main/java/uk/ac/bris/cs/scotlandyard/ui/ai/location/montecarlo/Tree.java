@@ -9,8 +9,8 @@ import java.util.Collections;
 public class Tree {
     private final Node rootNode;
 
-    protected Tree(Board board, Toml constants){
-        rootNode = new Node(board, constants);
+    protected Tree(Board board){
+        rootNode = new Node(board);
     }
 
     protected Node selectNode(Node node){ // what

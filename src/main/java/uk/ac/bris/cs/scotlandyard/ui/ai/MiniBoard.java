@@ -179,4 +179,18 @@ public class MiniBoard {
                     .collect(ImmutableSet.toImmutableSet());
         }
     }
+
+    public static class ScoreComparator implements Comparator<MiniBoard> {
+        private final IntermediateScore[] intermediateScores;
+        private final Toml constants;
+        public ScoreComparator(Toml constants, IntermediateScore... intermediateScores) {
+            this.intermediateScores = intermediateScores;
+            this.constants = constants;
+        }
+        @Override
+        public int compare(MiniBoard o1, MiniBoard o2) {
+            return Double.compare(o1.getMrXBoardScore(constants, intermediateScores),
+                    o2.getMrXBoardScore(constants, intermediateScores));
+        }
+    }
 }

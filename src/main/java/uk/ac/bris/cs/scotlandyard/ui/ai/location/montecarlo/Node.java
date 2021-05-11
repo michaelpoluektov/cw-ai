@@ -18,8 +18,8 @@ public class Node implements Comparable<Node> {
     private final Node parent;
     private ImmutableSet<Node> children;
 
-    protected Node(Board board, Toml constants) {
-        this.miniBoard = new MiniBoard(board, constants);
+    protected Node(Board board) {
+        this.miniBoard = new MiniBoard(board);
         this.plays = 0;
         this.score = 0;
         this.parent = null;

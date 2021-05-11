@@ -33,7 +33,7 @@ public class MonteCarlo implements LocationPicker {
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
-        Tree tree = new Tree(board, constants);
+        Tree tree = new Tree(board);
         while(currentTime < endTime - 300) {
             tree.runSimulation();
             simulations++;
