@@ -33,13 +33,13 @@ public class MonteCarlo implements LocationPicker {
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
-        MCTree tree = new MCTree(board, constants);
+        Tree tree = new Tree(board, constants);
         while(currentTime < endTime - 300) {
             tree.runSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
         }
-        for(MCNode child : tree.getRootNode().getChildren()){
+        for(Node child : tree.getRootNode().getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
         }
         Map.Entry<Integer, Double> bestEntry =

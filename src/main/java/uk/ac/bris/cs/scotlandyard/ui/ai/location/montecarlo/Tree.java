@@ -6,30 +6,30 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
 import java.util.Collections;
 
-public class MCTree {
-    private final MCNode rootNode;
+public class Tree {
+    private final Node rootNode;
 
-    protected MCTree(Board board, Toml constants){
-        rootNode = new MCNode(board, constants);
+    protected Tree(Board board, Toml constants){
+        rootNode = new Node(board, constants);
     }
 
-    protected MCNode selectNode(MCNode node){ // what
-        MCNode selectedNode = rootNode;
+    protected Node selectNode(Node node){ // what
+        Node selectedNode = rootNode;
         while(!selectedNode.isLeaf()) {
             selectedNode = Collections.max(selectedNode.getChildren());
         }
         return selectedNode;
     }
 
-    protected MCNode getRootNode() {
+    protected Node getRootNode() {
         return rootNode;
     }
 
     protected void runSimulation() {
-        MCNode selectedNode = selectNode(rootNode);
+        Node selectedNode = selectNode(rootNode);
         selectedNode.expand();
         if(!selectedNode.getChildren().isEmpty()) {
-            MCNode selectedChild = selectedNode.getChildren().asList().get(0);
+            Node selectedChild = selectedNode.getChildren().asList().get(0);
             Boolean rolloutResult = selectedChild.rollout();
             selectedChild.backPropagate(rolloutResult);
         } else {

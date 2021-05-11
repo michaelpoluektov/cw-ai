@@ -10,15 +10,15 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import java.util.Optional;
 import java.util.Random;
 
-public class MCNode implements Comparable<MCNode> {
+public class Node implements Comparable<Node> {
 
     private final MiniBoard miniBoard;
     private Integer plays;
     private Integer score;
-    private final MCNode parent;
-    private ImmutableSet<MCNode> children;
+    private final Node parent;
+    private ImmutableSet<Node> children;
 
-    protected MCNode(Board board, Toml constants) {
+    protected Node(Board board, Toml constants) {
         this.miniBoard = new MiniBoard(board, constants);
         this.plays = 0;
         this.score = 0;
@@ -27,11 +27,11 @@ public class MCNode implements Comparable<MCNode> {
                 .filter(move -> move instanceof Move.SingleMove)
                 .map(move -> ((Move.SingleMove) move).destination)
                 .map(miniBoard::advanceMrX)
-                .map(miniBoard1 -> new MCNode(miniBoard1, this))
+                .map(miniBoard1 -> new Node(miniBoard1, this))
                 .collect(ImmutableSet.toImmutableSet());
     }
 
-    protected MCNode(MiniBoard miniBoard, MCNode parent) {
+    protected Node(MiniBoard miniBoard, Node parent) {
         this.miniBoard = miniBoard;
         this.plays = 0;
         this.score = 0;
@@ -51,11 +51,11 @@ public class MCNode implements Comparable<MCNode> {
         return miniBoard;
     }
 
-    protected final Optional<MCNode> getParent() {
+    protected final Optional<Node> getParent() {
         return Optional.ofNullable(parent);
     }
 
-    protected final ImmutableSet<MCNode> getChildren(){
+    protected final ImmutableSet<Node> getChildren(){
         return children;
     }
 
@@ -86,7 +86,7 @@ public class MCNode implements Comparable<MCNode> {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(miniBoard.getWinner() == MiniBoard.winner.NONE) {
             this.children = miniBoard.getAdvancedMiniBoards().stream()
-                    .map(value -> new MCNode(value, this))
+                    .map(value -> new Node(value, this))
                     .collect(ImmutableSet.toImmutableSet());
         }
     }
@@ -99,7 +99,7 @@ public class MCNode implements Comparable<MCNode> {
     }
 
     @Override
-    public int compareTo(MCNode node) {
+    public int compareTo(Node node) {
         return Double.compare(getUCTScore(), node.getUCTScore());
     }
 }
