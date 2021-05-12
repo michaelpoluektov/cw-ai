@@ -7,21 +7,21 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class MonteCarlo implements LocationPicker {
     private final RootNode rootNode;
     private final Long simulationTime;
     private final IntermediateScore[] intermediateScores;
+    private final Set<PlayoutObserver> observers;
     public MonteCarlo(Board board,
                       Pair<Long, TimeUnit> timeoutPair,
                       IntermediateScore... intermediateScores) {
         this.rootNode = new RootNode(board);
         this.simulationTime = timeoutPair.right().toMillis(timeoutPair.left());
         this.intermediateScores = intermediateScores;
+        this.observers = new HashSet<>();
     }
     @Nonnull
     @Override
@@ -31,10 +31,15 @@ public class MonteCarlo implements LocationPicker {
         long endTime = System.currentTimeMillis()+simulationTime;
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
-        while(currentTime < endTime - 300) {
+        while(currentTime < endTime) {
             rootNode.runSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
+            if(simulations % 10 == 0) {
+                Double maxScore = Collections.max(rootNode.getChildren(),
+                        (Comparator.comparingDouble(Node::getAverageScore))).getAverageScore();
+                notifyObservers(simulations, maxScore, endTime-currentTime);
+            }
         }
         for(Node child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
@@ -48,5 +53,17 @@ public class MonteCarlo implements LocationPicker {
                 + " with score "
                 + bestEntry.getValue());
         return bestEntry;
+    }
+
+    public void addPlayoutObserver(PlayoutObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removePlayoutObserver(PlayoutObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers(Integer simulations, Double bestScore, Long remainingTime) {
+        for(PlayoutObserver observer : observers) observer.respondToPlayout(simulations, bestScore, remainingTime);
     }
 }
