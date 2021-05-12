@@ -14,6 +14,7 @@ public class Node {
     private Integer score;
     private final Node parent;
     private final Set<Node> children;
+    private final Integer roundSize;
 
     protected Node(MiniBoard miniBoard, Node parent) {
         this.miniBoard = miniBoard;
@@ -21,6 +22,7 @@ public class Node {
         this.score = 0;
         this.parent = parent;
         this.children = new HashSet<>();
+        this.roundSize = miniBoard.getSetup().rounds.size();
     }
 
     protected final Double getAverageScore() {
@@ -47,23 +49,24 @@ public class Node {
         return children.isEmpty();
     }
 
-    protected void backPropagate(Boolean hasMrXWon) {
+    protected void backPropagate(Integer round, Integer rootNodeRound) {
         plays++;
-        if(getParent().isEmpty()) score++;
+        if(getParent().isEmpty()) score += round-getMiniBoard().getRound();
         else {
-            if(parent.getMiniBoard().getMrXToMove() == hasMrXWon) score++;
-            parent.backPropagate(hasMrXWon);
+            if(parent.getMiniBoard().getMrXToMove()) score += (round - rootNodeRound);
+            else score += roundSize - round;
+            parent.backPropagate(round, rootNodeRound);
         }
     }
 
-    protected Boolean rollout() {
+    protected Integer rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
             rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
         }
-        return rollingMiniBoard.getWinner() == MiniBoard.winner.MRX;
+        return rollingMiniBoard.getRound();
     }
 
     protected void expand() {

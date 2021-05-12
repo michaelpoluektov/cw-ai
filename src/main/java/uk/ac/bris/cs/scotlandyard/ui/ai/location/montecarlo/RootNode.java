@@ -28,17 +28,16 @@ public class RootNode extends Node {
         return selectedNode;
     }
 
-    protected void runSimulation() {
+    protected void runSingleSimulation() {
         Node selectedNode = selectNode();
         selectedNode.expand();
         if(!selectedNode.getChildren().isEmpty()) {
             Node selectedChild = selectedNode.getChildren().asList().get(0);
-            Boolean rolloutResult = selectedChild.rollout();
-            selectedChild.backPropagate(rolloutResult);
+            selectedChild.backPropagate(selectedChild.rollout(), super.getMiniBoard().getRound());
         } else {
             MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();
             if(winner == MiniBoard.winner.NONE) throw new RuntimeException("State with no children has no winner!");
-            selectedNode.backPropagate(winner == MiniBoard.winner.MRX);
+            selectedNode.backPropagate(selectedNode.getMiniBoard().getRound(), super.getMiniBoard().getRound());
         }
     }
 

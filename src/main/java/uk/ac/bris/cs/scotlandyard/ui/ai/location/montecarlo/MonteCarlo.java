@@ -34,7 +34,7 @@ public class MonteCarlo implements LocationPicker {
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
         while(currentTime < endTime) {
-            rootNode.runSimulation();
+            rootNode.runSingleSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
             if(simulations % explorationFrequency == 0) {
