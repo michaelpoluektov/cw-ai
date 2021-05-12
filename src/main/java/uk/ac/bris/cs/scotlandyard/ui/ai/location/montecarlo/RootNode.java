@@ -34,11 +34,11 @@ public class RootNode extends Node {
         if(!selectedNode.getChildren().isEmpty()) {
             Node selectedChild = selectedNode.getChildren().asList().get(0);
             Integer rolloutResult = selectedChild.rollout();
-            selectedChild.backPropagate(rolloutResult, super.getMiniBoard().getRound());
+            selectedChild.backPropagate(rolloutResult, super.getRound());
         } else {
             MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();
             if(winner == MiniBoard.winner.NONE) throw new RuntimeException("State with no children has no winner!");
-            selectedNode.backPropagate(selectedNode.getMiniBoard().getRound(), super.getMiniBoard().getRound());
+            selectedNode.backPropagate(selectedNode.getRound(), super.getMiniBoard().getRound());
         }
     }
 

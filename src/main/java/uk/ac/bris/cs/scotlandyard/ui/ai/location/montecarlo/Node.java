@@ -45,6 +45,10 @@ public class Node {
         return ImmutableSet.copyOf(children);
     }
 
+    protected Integer getRound() {
+        return miniBoard.getRound();
+    }
+
     protected final Boolean isLeaf() {
         return children.isEmpty();
     }
