@@ -10,12 +10,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class Dijkstra {
-    protected final List<List<Integer>> getDistances(ImmutableList<Integer> sources,
-                                               ImmutableList<Integer> destinations,
-                                               MiniBoard miniBoard) {
-        final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph = miniBoard.getSetup().graph;
-        final Integer nodeSize = graph.nodes().size();
+public class Dijkstra {
+    private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
+    public Dijkstra(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph) {
+        this.graph = graph;
+    }
+    public final List<List<Integer>> getDistances(ImmutableList<Integer> sources,
+                                               ImmutableList<Integer> destinations) {
+        final int nodeSize = graph.nodes().size();
         final List<List<Integer>> distances = new ArrayList<>(sources.size());
         for(Integer source : sources) {
             final List<Integer> distanceToSource = new ArrayList<>(Collections.nCopies(nodeSize, Integer.MAX_VALUE));

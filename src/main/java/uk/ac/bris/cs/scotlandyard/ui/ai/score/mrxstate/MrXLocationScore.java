@@ -13,19 +13,21 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.pow;
 
-public class MrXLocationScore extends Dijkstra implements IntermediateScore {
+public class MrXLocationScore implements IntermediateScore {
     private final Double locationScoreExp;
     private final Double locationScoreWeight;
-    public MrXLocationScore(Toml constants) {
+    private final Dijkstra dijkstra;
+    public MrXLocationScore(Toml constants, Dijkstra dijkstra) {
         this.locationScoreExp = constants.getDouble("location.exp");
         this.locationScoreWeight = constants.getDouble("location.weight");
+        this.dijkstra = dijkstra;
     }
     @Nonnull
     @Override
     public Double getScore(MiniBoard miniBoard) {
         final ImmutableList<Integer> mrXLocationList = ImmutableList.of(miniBoard.getMrXLocation());
         final List<Integer> distanceToSource =
-                getDistances(mrXLocationList, miniBoard.getDetectiveLocations(), miniBoard).get(0);
+                dijkstra.getDistances(mrXLocationList, miniBoard.getDetectiveLocations()).get(0);
         Collections.sort(distanceToSource);
         List<Double> weightsList = distanceToSource.stream()
                 .map(value -> pow(locationScoreExp, -value)/(1 - pow(locationScoreExp, -1)))
