@@ -2,23 +2,17 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.model.Board;
-import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class RootNode extends Node {
     private final Set<Node> children;
     protected RootNode(Board board) {
         super(new MiniBoard(board), null);
-        this.children = board.getAvailableMoves().stream()
-                .filter(move -> move instanceof Move.SingleMove)
-                .map(move -> ((Move.SingleMove) move).destination)
-                .map(super.getMiniBoard()::advanceMrX)
-                .map(miniBoard1 -> new Node(miniBoard1, this))
-                .collect(Collectors.toSet());
+        this.children = new HashSet<>();
     }
 
     protected Node selectNode(){

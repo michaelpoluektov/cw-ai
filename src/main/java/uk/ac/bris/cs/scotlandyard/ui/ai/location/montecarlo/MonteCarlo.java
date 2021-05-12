@@ -14,19 +14,21 @@ import java.util.concurrent.TimeUnit;
 
 public class MonteCarlo implements LocationPicker {
     private final RootNode rootNode;
-    private final Long endTime;
+    private final Long simulationTime;
     private final IntermediateScore[] intermediateScores;
     public MonteCarlo(Board board,
                       Pair<Long, TimeUnit> timeoutPair,
                       IntermediateScore... intermediateScores) {
         this.rootNode = new RootNode(board);
-        this.endTime = System.currentTimeMillis()+timeoutPair.right().toMillis(timeoutPair.left());
+        this.simulationTime = timeoutPair.right().toMillis(timeoutPair.left());
         this.intermediateScores = intermediateScores;
     }
     @Nonnull
     @Override
     public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations) {
+        rootNode.addChildren(destinations);
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
+        long endTime = System.currentTimeMillis()+simulationTime;
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
         while(currentTime < endTime - 300) {
@@ -46,9 +48,5 @@ public class MonteCarlo implements LocationPicker {
                 + " with score "
                 + bestEntry.getValue());
         return bestEntry;
-    }
-
-    public void addChildren(ImmutableSet<Integer> destinations) {
-        rootNode.addChildren(destinations);
     }
 }
