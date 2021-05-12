@@ -4,65 +4,49 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Node {
-
-    private final MiniBoard miniBoard;
-    private Integer plays;
-    private Integer score;
-    private final Node parent;
-    private final Set<Node> children;
-    private final Integer roundSize;
-
-    protected Node(MiniBoard miniBoard, Node parent) {
-        this.miniBoard = miniBoard;
+public class StandardNode extends AbstractNode {
+    private int plays;
+    private int score;
+    private final Set<StandardNode> children;
+    protected StandardNode(MiniBoard miniBoard,
+                           StandardNode parent) {
+        super(miniBoard, parent);
         this.plays = 0;
         this.score = 0;
-        this.parent = parent;
         this.children = new HashSet<>();
-        this.roundSize = miniBoard.getSetup().rounds.size();
     }
-
-    protected final Double getAverageScore() {
+    @Override
+    protected Double getAverageScore() {
         return (double) score/plays;
     }
 
-    protected final Integer getPlays() {
+    @Override
+    protected Integer getPlays() {
         return plays;
     }
 
-    protected final MiniBoard getMiniBoard() {
-        return miniBoard;
-    }
-
-    protected final Optional<Node> getParent() {
-        return Optional.ofNullable(parent);
-    }
-
-    protected ImmutableSet<Node> getChildren(){
+    @Override
+    protected ImmutableSet<AbstractNode> getChildren() {
         return ImmutableSet.copyOf(children);
     }
 
-    protected Integer getRound() {
-        return miniBoard.getRound();
-    }
-
-    protected final Boolean isLeaf() {
-        return children.isEmpty();
-    }
-
+    @Override
     protected void backPropagate(Integer round, Integer rootNodeRound) {
-        plays++;
+        plays ++;
         if(getParent().isEmpty()) score += round-getMiniBoard().getRound();
         else {
-            if(parent.getMiniBoard().getMrXToMove()) score += (round - rootNodeRound);
-            else score += roundSize - round;
-            parent.backPropagate(round, rootNodeRound);
+            if(getParent().get().getMiniBoard().getMrXToMove()) score += (round - rootNodeRound);
+            else score += getRoundSize() - round;
+            getParent().get().backPropagate(round, rootNodeRound);
         }
     }
 
+    @Override
     protected Integer rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
@@ -73,11 +57,12 @@ public class Node {
         return rollingMiniBoard.getRound();
     }
 
+    @Override
     protected void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
-        if(miniBoard.getWinner() == MiniBoard.winner.NONE) {
-            children.addAll(miniBoard.getAdvancedMiniBoards().stream()
-                    .map(value -> new Node(value, this))
+        if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
+            children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()
+                    .map(value -> new StandardNode(value, this))
                     .collect(Collectors.toSet()));
         }
     }

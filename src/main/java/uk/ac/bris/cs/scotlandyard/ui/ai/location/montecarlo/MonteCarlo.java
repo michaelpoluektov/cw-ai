@@ -19,7 +19,7 @@ public class MonteCarlo implements LocationPicker {
     public MonteCarlo(Board board,
                       Toml constants,
                       IntermediateScore... intermediateScores) {
-        this.rootNode = new RootNode(board, constants);
+        this.rootNode = new StandardRootNode(board, constants);
         this.intermediateScores = intermediateScores;
         this.observers = new HashSet<>();
         this.explorationFrequency = constants.getLong("monteCarlo.explorationFrequency", (long) 100).intValue();
@@ -39,11 +39,11 @@ public class MonteCarlo implements LocationPicker {
             currentTime = System.currentTimeMillis();
             if(simulations % explorationFrequency == 0) {
                 Double maxScore = Collections.max(rootNode.getChildren(),
-                        (Comparator.comparingDouble(Node::getAverageScore))).getAverageScore();
+                        (Comparator.comparingDouble(AbstractNode::getAverageScore))).getAverageScore();
                 notifyObservers(simulations, maxScore, endTime-currentTime);
             }
         }
-        for(Node child : rootNode.getChildren()){
+        for(AbstractNode child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
         }
         Map.Entry<Integer, Double> bestEntry =
