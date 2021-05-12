@@ -26,14 +26,7 @@ public class MoveConverter {
                 .collect(ImmutableSet.toImmutableSet());
     }
 
-    public ImmutableSet<Move> getSingleMovesWithDestination(Integer destination) {
-        return availableMoves.stream()
-                .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))
-                .filter(move -> move instanceof Move.SingleMove)
-                .collect(ImmutableSet.toImmutableSet());
-    }
-
-    public ImmutableSet<Move> getDoubleMovesWithDestination(Integer destination) {
+    public ImmutableSet<Move> getMovesWithDestination(Integer destination) {
         return availableMoves.stream()
                 .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))
                 .collect(ImmutableSet.toImmutableSet());

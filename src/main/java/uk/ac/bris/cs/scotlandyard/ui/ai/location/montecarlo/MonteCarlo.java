@@ -12,30 +12,28 @@ import java.util.concurrent.TimeUnit;
 
 public class MonteCarlo implements LocationPicker {
     private final RootNode rootNode;
-    private final Long simulationTime;
     private final IntermediateScore[] intermediateScores;
     private final Set<PlayoutObserver> observers;
     public MonteCarlo(Board board,
-                      Pair<Long, TimeUnit> timeoutPair,
                       IntermediateScore... intermediateScores) {
         this.rootNode = new RootNode(board);
-        this.simulationTime = timeoutPair.right().toMillis(timeoutPair.left());
         this.intermediateScores = intermediateScores;
         this.observers = new HashSet<>();
     }
     @Nonnull
     @Override
-    public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations) {
+    public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
+                                                         Pair<Long, TimeUnit> simulationTime) {
         rootNode.addChildren(destinations);
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
-        long endTime = System.currentTimeMillis()+simulationTime;
+        long endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
         while(currentTime < endTime) {
             rootNode.runSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
-            if(simulations % 10 == 0) {
+            if(simulations % 100 == 0) {
                 Double maxScore = Collections.max(rootNode.getChildren(),
                         (Comparator.comparingDouble(Node::getAverageScore))).getAverageScore();
                 notifyObservers(simulations, maxScore, endTime-currentTime);
@@ -64,6 +62,12 @@ public class MonteCarlo implements LocationPicker {
     }
 
     public void notifyObservers(Integer simulations, Double bestScore, Long remainingTime) {
-        for(PlayoutObserver observer : observers) observer.respondToPlayout(simulations, bestScore, remainingTime);
+        for(PlayoutObserver observer : observers) {
+            observer.respondToPlayout(simulations, bestScore, remainingTime, this);
+        }
+    }
+
+    public void addDestinations(ImmutableSet<Integer> destinations) {
+        rootNode.addChildren(destinations);
     }
 }

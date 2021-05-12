@@ -8,6 +8,7 @@ import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.MonteCarlo;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.DefaultTicketPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
@@ -15,21 +16,22 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultMonteCarlo implements Ai {
+public class EnhancedMonteCarlo implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull
     @Override
     public String name() {
-        return "Default MCTS (D)";
+        return "Enhanced MCTS - (D)";
     }
 
     @Nonnull
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final LocationPicker monteCarlo = new MonteCarlo(board);
+        final MonteCarlo monteCarlo = new MonteCarlo(board);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
-        final MovePicker<LocationPicker> defaultMovePicker = new DefaultMovePicker(board, endTimeMillis, constants);
-        return defaultMovePicker.pickMove(monteCarlo, defaultTicketPicker);
+        final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants);
+        monteCarlo.addPlayoutObserver(monteCarloMovePicker);
+        return monteCarloMovePicker.pickMove(monteCarlo, defaultTicketPicker);
     }
 }

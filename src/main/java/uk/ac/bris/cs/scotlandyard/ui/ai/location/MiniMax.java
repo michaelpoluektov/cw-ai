@@ -2,6 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location;
 
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
+import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
@@ -10,15 +11,16 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
- * This class implements the {@link LocationPicker} interface, and implements the {@link #getBestDestination(ImmutableSet)}
+ * This class implements the {@link LocationPicker} interface, and implements the {@link #getBestDestination(ImmutableSet, Pair)}
  * method using the MiniMax algorithm, which iterates through the entire game tree N moves ahead of the given game
  * state, and expects each player to pick the best move they have available. It is optimised using Alpha-Beta pruning.
  * For more information, check out <a href="https://en.wikipedia.org/wiki/Minimax">MiniMax</a>,
  * <a href="https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning">Alpha-Beta pruning</a>
  * <p>When the bottom of the game tree is reached, the algorithm calls the
- * {@link MiniBoard#getMrXBoardScore(Toml, IntermediateScore...)} method of the {@link MiniBoard} corresponding to a
+ * {@link MiniBoard#getMrXBoardScore(IntermediateScore...)} method of the {@link MiniBoard} corresponding to a
  * state of the game after N moves with the provided {@link #intermediateScores} to evaluate the state.</p>
  * <p>The branching game states are generated using the {@link MiniBoard#getAdvancedMiniBoards()} method, which doesn't
  * take into account the different permutations of the order the detectives' moves, which enables us to significantly
@@ -28,7 +30,7 @@ import java.util.Map;
  * @see MiniBoard
  */
 
-public class MiniMax implements LocationPicker{
+public class MiniMax implements LocationPicker {
     private final Board board;
     private final Toml constants;
     private final Integer steps;
@@ -51,7 +53,8 @@ public class MiniMax implements LocationPicker{
 
     @Nonnull
     @Override
-    public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations) {
+    public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
+                                                         Pair<Long, TimeUnit> simulationTime) {
         Map<Integer, Double> scoredDestinations = Collections.synchronizedMap(new HashMap<>());
         MiniBoard miniBoard = new MiniBoard(board);
         System.out.print("Rating destinations: ");
@@ -89,7 +92,7 @@ public class MiniMax implements LocationPicker{
      * @param miniBoard MiniBoard representing the current state
      * @param depth Depth to run the algorithm at, treats each detective move as a depth of 1 (i.e. 2 step lookahead for
      * a game with 5 detectives would be a depth of 5, since the first move of MrX is simulated in
-     * {@link #getBestDestination(ImmutableSet)}).
+     * {@link #getBestDestination(ImmutableSet, Pair)}).
      * @param alpha Alpha cut-off point for pruning
      * @param beta Beta cut-off point for pruning
      * @return The score of a given board after looking ahead 'depth' steps

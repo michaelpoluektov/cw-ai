@@ -12,7 +12,7 @@ exp = 2.0
 threshold = 0.4
 minOffset = 0.2
 
-[montecarlo]
+[monteCarlo]
 timoutOffsetMillis = 300
 notificationFrequency = 10
 explorationConstant = 2.0
