@@ -1,6 +1,7 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
+import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
@@ -14,11 +15,14 @@ public class MonteCarlo implements LocationPicker {
     private final RootNode rootNode;
     private final IntermediateScore[] intermediateScores;
     private final Set<PlayoutObserver> observers;
+    private final Integer explorationFrequency;
     public MonteCarlo(Board board,
+                      Toml constants,
                       IntermediateScore... intermediateScores) {
-        this.rootNode = new RootNode(board);
+        this.rootNode = new RootNode(board, constants);
         this.intermediateScores = intermediateScores;
         this.observers = new HashSet<>();
+        this.explorationFrequency = constants.getLong("monteCarlo.explorationFrequency", (long) 100).intValue();
     }
     @Nonnull
     @Override
@@ -33,7 +37,7 @@ public class MonteCarlo implements LocationPicker {
             rootNode.runSimulation();
             simulations++;
             currentTime = System.currentTimeMillis();
-            if(simulations % 100 == 0) {
+            if(simulations % explorationFrequency == 0) {
                 Double maxScore = Collections.max(rootNode.getChildren(),
                         (Comparator.comparingDouble(Node::getAverageScore))).getAverageScore();
                 notifyObservers(simulations, maxScore, endTime-currentTime);

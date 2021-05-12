@@ -1,24 +1,29 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
+import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
 public class RootNode extends Node {
     private final Set<Node> children;
-    protected RootNode(Board board) {
+    private final Double explorationConstant;
+    protected RootNode(Board board, Toml constants) {
         super(new MiniBoard(board), null);
         this.children = new HashSet<>();
+        this.explorationConstant = constants.getDouble("monteCarlo.explorationConstant");
     }
 
     protected Node selectNode(){
+        Comparator<Node> uctComparator = new NodeUCTComparator();
         Node selectedNode = this;
         while(!selectedNode.isLeaf()) {
-            selectedNode = Collections.max(selectedNode.getChildren());
+            selectedNode = Collections.max(selectedNode.getChildren(), uctComparator);
         }
         return selectedNode;
     }
@@ -44,7 +49,22 @@ public class RootNode extends Node {
                 .forEach(children::add);
     }
 
+    protected final Double getUCTScore(Node node){
+        if(node.getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
+        Double exploitation = node.getAverageScore();
+        Double exploration = explorationConstant * Math.sqrt(Math.log(node.getParent().get().getPlays())/node.getPlays());
+        return exploitation + exploration;
+    }
+
     @Override protected ImmutableSet<Node> getChildren() {
         return ImmutableSet.copyOf(children);
+    }
+
+    private class NodeUCTComparator implements Comparator<Node> {
+
+        @Override
+        public int compare(Node o1, Node o2) {
+            return Double.compare(getUCTScore(o1), getUCTScore(o2));
+        }
     }
 }

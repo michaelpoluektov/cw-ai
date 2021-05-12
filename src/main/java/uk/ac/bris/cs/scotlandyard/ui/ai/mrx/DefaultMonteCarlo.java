@@ -27,7 +27,7 @@ public class DefaultMonteCarlo implements Ai {
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final LocationPicker monteCarlo = new MonteCarlo(board);
+        final LocationPicker monteCarlo = new MonteCarlo(board, constants);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MovePicker<LocationPicker> defaultMovePicker = new DefaultMovePicker(board, endTimeMillis, constants);
         return defaultMovePicker.pickMove(monteCarlo, defaultTicketPicker);

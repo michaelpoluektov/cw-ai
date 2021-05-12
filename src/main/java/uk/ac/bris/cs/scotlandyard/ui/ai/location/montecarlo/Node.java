@@ -4,13 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class Node implements Comparable<Node> {
+public class Node {
 
     private final MiniBoard miniBoard;
     private Integer plays;
@@ -76,17 +73,5 @@ public class Node implements Comparable<Node> {
                     .map(value -> new Node(value, this))
                     .collect(Collectors.toSet()));
         }
-    }
-
-    protected final Double getUCTScore(){
-        if(getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
-        Double exploitation = getAverageScore();
-        Double exploration = Math.sqrt(2) * Math.sqrt(Math.log(parent.getPlays())/plays);
-        return exploitation + exploration;
-    }
-
-    @Override
-    public int compareTo(Node node) {
-        return Double.compare(getUCTScore(), node.getUCTScore());
     }
 }

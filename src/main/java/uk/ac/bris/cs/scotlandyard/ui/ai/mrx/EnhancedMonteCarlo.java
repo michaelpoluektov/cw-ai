@@ -28,7 +28,7 @@ public class EnhancedMonteCarlo implements Ai {
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final MonteCarlo monteCarlo = new MonteCarlo(board);
+        final MonteCarlo monteCarlo = new MonteCarlo(board, constants);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);
