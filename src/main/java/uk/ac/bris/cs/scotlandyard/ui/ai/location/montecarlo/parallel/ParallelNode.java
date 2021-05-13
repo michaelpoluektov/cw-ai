@@ -77,10 +77,9 @@ public class ParallelNode extends AbstractNode {
     }
 
     @Override
-    public Integer rollout() {
+    public Integer rollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
-        IntermediateScore locationScore = new MrXLiteLocationScore(new Dijkstra(getMiniBoard().getSetup().graph));
-        Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(locationScore);
+        Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();

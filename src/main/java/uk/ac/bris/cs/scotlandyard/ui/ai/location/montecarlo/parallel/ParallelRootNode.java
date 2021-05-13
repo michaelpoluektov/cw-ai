@@ -7,6 +7,9 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.NodeUCTComparator;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -32,13 +35,13 @@ public class ParallelRootNode extends ParallelNode implements RootNode {
         return selectedNode;
     }
 
-    @Override public void runSingleSimulation() {
+    @Override public void runSingleSimulation(IntermediateScore... intermediateScores) {
         ParallelNode selectedNode = selectNode();
         selectedNode.expand();
         if(!selectedNode.getChildren().isEmpty()) {
             ParallelNode selectedChild = (ParallelNode) selectedNode.getChildren().asList().get(0);
             selectedChild.backPropagatePlays();
-            Integer rolloutResult = selectedChild.rollout();
+            Integer rolloutResult = selectedChild.rollout(intermediateScores);
             selectedChild.backPropagateScore(rolloutResult, super.getRound());
         } else {
             MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();

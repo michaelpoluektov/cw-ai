@@ -1,7 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
@@ -22,8 +21,9 @@ public class MrXLiteLocationScore implements IntermediateScore {
         final List<Integer> distanceToSource =
                 dijkstra.getDistances(mrXLocationList, miniBoard.getDetectiveLocations()).get(0);
         Collections.sort(distanceToSource);
+        final int nDetectives = distanceToSource.size();
         final int closestDistance = distanceToSource.get(0)-1;
-        final int averageDistance = distanceToSource.stream().reduce(0, Integer::sum) - distanceToSource.size();
+        final int averageDistance = (distanceToSource.stream().reduce(0, Integer::sum) - nDetectives)/nDetectives;
         return (double) closestDistance + averageDistance;
     }
 
