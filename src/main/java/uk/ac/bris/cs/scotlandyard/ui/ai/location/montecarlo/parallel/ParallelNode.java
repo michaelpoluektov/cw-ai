@@ -2,12 +2,11 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,15 +16,12 @@ public class ParallelNode extends AbstractNode {
     private final AtomicInteger plays;
     private final AtomicInteger score;
     private final Set<ParallelNode> children;
-    private final Toml constants;
     protected ParallelNode(MiniBoard miniBoard,
-                           ParallelNode parent,
-                           Toml constants) {
+                           ParallelNode parent) {
         super(miniBoard, parent);
         this.plays = new AtomicInteger();
         this.score = new AtomicInteger();
         this.children = Collections.synchronizedSet(new HashSet<>());
-        this.constants = constants;
     }
     @Override
     public Double getAverageScore() {
@@ -73,10 +69,9 @@ public class ParallelNode extends AbstractNode {
 
     @Override
     public void backPropagateScore(Integer round, Integer rootNodeRound) {
-        if(getParent().isEmpty()) incrementScore(round-getMiniBoard().getRound());
-        else {
+        if(getParent().isPresent()) {
             if(getParent().get().getMiniBoard().getMrXToMove()) incrementScore(round - rootNodeRound);
-            else incrementScore(getRoundSize() - round);
+            else incrementScore(getRoundSize() + 1 - round);
             getParent().get().backPropagateScore(round, rootNodeRound);
         }
     }
@@ -84,7 +79,7 @@ public class ParallelNode extends AbstractNode {
     @Override
     public Integer rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
-        IntermediateScore locationScore = new MrXLocationScore(constants, new Dijkstra(getMiniBoard().getSetup().graph));
+        IntermediateScore locationScore = new MrXLiteLocationScore(new Dijkstra(getMiniBoard().getSetup().graph));
         Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(locationScore);
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
@@ -93,7 +88,8 @@ public class ParallelNode extends AbstractNode {
                 rollingMiniBoard = Collections.max(availableMiniBoards, comparator);
             } else rollingMiniBoard = Collections.min(availableMiniBoards, comparator);
         }
-        return rollingMiniBoard.getRound();
+        if(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX) return getRoundSize()+1;
+        else return rollingMiniBoard.getRound();
     }
 
     @Override
@@ -101,7 +97,7 @@ public class ParallelNode extends AbstractNode {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
             children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()
-                    .map(value -> new ParallelNode(value, this, constants))
+                    .map(value -> new ParallelNode(value, this))
                     .collect(Collectors.toSet()));
         }
     }
