@@ -3,6 +3,15 @@ package uk.ac.bris.cs.scotlandyard.ui.ai;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 
+/**
+ * We instantiate this class with the set of all available moves returned from the available move function in the
+ * {@link uk.ac.bris.cs.scotlandyard.model.Board} and {@link MiniBoard} classes. From the instantiation we can easily
+ * access single and double move destinations allowing us to deal with them separately in
+ * {@link uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker} and
+ * {@link uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker}.
+ *
+ */
+
 public class MoveConverter {
     private final ImmutableSet<Move> availableMoves;
     public MoveConverter(ImmutableSet<Move> availableMoves) {

@@ -13,6 +13,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Miniboard is a condensed version of the board class containing the minimum amount of data needed for the Ai. This is
+ * done to reduce space in the decision tree and aims to speed the process up. We use Overloaded contructors to produce
+ * different mini boards for MrX and Detectives
+ */
+
 public class MiniBoard {
     private final Integer round;
     private final Integer mrXLocation;
@@ -21,12 +27,23 @@ public class MiniBoard {
     private final GameSetup setup;
     private final Boolean mrXToMove;
 
+    /**
+     *
+     * @param board
+     * Used to construct a {@link MiniBoard} for MrX from outside the class. We call the private constructor with true for MrX
+     * to move
+     */
+
     public MiniBoard(Board board){
         this(board, board.getAvailableMoves().asList().get(0).source(), true);
         if(!(board.getAvailableMoves().asList().get(0).commencedBy() == Piece.MrX.MRX)) {
             throw new IllegalArgumentException("Passed board is detectives to move!");
         }
     }
+    /**@param board
+     * Used in construction of a detectives {@link MiniBoard} from outisde the class. It calls the private constructor
+     * with MrX to move as false
+     */
 
     public MiniBoard(Board board, Integer location) {
         this(board, location, false);
@@ -35,6 +52,13 @@ public class MiniBoard {
         }
     }
 
+    /**
+     *
+     * @param board
+     * @param mrXLocation
+     * @param mrXToMove
+     * Used in Advance MrX. This constructor is only classed form within the class
+     */
     private MiniBoard(Board board, Integer mrXLocation, Boolean mrXToMove) {
         this.mrXLocation = mrXLocation;
         if(!mrXToMove) this.unmovedDetectiveLocations = board.getAvailableMoves().stream()
@@ -97,6 +121,12 @@ public class MiniBoard {
                 .filter(node -> !getDetectiveLocations().contains(node))
                 .collect(Collectors.toList()));
     }
+
+    /**
+     *
+     * @param destination
+     * @return
+     */
 
     public MiniBoard advanceMrX(Integer destination) {
         if(getWinner() != winner.NONE) throw new UnsupportedOperationException("Can not advance board with winner!");

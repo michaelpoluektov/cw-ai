@@ -6,6 +6,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public abstract class AbstractMonteCarlo implements LocationPicker {
     private final Set<PlayoutObserver> observers = new HashSet<>();
 
