@@ -7,9 +7,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.NodeUCTComparator;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;

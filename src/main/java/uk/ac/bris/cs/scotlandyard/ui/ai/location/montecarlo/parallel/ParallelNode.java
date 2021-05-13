@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
