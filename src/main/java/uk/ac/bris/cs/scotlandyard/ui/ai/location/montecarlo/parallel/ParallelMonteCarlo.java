@@ -13,15 +13,14 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
     private final IntermediateScore[] intermediateScores;
     private final Integer explorationFrequency;
     private final ParallelRootNode rootNode;
+    private final Integer coreNumber = Runtime.getRuntime().availableProcessors();
     public ParallelMonteCarlo(Board board,
                               Toml constants,
                               IntermediateScore... intermediateScores) {
@@ -37,13 +36,18 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
         final HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         final long endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();
-        int simulations = 0;
-        final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        final ExecutorService executor = new ThreadPoolExecutor(1,
+                coreNumber,
+                0,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(1),
+                new ThreadPoolExecutor.AbortPolicy());
+        //final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final ReentrantLock lock = new ReentrantLock();
         for(int i = 0; i<20000; i++) {
         //while(currentTime < endTime) {
             //rootNode.runSingleSimulation();
-            executor.submit(() -> {
+            executor.execute(() -> {
                 ParallelNode selectedNode;
                 lock.lock();
                 try {
@@ -62,7 +66,6 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
                 Integer rolloutResult = selectedNode.rollout();
                 selectedNode.backPropagateScore(rolloutResult, rootNode.getRound());
             });
-            simulations++;
             //currentTime = System.currentTimeMillis();
             /*if(simulations % explorationFrequency == 0) {
                 Double maxScore = Collections.max(rootNode.getChildren(),
@@ -73,7 +76,6 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
         while(currentTime < endTime) {
             currentTime = System.currentTimeMillis();
         }
-        System.out.println(rootNode.getPlays());
         executor.shutdown();
         for(AbstractNode child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
@@ -81,7 +83,7 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
         Map.Entry<Integer, Double> bestEntry =
                 Collections.max(scoredDestinations.entrySet(), Map.Entry.comparingByValue());
         System.out.println("Ran "
-                + simulations
+                + rootNode.getPlays()
                 + " simulations, best destination is: "
                 + bestEntry.getKey()
                 + " with score "
