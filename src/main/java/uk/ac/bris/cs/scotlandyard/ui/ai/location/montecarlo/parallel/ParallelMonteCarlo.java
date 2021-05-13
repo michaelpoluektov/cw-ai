@@ -1,27 +1,28 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel;
 
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class MonteCarlo implements LocationPicker {
-    private final RootNode rootNode;
+public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
     private final IntermediateScore[] intermediateScores;
-    private final Set<PlayoutObserver> observers;
     private final Integer explorationFrequency;
-    public MonteCarlo(Board board,
-                      Toml constants,
-                      IntermediateScore... intermediateScores) {
-        this.rootNode = new StandardRootNode(board, constants);
+    private final RootNode rootNode;
+    public ParallelMonteCarlo(Board board,
+                              Toml constants,
+                              IntermediateScore... intermediateScores) {
+        this.rootNode = new ParallelRootNode(board, constants);
         this.intermediateScores = intermediateScores;
-        this.observers = new HashSet<>();
         this.explorationFrequency = constants.getLong("monteCarlo.explorationFrequency", (long) 100).intValue();
     }
     @Nonnull
@@ -57,21 +58,7 @@ public class MonteCarlo implements LocationPicker {
         return bestEntry;
     }
 
-    public void addPlayoutObserver(PlayoutObserver observer) {
-        observers.add(observer);
-    }
-
-    public void removePlayoutObserver(PlayoutObserver observer) {
-        observers.remove(observer);
-    }
-
-    public void notifyObservers(Integer simulations, Double bestScore, Long remainingTime) {
-        for(PlayoutObserver observer : observers) {
-            observer.respondToPlayout(simulations, bestScore, remainingTime, this);
-        }
-    }
-
-    public void addDestinations(ImmutableSet<Integer> destinations) {
+    @Override public void addDestinations(ImmutableSet<Integer> destinations) {
         rootNode.addChildren(destinations);
     }
 }

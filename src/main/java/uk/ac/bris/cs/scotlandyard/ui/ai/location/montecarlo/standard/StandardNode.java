@@ -1,8 +1,9 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -21,33 +22,37 @@ public class StandardNode extends AbstractNode {
         this.children = new HashSet<>();
     }
     @Override
-    protected Double getAverageScore() {
+    public Double getAverageScore() {
         return (double) score/plays;
     }
 
     @Override
-    protected Integer getPlays() {
+    public Integer getPlays() {
         return plays;
     }
 
     @Override
-    protected ImmutableSet<AbstractNode> getChildren() {
+    public ImmutableSet<AbstractNode> getChildren() {
         return ImmutableSet.copyOf(children);
     }
 
+    public void backPropagatePlays() {
+        plays++;
+        getParent().ifPresent(AbstractNode::backPropagatePlays);
+    }
+
     @Override
-    protected void backPropagate(Integer round, Integer rootNodeRound) {
-        plays ++;
+    public void backPropagateScore(Integer round, Integer rootNodeRound) {
         if(getParent().isEmpty()) score += round-getMiniBoard().getRound();
         else {
             if(getParent().get().getMiniBoard().getMrXToMove()) score += (round - rootNodeRound);
             else score += getRoundSize() - round;
-            getParent().get().backPropagate(round, rootNodeRound);
+            getParent().get().backPropagateScore(round, rootNodeRound);
         }
     }
 
     @Override
-    protected Integer rollout() {
+    public Integer rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
@@ -58,7 +63,7 @@ public class StandardNode extends AbstractNode {
     }
 
     @Override
-    protected void expand() {
+    public void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
             children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()

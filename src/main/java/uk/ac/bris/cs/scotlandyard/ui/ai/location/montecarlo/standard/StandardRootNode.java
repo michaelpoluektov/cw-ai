@@ -1,9 +1,12 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard;
 
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.NodeUCTComparator;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -21,7 +24,7 @@ public class StandardRootNode extends StandardNode implements RootNode {
     }
 
     protected StandardNode selectNode(){
-        Comparator<AbstractNode> uctComparator = new NodeUCTComparator();
+        Comparator<AbstractNode> uctComparator = new NodeUCTComparator(explorationConstant);
         StandardNode selectedNode = this;
         while(!selectedNode.isLeaf()) {
             selectedNode = (StandardNode) Collections.max(selectedNode.getChildren(), uctComparator);
@@ -34,12 +37,14 @@ public class StandardRootNode extends StandardNode implements RootNode {
         selectedNode.expand();
         if(!selectedNode.getChildren().isEmpty()) {
             StandardNode selectedChild = (StandardNode) selectedNode.getChildren().asList().get(0);
+            selectedChild.backPropagatePlays();
             Integer rolloutResult = selectedChild.rollout();
-            selectedChild.backPropagate(rolloutResult, super.getRound());
+            selectedChild.backPropagateScore(rolloutResult, super.getRound());
         } else {
             MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();
             if(winner == MiniBoard.winner.NONE) throw new RuntimeException("State with no children has no winner!");
-            selectedNode.backPropagate(selectedNode.getRound(), super.getMiniBoard().getRound());
+            selectedNode.backPropagatePlays();
+            selectedNode.backPropagateScore(selectedNode.getRound(), super.getMiniBoard().getRound());
         }
     }
 
@@ -52,21 +57,5 @@ public class StandardRootNode extends StandardNode implements RootNode {
 
     @Override @Nonnull public ImmutableSet<AbstractNode> getChildren() {
         return ImmutableSet.copyOf(children);
-    }
-
-    @Override @Nonnull
-    public final Double getUCTScore(AbstractNode node){
-        if(node.getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
-        Double exploitation = node.getAverageScore();
-        Double exploration = explorationConstant * Math.sqrt(Math.log(node.getParent().get().getPlays())/node.getPlays());
-        return exploitation + exploration;
-    }
-
-    private class NodeUCTComparator implements Comparator<AbstractNode> {
-
-        @Override
-        public int compare(AbstractNode o1, AbstractNode o2) {
-            return Double.compare(getUCTScore(o1), getUCTScore(o2));
-        }
     }
 }

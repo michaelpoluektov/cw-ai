@@ -5,8 +5,10 @@ import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nonnull;
 
 public interface RootNode {
+
     void runSingleSimulation();
+
     void addChildren(ImmutableSet<Integer> destinations);
-    @Nonnull Double getUCTScore(AbstractNode node);
+
     @Nonnull ImmutableSet<AbstractNode> getChildren();
 }

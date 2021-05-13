@@ -5,16 +5,16 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveConverter;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.MonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardMonteCarlo;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.PlayoutObserver;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 
 import javax.annotation.Nonnull;
-import java.sql.Time;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class MCTSMovePicker implements MovePicker<MonteCarlo>, PlayoutObserver {
+public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutObserver {
     private final MoveConverter converter;
     private final Long endTimeMillis;
     private final Double doubleThreshold;
@@ -33,7 +33,7 @@ public class MCTSMovePicker implements MovePicker<MonteCarlo>, PlayoutObserver {
     }
     @Nonnull
     @Override
-    public Move pickMove(MonteCarlo locationPicker, TicketPicker ticketPicker) {
+    public Move pickMove(AbstractMonteCarlo locationPicker, TicketPicker ticketPicker) {
         System.out.println("RATING SINGLE MOVES ONLY");
         simTime = new Pair<>(endTimeMillis - System.currentTimeMillis() - timeoutOffset, TimeUnit.MILLISECONDS);
         Map.Entry<Integer, Double> bestDestination =
@@ -42,7 +42,7 @@ public class MCTSMovePicker implements MovePicker<MonteCarlo>, PlayoutObserver {
     }
 
     @Override
-    public void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, MonteCarlo observable) {
+    public void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, AbstractMonteCarlo observable) {
         if(!addedDoubles && remainingTime < simTime.right().toMillis(simTime.left())/3 && bestScore < doubleThreshold) {
             addedDoubles = true;
             System.out.println("BEST SINGLE SCORE IS "+bestScore+", ADDING DOUBLE MOVES");
