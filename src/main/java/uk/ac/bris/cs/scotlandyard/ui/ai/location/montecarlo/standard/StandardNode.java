@@ -43,10 +43,9 @@ public class StandardNode extends AbstractNode {
 
     @Override
     public void backPropagateScore(Integer round, Integer rootNodeRound) {
-        if(getParent().isEmpty()) score += round-getMiniBoard().getRound();
-        else {
+        if(getParent().isPresent()) {
             if(getParent().get().getMiniBoard().getMrXToMove()) score += (round - rootNodeRound);
-            else score += getRoundSize() - round;
+            else score += getRoundSize() + 1 - round;
             getParent().get().backPropagateScore(round, rootNodeRound);
         }
     }
@@ -59,7 +58,8 @@ public class StandardNode extends AbstractNode {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
             rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
         }
-        return rollingMiniBoard.getRound();
+        if(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX) return getRoundSize()+1;
+        else return rollingMiniBoard.getRound();
     }
 
     @Override
