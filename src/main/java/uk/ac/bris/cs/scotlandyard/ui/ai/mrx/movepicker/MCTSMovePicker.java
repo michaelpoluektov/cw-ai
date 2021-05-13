@@ -25,7 +25,7 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
     public MCTSMovePicker(Board board, Long endTimeMillis, Toml constants) {
         this.converter = new MoveConverter(board.getAvailableMoves());
         this.endTimeMillis = endTimeMillis;
-        this.doubleThreshold = constants.getDouble("double.threshold", 0.4);
+        this.doubleThreshold = constants.getDouble("monteCarlo.mctsDoubleThreshold", 3.0);
         this.doubleOffset = constants.getDouble("double.minOffset", 0.2);
         this.timeoutOffset = constants.getLong("monteCarlo.timeoutOffsetMillis", (long) 300);
         this.addedDoubles = false;

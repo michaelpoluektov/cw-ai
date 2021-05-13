@@ -40,13 +40,10 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
                 coreNumber,
                 0,
                 TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(1),
-                new ThreadPoolExecutor.AbortPolicy());
-        //final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+                new ArrayBlockingQueue<>(1),
+                new ThreadPoolExecutor.CallerRunsPolicy());
         final ReentrantLock lock = new ReentrantLock();
-        for(int i = 0; i<20000; i++) {
-        //while(currentTime < endTime) {
-            //rootNode.runSingleSimulation();
+        while(currentTime < endTime) {
             executor.execute(() -> {
                 ParallelNode selectedNode;
                 lock.lock();
@@ -65,16 +62,14 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
                 }
                 Integer rolloutResult = selectedNode.rollout();
                 selectedNode.backPropagateScore(rolloutResult, rootNode.getRound());
+
             });
-            //currentTime = System.currentTimeMillis();
-            /*if(simulations % explorationFrequency == 0) {
+            currentTime = System.currentTimeMillis();
+            if(rootNode.getPlays() % explorationFrequency == 0) {
                 Double maxScore = Collections.max(rootNode.getChildren(),
                         (Comparator.comparingDouble(AbstractNode::getAverageScore))).getAverageScore();
-                notifyObservers(simulations, maxScore, endTime-currentTime);
-            }*/
-        }
-        while(currentTime < endTime) {
-            currentTime = System.currentTimeMillis();
+                notifyObservers(rootNode.getPlays(), maxScore, endTime-currentTime);
+            }
         }
         executor.shutdown();
         for(AbstractNode child : rootNode.getChildren()){

@@ -16,3 +16,4 @@ minOffset = 0.2
 timoutOffsetMillis = 300
 notificationFrequency = 100
 explorationConstant = 2.0
+mctsDoubleThreshold = 3.0
