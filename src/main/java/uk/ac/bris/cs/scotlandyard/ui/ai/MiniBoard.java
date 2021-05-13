@@ -182,7 +182,7 @@ public class MiniBoard {
 
     public static class ScoreComparator implements Comparator<MiniBoard> {
         private final IntermediateScore[] intermediateScores;
-        public ScoreComparator(Toml constants, IntermediateScore... intermediateScores) {
+        public ScoreComparator(IntermediateScore... intermediateScores) {
             this.intermediateScores = intermediateScores;
         }
         @Override

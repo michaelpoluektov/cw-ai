@@ -16,10 +16,12 @@ import java.util.Set;
 
 public class ParallelRootNode extends ParallelNode implements RootNode {
     private final Set<ParallelNode> children;
+    private final Toml constants;
     private final Double explorationConstant;
     protected ParallelRootNode(Board board, Toml constants) {
-        super(new MiniBoard(board), null);
+        super(new MiniBoard(board), null, constants);
         this.children = Collections.synchronizedSet(new HashSet<>());
+        this.constants = constants;
         this.explorationConstant = constants.getDouble("monteCarlo.explorationConstant");
     }
 
@@ -51,7 +53,7 @@ public class ParallelRootNode extends ParallelNode implements RootNode {
     @Override public void addChildren(ImmutableSet<Integer> destinations) {
         destinations.stream()
                 .map(super.getMiniBoard()::advanceMrX)
-                .map(advancedMiniBoard -> new ParallelNode(advancedMiniBoard, this))
+                .map(advancedMiniBoard -> new ParallelNode(advancedMiniBoard, this, constants))
                 .forEach(children::add);
     }
 

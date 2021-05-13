@@ -2,13 +2,14 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -16,12 +17,15 @@ public class ParallelNode extends AbstractNode {
     private final AtomicInteger plays;
     private final AtomicInteger score;
     private final Set<ParallelNode> children;
+    private final Toml constants;
     protected ParallelNode(MiniBoard miniBoard,
-                           ParallelNode parent) {
+                           ParallelNode parent,
+                           Toml constants) {
         super(miniBoard, parent);
         this.plays = new AtomicInteger();
         this.score = new AtomicInteger();
         this.children = Collections.synchronizedSet(new HashSet<>());
+        this.constants = constants;
     }
     @Override
     public Double getAverageScore() {
@@ -80,10 +84,12 @@ public class ParallelNode extends AbstractNode {
     @Override
     public Integer rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
+        IntermediateScore locationScore = new MrXLocationScore(constants, new Dijkstra(getMiniBoard().getSetup().graph));
+        Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(locationScore);
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
-            rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
+            rollingMiniBoard = Collections.max(availableMiniBoards, comparator);
         }
         return rollingMiniBoard.getRound();
     }
@@ -93,7 +99,7 @@ public class ParallelNode extends AbstractNode {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
             children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()
-                    .map(value -> new ParallelNode(value, this))
+                    .map(value -> new ParallelNode(value, this, constants))
                     .collect(Collectors.toSet()));
         }
     }
