@@ -13,15 +13,32 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.pow;
 
+/**
+ * Scores a location based on how far MrX is away from the detectives.
+ */
+
 public class MrXLocationScore implements IntermediateScore {
     private final Double locationScoreExp;
     private final Double locationScoreWeight;
     private final Dijkstra dijkstra;
+
+    /**
+     * @param constants
+     * @param dijkstra Pass an instantiation of {@link Dijkstra} to get the shortest distance to the detectives
+     */
     public MrXLocationScore(Toml constants, Dijkstra dijkstra) {
         this.locationScoreExp = constants.getDouble("location.exp");
         this.locationScoreWeight = constants.getDouble("location.weight");
         this.dijkstra = dijkstra;
     }
+
+    /**
+     * Returns the score based on distances to detectives. We use a series of weights based on the sum to infinity of the
+     * radii from detectives to MrX. We weight each score accordingly depedning on how cloase each detctive is. The
+     * further a detective is away the less weight it should bare on the overall location score.
+     * @param miniBoard MiniBoard to score
+     * @return
+     */
     @Nonnull
     @Override
     public Double getScore(MiniBoard miniBoard) {

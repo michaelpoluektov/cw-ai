@@ -57,7 +57,8 @@ public class MiniBoard {
      * @param board
      * @param mrXLocation
      * @param mrXToMove
-     * Used in Advance MrX. This constructor is only classed form within the class
+     * Used in Advance MrX to set a new miniBoard up for detectives to move. This constructor is only called from within
+     * the class so is private.
      */
     private MiniBoard(Board board, Integer mrXLocation, Boolean mrXToMove) {
         this.mrXLocation = mrXLocation;
@@ -77,6 +78,18 @@ public class MiniBoard {
         this.mrXToMove = mrXToMove;
         this.round = board.getMrXTravelLog().size();
     }
+
+    /**
+     * Constructor is used in unchecked advance. This constructor must deal with advancing to both a MrX and detectives
+     * {@link MiniBoard}
+     * @param mrXLocation
+     * @param unmovedDetectiveLocations
+     * @param movedDetectiveLocations
+     * @param setup
+     * @param mrXToMove
+     * @param round If this constructor is called and there a no more detectives left to move we need to increment the
+     *              round by 1 in the new {@link MiniBoard}
+     */
 
     private MiniBoard(Integer mrXLocation, 
                       ImmutableList<Integer> unmovedDetectiveLocations,
@@ -123,9 +136,11 @@ public class MiniBoard {
     }
 
     /**
-     *
+     * Advances to a {@link MiniBoard} with detectives to move and increments the round. The moved and unmoved detective
+     * lists are swapped so the advanced mini board contains all detectives to move.
      * @param destination
-     * @return
+     * @return {@link MiniBoard}
+     *
      */
 
     public MiniBoard advanceMrX(Integer destination) {
@@ -143,6 +158,14 @@ public class MiniBoard {
         }
     }
 
+    /**
+     * Unchecked advance will advance a detective from source to destination and return a new mini board. This is
+     * unchecked as it does not check whether this move is valid. This check is done before the call to this method.
+     * @param source
+     * @param destination
+     * @return
+     */
+
     private MiniBoard uncheckedAdvance(Integer source, Integer destination) {
         final ArrayList<Integer> newUnmovedDetectiveLocation = new ArrayList<>(unmovedDetectiveLocations);
         newUnmovedDetectiveLocation.remove(source);
@@ -156,6 +179,13 @@ public class MiniBoard {
                 round);
     }
 
+    /**
+     * Advances a detective {@link MiniBoard}. We pass the source and destination of the move and validate this move
+     * using getNodeDestination which checks if the adjacent nodes contain the destination. We can then call Unchecked Advance
+     * @param source
+     * @param destination
+     * @return
+     */
     public MiniBoard advanceDetective(Integer source, Integer destination) {
         if(!unmovedDetectiveLocations.contains(source)) {
             throw new IllegalArgumentException("No movable detective there!");
@@ -180,6 +210,15 @@ public class MiniBoard {
         else return winner.NONE;
     }
 
+    /**
+     * The class sums the total scores from all scoring objects and divides by the total weights. This ensures the score
+     * is between 0 and 1. If either detectives or MrX have won we return 0 or 1 respectively. We aim to maximise the
+     * score for MrX and minimise for detectives.
+     * @param scoringObjects We pass a varribalee number of {@link IntermediateScore} varriables to the function. Examples
+     *                       include {@link uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore}. Each
+     *                       Intermediate scoring object manages an individual scoring process.
+     * @return
+     */
     public Double getMrXBoardScore(IntermediateScore... scoringObjects) {
         if(getWinner() == winner.DETECTIVES) return 0.0;
         if(getWinner() == winner.MRX) return 1.0;
@@ -192,6 +231,13 @@ public class MiniBoard {
         if(totalWeights == 0.0) throw new ArithmeticException("getTotalScore: All weights are zero");
         return totalScore/totalWeights;
     }
+
+    /**
+     * Returns the all advanced MiniBoards for the person who is to move in the this {@link MiniBoard}. If the player is MrX
+     * we use functional java to map the AdvanceMrX function over the set of destinations. If detectives are to move we
+     * map using detectiveAdvance.
+     * @return
+     */
     public ImmutableSet<MiniBoard> getAdvancedMiniBoards() {
         if(mrXToMove) {
             return getNodeDestinations(mrXLocation).stream()
@@ -210,6 +256,10 @@ public class MiniBoard {
         }
     }
 
+    /**
+     * Provides a way to compare MiniBoards. We compare 2 {@link MiniBoard}'s by comparing the MrxBoard score for each one.
+     * To do this we implemented the Comparator interface.
+     */
     public static class ScoreComparator implements Comparator<MiniBoard> {
         private final IntermediateScore[] intermediateScores;
         public ScoreComparator(IntermediateScore... intermediateScores) {
