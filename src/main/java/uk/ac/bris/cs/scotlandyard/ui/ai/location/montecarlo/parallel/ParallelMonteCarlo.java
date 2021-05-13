@@ -59,7 +59,7 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
                 } finally {
                     lock.unlock();
                 }
-                Integer rolloutResult = selectedNode.rollout();
+                Integer rolloutResult = selectedNode.rollout(intermediateScores);
                 selectedNode.backPropagateScore(rolloutResult, rootNode.getRound());
 
             });

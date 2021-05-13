@@ -2,6 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import java.util.*;
 
@@ -47,7 +48,7 @@ public abstract class AbstractNode {
 
     public abstract void backPropagateScore(Integer round, Integer rootNodeRound);
 
-    public abstract Integer rollout();
+    public abstract Integer rollout(IntermediateScore... intermediateScores);
 
     public abstract void expand();
 }

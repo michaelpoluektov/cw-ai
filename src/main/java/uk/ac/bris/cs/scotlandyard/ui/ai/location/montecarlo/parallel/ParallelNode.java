@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,10 +75,9 @@ public class ParallelNode extends AbstractNode {
     }
 
     @Override
-    public Integer rollout() {
+    public Integer rollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
-        IntermediateScore locationScore = new MrXLiteLocationScore(new Dijkstra(getMiniBoard().getSetup().graph));
-        Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(locationScore);
+        Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();

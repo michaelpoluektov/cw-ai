@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -51,7 +52,7 @@ public class StandardNode extends AbstractNode {
     }
 
     @Override
-    public Integer rollout() {
+    public Integer rollout(IntermediateScore... intermediateScore) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
