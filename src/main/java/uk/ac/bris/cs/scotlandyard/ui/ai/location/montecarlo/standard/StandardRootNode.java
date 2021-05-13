@@ -44,7 +44,7 @@ public class StandardRootNode extends StandardNode implements RootNode {
             MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();
             if(winner == MiniBoard.winner.NONE) throw new RuntimeException("State with no children has no winner!");
             selectedNode.backPropagatePlays();
-            selectedNode.backPropagateScore(selectedNode.getRound(), super.getMiniBoard().getRound());
+            selectedNode.backPropagateScore(selectedNode.getRound(), super.getRound());
         }
     }
 
