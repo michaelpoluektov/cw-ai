@@ -89,7 +89,7 @@ public class ParallelNode extends AbstractNode {
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
-            if(availableMiniBoards.get(0).getMrXToMove()) {
+            if(getMiniBoard().getMrXToMove()) {
                 rollingMiniBoard = Collections.max(availableMiniBoards, comparator);
             } else rollingMiniBoard = Collections.min(availableMiniBoards, comparator);
         }
