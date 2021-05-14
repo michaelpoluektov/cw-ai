@@ -103,11 +103,6 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
                 selectedNode.expand();
                 if(!selectedNode.getChildren().isEmpty()) {
                     selectedNode = (ParallelNode) selectedNode.getChildren().asList().get(0);
-                } else {
-                    MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();
-                    if(winner == MiniBoard.winner.NONE) {
-                        throw new RuntimeException("State with no children has no winner!");
-                    }
                 }
                 selectedNode.backPropagatePlays();
             } finally {
