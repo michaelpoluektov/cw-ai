@@ -13,7 +13,7 @@ threshold = 0.4
 minOffset = 0.2
 
 [monteCarlo]
-timoutOffsetMillis = 2000
+timeoutOffsetMillis = 1000
 notificationFrequency = 100
 explorationConstant = 1.0
 mctsDoubleThreshold = 5.0
