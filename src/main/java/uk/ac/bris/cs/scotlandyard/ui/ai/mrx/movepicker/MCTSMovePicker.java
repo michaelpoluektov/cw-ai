@@ -34,7 +34,6 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
     @Nonnull
     @Override
     public Move pickMove(AbstractMonteCarlo locationPicker, TicketPicker ticketPicker) {
-        System.out.println("RATING SINGLE MOVES ONLY");
         simTime = new Pair<>(endTimeMillis - System.currentTimeMillis() - timeoutOffset, TimeUnit.MILLISECONDS);
         Map.Entry<Integer, Double> bestDestination =
                 locationPicker.getBestDestination(converter.getSingleMoveDestinations(), simTime);
