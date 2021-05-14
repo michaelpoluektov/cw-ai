@@ -3,11 +3,11 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,6 +48,10 @@ public class ParallelNode extends AbstractNode {
         return ImmutableSet.copyOf(children);
     }
 
+    /**
+     * Thread safe way to increment the plays variable by 1
+     */
+
     private void incrementPlays() {
         while(true) {
             int currentPlays = getPlays();
@@ -59,8 +63,7 @@ public class ParallelNode extends AbstractNode {
     }
 
     /**
-     * compareAndSet checks that the currentScore has not changed by another thread. If no then it replaces the current
-     * score with the incremented score. This allows us to achieve synchronization.
+     * Thread safe way to increment the score variable by a given value
      * @param increment The amount we want to increase an atomic variable by.
      */
 
@@ -74,13 +77,11 @@ public class ParallelNode extends AbstractNode {
         }
     }
 
-    /**
-     * We do not use plays ++ as this causes issues with concurrency
-     */
     public void backPropagatePlays() {
         incrementPlays();
         getParent().ifPresent(AbstractNode::backPropagatePlays);
     }
+
 
     @Override
     public void backPropagateScore(Integer round, Integer rootNodeRound) {
@@ -93,10 +94,12 @@ public class ParallelNode extends AbstractNode {
 
     /**
      *
-     * Unlike {@link StandardNode} the rollout procedure is not random and instead uses a 1 step lookahead Ai to pick
-     * the path we rollout down the tree. 
-     * @param intermediateScores We pass the {@link MrXLiteLocationScore} to reduce the runtime of each simulation.
-     * @return The round at which the rollout procedure stops
+     * Unlike {@link StandardNode} the rollout procedure is not random and instead uses a 1 step lookahead AI to pick
+     * the path we rollout down the tree.
+     * @throws UnsupportedOperationException If the node already has children.
+     * @param intermediateScores We pass the {@link MrXLiteLocationScore} to reduce the runtime of each simulation
+     *                           relative to {@link MrXLocationScore}.
+     * @return The round of the termination node, return the final round + 1 if MrX win
      */
     @Override
     public Integer rollout(IntermediateScore... intermediateScores) {
@@ -113,6 +116,11 @@ public class ParallelNode extends AbstractNode {
         else return rollingMiniBoard.getRound();
     }
 
+    /**
+     * NOT THREAD SAFE, ACCESS MUST BE MANAGED
+     * Populates the children of the node with the possible advanced game states
+     * @throws UnsupportedOperationException If children already populated
+     */
     @Override
     public void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");

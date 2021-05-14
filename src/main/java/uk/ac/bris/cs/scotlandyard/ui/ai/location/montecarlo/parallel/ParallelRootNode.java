@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * Root node for the {@link SmartMonteCarlo} implementation.
- * @see StandardRootNode for detail on implementations
+ * @see StandardRootNode
  */
 
 public class ParallelRootNode extends ParallelNode implements RootNode {
@@ -44,7 +44,10 @@ public class ParallelRootNode extends ParallelNode implements RootNode {
         return selectedNode;
     }
 
-    @Override public void runSingleSimulation(IntermediateScore... intermediateScores) {
+    /**
+     * @deprecated Method does not manage access to node expansion, can not be used in a parallel environment.
+     */
+    @Deprecated @Override public void runSingleSimulation(IntermediateScore... intermediateScores) {
         ParallelNode selectedNode = selectNode();
         selectedNode.expand();
         if(!selectedNode.getChildren().isEmpty()) {

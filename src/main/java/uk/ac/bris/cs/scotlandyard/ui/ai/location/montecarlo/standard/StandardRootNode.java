@@ -32,7 +32,8 @@ public class StandardRootNode extends StandardNode implements RootNode {
     /**
      * returns the node we should begin rollout from. We create a new {@link NodeUCTComparator} which details how we will
      * compare 2 nodes to decide which path we take through the existing tree.
-     * @return StandardNode Node we call rollout from
+     * @return StandardNode without children recursively selected by picking the maximum UCT value
+     * @see NodeUCTComparator
      */
     protected StandardNode selectNode(){
         Comparator<AbstractNode> uctComparator = new NodeUCTComparator(explorationConstant);
@@ -44,9 +45,9 @@ public class StandardRootNode extends StandardNode implements RootNode {
     }
 
     /**
-     * Provides an implementation for running an entire simulation for the standard MCTS algorithm.
-     * @see RootNode formore information on the method
-     * @param intermediateScores
+     * Provides a simple single threaded implementation for running an entire simulation for the standard MCTS
+     * algorithm.
+     * @see RootNode for more information on the method
      */
 
     @Override public void runSingleSimulation(IntermediateScore... intermediateScores) {
@@ -65,16 +66,6 @@ public class StandardRootNode extends StandardNode implements RootNode {
         }
     }
 
-    /**
-     * The method is used to add children nodes to the root node externally.  In the case that the best single move yields a bad score
-     * we call addChildren with the list of destinations for double moves (obtained from the board and {@link MoveConverter})
-     * which are then added to the root node and can be simulated.
-     * <p>-The {@link MiniBoard} can not access the double move destinations, hence when we add doubleMove destinations
-     * for the root node to consider we need to do so in a separate method from expand. In addition expand will add nodes
-     * /gamestates that potentially can not be reached due to insufficient tickets. We can not do this for the children
-     * of the root node as the programme may output an illegal move.</p>
-     * @param destinations
-     */
     @Override public void addChildren(ImmutableSet<Integer> destinations) {
         destinations.stream()
                 .map(getMiniBoard()::advanceMrX)

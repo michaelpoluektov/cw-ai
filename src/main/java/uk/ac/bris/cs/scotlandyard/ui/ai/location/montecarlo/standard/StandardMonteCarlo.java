@@ -35,11 +35,10 @@ public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPi
      * Responsible for simulating the decision tree. While the current time is less than the end time we will continue
      * simulation.
      * <p>- The explorationFrequency is used to notify the {@link uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker}
-     * observer every 100 simulations. Every 100 simulations the observer is notified and is passed the best single
-     * move seen. It will then consider the use of double moves. </p>
+     * observer every {@link #explorationFrequency} simulations.</p>
      * @param destinations ImmutableSet of all available destinations
      * @param simulationTime Maximum time to be used to return a result
-     * @return
+     * @see AbstractMonteCarlo
      */
     @Nonnull
     @Override

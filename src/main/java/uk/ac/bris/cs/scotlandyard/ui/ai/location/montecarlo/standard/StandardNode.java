@@ -12,9 +12,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- *  We populate our standard MonteCarlo tree using StandardNodes
- */
 public class StandardNode extends AbstractNode {
     private int plays;
     private int score;
@@ -42,8 +39,8 @@ public class StandardNode extends AbstractNode {
     }
 
     /**
-     * Propagates the plays back up the tree so long as the current node has a parent. We separated this from backPropagateScore
-     * in order to implement {@link ParallelNode} which requires this.
+     * Propagates the plays back up the tree so long as the current node has a parent. We separated this from
+     * {@link #backPropagateScore(Integer, Integer)} for consistency with the parallel implementation
      * @see ParallelNode
      */
 
@@ -53,9 +50,11 @@ public class StandardNode extends AbstractNode {
     }
 
     /**
-     * The score backpropagated to MrX's child node is the number of rounds MrX losses in from the round at which he starts
-     * simulation. We update the child's score instead of its parent due to the fact that each child nodes statistics are used
-     * for its parents decision. Similar idea's are used for the detectives.
+     * The score backpropagated to MrX's child node is the number of rounds MrX loses in from the round at which he starts
+     * simulation. For a detective's child node, we increment the score by the amount of rounds didn't get to live for
+     * (endRound - gameEndRound).
+     * We update the child's score instead of its parent due to the fact that each child nodes statistics are used
+     * for its parents decision.
      * @param round Round at which the game has ended
      * @param rootNodeRound Round at which the simulations started from
      */
@@ -69,10 +68,10 @@ public class StandardNode extends AbstractNode {
     }
 
     /**
-     * Standard implementation of the rollout method. This randomly slects a path to the bottom of the decision tree
-     * @param intermediateScore Ignored in the standard version of MCTS. This is considered a "light" playout.
-     * @see ParallelNode for an implementation of a "heavy" playout
-     * @return
+     * Standard implementation of the rollout method. This randomly selects a path to the bottom of the decision tree
+     * @param intermediateScore Ignored in this version of MCTS. This is considered a "light" playout.
+     * @see ParallelNode for an implementation of a "heavy" playout.
+     * @return Round at which the game has ended
      */
     @Override
     public Integer rollout(IntermediateScore... intermediateScore) {
@@ -86,10 +85,6 @@ public class StandardNode extends AbstractNode {
         else return rollingMiniBoard.getRound();
     }
 
-    /**
-     * For expansion of a leaf node. This adds child nodes to the caller node. These child nodes are standard nodes and
-     * each of which contains an advanced {@link MiniBoard}
-     */
     @Override
     public void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
