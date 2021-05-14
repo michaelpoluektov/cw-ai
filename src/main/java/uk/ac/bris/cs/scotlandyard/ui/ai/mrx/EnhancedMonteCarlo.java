@@ -18,7 +18,7 @@ public class EnhancedMonteCarlo implements Ai {
     @Nonnull
     @Override
     public String name() {
-        return "Enhanced MCTS - (D)";
+        return "MCTS with it's own move picker - (ND)";
     }
 
     @Nonnull

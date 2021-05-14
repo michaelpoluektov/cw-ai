@@ -23,7 +23,6 @@ public class MrXLocationScore implements IntermediateScore {
     private final Dijkstra dijkstra;
 
     /**
-     * @param constants
      * @param dijkstra Pass an instantiation of {@link Dijkstra} to get the shortest distance to the detectives
      */
     public MrXLocationScore(Toml constants, Dijkstra dijkstra) {
@@ -34,10 +33,9 @@ public class MrXLocationScore implements IntermediateScore {
 
     /**
      * Returns the score based on distances to detectives. We use a series of weights based on the sum to infinity of the
-     * radii from detectives to MrX. We weight each score accordingly depedning on how cloase each detctive is. The
+     * radii from detectives to MrX. We weight each score accordingly depending on how close each detective is. The
      * further a detective is away the less weight it should bare on the overall location score.
      * @param miniBoard MiniBoard to score
-     * @return
      */
     @Nonnull
     @Override

@@ -14,6 +14,11 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The standard Monte Carlo uses random moves in stage 3) for the MCTS algorithm.
+ * @see AbstractMonteCarlo for details of the algorithm.
+ */
+
 public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
     private final IntermediateScore[] intermediateScores;
     private final Integer explorationFrequency;
@@ -25,11 +30,22 @@ public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPi
         this.intermediateScores = intermediateScores;
         this.explorationFrequency = constants.getLong("monteCarlo.explorationFrequency", (long) 100).intValue();
     }
+
+    /**
+     * Responsible for simulating the decision tree. While the current time is less than the end time we will continue
+     * simulation.
+     * <p>- The explorationFrequency is used to notify the {@link uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker}
+     * observer every 100 simulations. Every 100 simulations the observer is notified and is passed the best single
+     * move seen. It will then consider the use of double moves. </p>
+     * @param destinations ImmutableSet of all available destinations
+     * @param simulationTime Maximum time to be used to return a result
+     * @return
+     */
     @Nonnull
     @Override
     public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
                                                          Pair<Long, TimeUnit> simulationTime) {
-        rootNode.addChildren(destinations);
+        addDestinations(destinations);
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         long endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();

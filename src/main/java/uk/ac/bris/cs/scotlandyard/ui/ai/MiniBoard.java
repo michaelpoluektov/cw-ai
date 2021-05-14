@@ -2,20 +2,20 @@ package uk.ac.bris.cs.scotlandyard.ui.ai;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.GameSetup;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.model.Piece;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Miniboard is a condensed version of the board class containing the minimum amount of data needed for the Ai. This is
- * done to reduce space in the decision tree and aims to speed the process up. We use Overloaded contructors to produce
+ * Mini board is a condensed version of the board class containing the minimum amount of data needed for the Ai. This is
+ * done to reduce space in the decision tree and aims to speed the process up. We use Overloaded constructors to produce
  * different mini boards for MrX and Detectives
  */
 
@@ -41,7 +41,7 @@ public class MiniBoard {
         }
     }
     /**@param board
-     * Used in construction of a detectives {@link MiniBoard} from outisde the class. It calls the private constructor
+     * Used in construction of a detectives {@link MiniBoard} from outside the class. It calls the private constructor
      * with MrX to move as false
      */
 
@@ -54,8 +54,6 @@ public class MiniBoard {
 
     /**
      *
-     * @param board
-     * @param mrXLocation
      * @param mrXToMove
      * Used in Advance MrX to set a new miniBoard up for detectives to move. This constructor is only called from within
      * the class so is private.
@@ -82,11 +80,9 @@ public class MiniBoard {
     /**
      * Constructor is used in unchecked advance. This constructor must deal with advancing to both a MrX and detectives
      * {@link MiniBoard}
-     * @param mrXLocation
-     * @param unmovedDetectiveLocations
-     * @param movedDetectiveLocations
-     * @param setup
-     * @param mrXToMove
+     * @param unmovedDetectiveLocations Location of detectives yet to move
+     * @param movedDetectiveLocations Location of already moved detectives
+     * @param mrXToMove True if its MrX's turn to move
      * @param round If this constructor is called and there a no more detectives left to move we need to increment the
      *              round by 1 in the new {@link MiniBoard}
      */
@@ -138,7 +134,6 @@ public class MiniBoard {
     /**
      * Advances to a {@link MiniBoard} with detectives to move and increments the round. The moved and unmoved detective
      * lists are swapped so the advanced mini board contains all detectives to move.
-     * @param destination
      * @return {@link MiniBoard}
      *
      */
@@ -160,10 +155,7 @@ public class MiniBoard {
 
     /**
      * Unchecked advance will advance a detective from source to destination and return a new mini board. This is
-     * unchecked as it does not check whether this move is valid. This check is done before the call to this method.
-     * @param source
-     * @param destination
-     * @return
+     * unchecked as it does not check whether this move is valid. The check should be done before the call to this method.
      */
 
     private MiniBoard uncheckedAdvance(Integer source, Integer destination) {
@@ -182,9 +174,6 @@ public class MiniBoard {
     /**
      * Advances a detective {@link MiniBoard}. We pass the source and destination of the move and validate this move
      * using getNodeDestination which checks if the adjacent nodes contain the destination. We can then call Unchecked Advance
-     * @param source
-     * @param destination
-     * @return
      */
     public MiniBoard advanceDetective(Integer source, Integer destination) {
         if(!unmovedDetectiveLocations.contains(source)) {
@@ -214,10 +203,9 @@ public class MiniBoard {
      * The class sums the total scores from all scoring objects and divides by the total weights. This ensures the score
      * is between 0 and 1. If either detectives or MrX have won we return 0 or 1 respectively. We aim to maximise the
      * score for MrX and minimise for detectives.
-     * @param scoringObjects We pass a varribalee number of {@link IntermediateScore} varriables to the function. Examples
-     *                       include {@link uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore}. Each
+     * @param scoringObjects We pass a variable number of {@link IntermediateScore} variables to the function. Examples
+     *                       include {@link MrXLocationScore}. Each
      *                       Intermediate scoring object manages an individual scoring process.
-     * @return
      */
     public Double getMrXBoardScore(IntermediateScore... scoringObjects) {
         if(getWinner() == winner.DETECTIVES) return 0.0;
@@ -236,7 +224,6 @@ public class MiniBoard {
      * Returns the all advanced MiniBoards for the person who is to move in the this {@link MiniBoard}. If the player is MrX
      * we use functional java to map the AdvanceMrX function over the set of destinations. If detectives are to move we
      * map using detectiveAdvance.
-     * @return
      */
     public ImmutableSet<MiniBoard> getAdvancedMiniBoards() {
         if(mrXToMove) {

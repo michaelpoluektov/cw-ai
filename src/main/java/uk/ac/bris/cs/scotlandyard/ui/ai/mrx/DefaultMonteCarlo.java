@@ -20,7 +20,7 @@ public class DefaultMonteCarlo implements Ai {
     @Nonnull
     @Override
     public String name() {
-        return "Default MCTS (D)";
+        return "MCTS with default move picker - (ND)";
     }
 
     @Nonnull

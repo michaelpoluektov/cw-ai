@@ -3,12 +3,20 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+/**
+ * Parallel node is used to populate the "smart" Monte Carlo tree. Unlike the {@link StandardNode} we require the use of
+ * atomic variables to deal with shared access.
+ */
 
 public class ParallelNode extends AbstractNode {
     private final AtomicInteger plays;
@@ -50,6 +58,12 @@ public class ParallelNode extends AbstractNode {
         }
     }
 
+    /**
+     * compareAndSet checks that the currentScore has not changed by another thread. If no then it replaces the current
+     * score with the incremented score. This allows us to achieve synchronization.
+     * @param increment The amount we want to increase an atomic variable by.
+     */
+
     private void incrementScore(Integer increment) {
         while(true) {
             int currentScore = getScore();
@@ -60,6 +74,9 @@ public class ParallelNode extends AbstractNode {
         }
     }
 
+    /**
+     * We do not use plays ++ as this causes issues with concurrency
+     */
     public void backPropagatePlays() {
         incrementPlays();
         getParent().ifPresent(AbstractNode::backPropagatePlays);
@@ -74,6 +91,13 @@ public class ParallelNode extends AbstractNode {
         }
     }
 
+    /**
+     *
+     * Unlike {@link StandardNode} the rollout procedure is not random and instead uses a 1 step lookahead Ai to pick
+     * the path we rollout down the tree. 
+     * @param intermediateScores We pass the {@link MrXLiteLocationScore} to reduce the runtime of each simulation.
+     * @return The round at which the rollout procedure stops
+     */
     @Override
     public Integer rollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");

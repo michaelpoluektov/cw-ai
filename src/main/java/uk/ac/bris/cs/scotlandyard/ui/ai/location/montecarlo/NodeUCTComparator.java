@@ -1,6 +1,15 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel.ParallelRootNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardRootNode;
+
 import java.util.Comparator;
+
+/**
+ * Provides a way to compare any node that implements {@link AbstractNode}. This is used in the selectNode method in
+ * {@link StandardRootNode} and {@link ParallelRootNode}
+ */
 
 public class NodeUCTComparator implements Comparator<AbstractNode> {
     private final Double explorationConstant;

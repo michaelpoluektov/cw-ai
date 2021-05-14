@@ -14,9 +14,9 @@ import java.util.stream.IntStream;
  * optimisation uses the fact that every edge has the same weight of 1 assigned to it. Therefore it does not need to
  * look at paths that travel through more nodes than the current best path.
  * We return a list of lists of integers. If the {@link Dijkstra} algorithm is called with Mrx, we return a list containing a
- * single list of the shortest distances to the detectives. If we call {@link Dijkstra} with detectives, we retun a list
- * of lists of integers, each sublist containg the shortest distance from a particular detective to all the possible
- * locations MrX could be given his latest reveal rounds. This feature was intended to be used for the detectives Ai.
+ * single list of the shortest distances to the detectives. If we call {@link Dijkstra} with detectives, we return a list
+ * of lists of integers, each sublist containing the shortest distance from a particular detective to all the possible
+ * locations MrX could be at given his latest reveal round. This feature was intended to be used for the detectives Ai.
  */
 
 public class Dijkstra {

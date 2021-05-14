@@ -1,6 +1,5 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score;
 
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 
 import javax.annotation.Nonnull;

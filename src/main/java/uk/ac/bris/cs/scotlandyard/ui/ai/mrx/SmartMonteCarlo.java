@@ -21,7 +21,7 @@ public class SmartMonteCarlo implements Ai {
     @Nonnull
     @Override
     public String name() {
-        return "Parallel MCTS - (D)";
+        return "Parallel MCTS, heavy playout - (ND)";
     }
 
     @Nonnull

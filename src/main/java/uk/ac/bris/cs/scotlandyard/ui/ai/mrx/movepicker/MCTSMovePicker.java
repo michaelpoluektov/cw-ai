@@ -6,7 +6,7 @@ import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveConverter;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractMonteCarlo;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.PlayoutObserver;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 
@@ -40,6 +40,16 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
                 locationPicker.getBestDestination(converter.getSingleMoveDestinations(), simTime);
         return ticketPicker.getBestMoveByTickets(converter.getMovesWithDestination(bestDestination.getKey()));
     }
+
+    /**
+     * If the best single move is less than the double threshold, and we have spent 2/3's of the total time simulating,
+     * then we add the double move destinations into the simulation for the final period of time.
+     * @param simulations Amount of simulations ran to produce the result
+     * @param bestScore Best predicted score of the children {@link AbstractNode} (representing game states)
+     * @param remainingTime Remaining time (in milliseconds) until a move has to be returned
+     * @param observable Reference to the observable object
+     * @see AbstractMonteCarlo
+     */
 
     @Override
     public void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, AbstractMonteCarlo observable) {

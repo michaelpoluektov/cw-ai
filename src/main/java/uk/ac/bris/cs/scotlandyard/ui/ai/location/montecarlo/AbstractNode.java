@@ -2,9 +2,17 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel.ParallelNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import java.util.*;
+
+/**
+ * This class is implemented by the {@link StandardNode} and the {@link ParallelNode}. Certain attributes and
+ * methods such as parent and backPropagate are the same in both implementations hence they are declared or initialised
+ * here rather than being declared abstract. Methods which require specific implementations are declared abstract.
+ */
 
 public abstract class AbstractNode {
 

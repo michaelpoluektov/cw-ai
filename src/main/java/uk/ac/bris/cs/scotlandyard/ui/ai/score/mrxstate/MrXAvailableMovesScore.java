@@ -18,10 +18,9 @@ public class MrXAvailableMovesScore implements IntermediateScore {
     }
 
     /**
-     * Uses an exponential function we selected to score a {@link MiniBoard} based on moves. The exponent is stored in the Toml file
+     * Uses an exponential function we selected to score a {@link MiniBoard} based on moves. The exponent is stored in the {@link Toml} file
      * @param miniBoard MiniBoard to score. We use this to find out how many available moves this {@link MiniBoard}
      *                 will lead to.
-     * @return
      */
     @Nonnull
     @Override
