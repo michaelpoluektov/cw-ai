@@ -36,7 +36,7 @@ public class PruningNStep_AI implements Ai {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
         IntermediateScore locationScore = new MrXLocationScore(constants, new Dijkstra(board.getSetup().graph));
         IntermediateScore availableMovesScore = new MrXAvailableMovesScore(constants);
-        LocationPicker miniMax = new MiniMax(board, constants, 6, locationScore, availableMovesScore);
+        LocationPicker miniMax = new MiniMax(board,6, locationScore, availableMovesScore);
         TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         MovePicker<LocationPicker> defaultMovePicker = new DefaultMovePicker(board, endTimeMillis, constants);
         return defaultMovePicker.pickMove(miniMax, defaultTicketPicker);

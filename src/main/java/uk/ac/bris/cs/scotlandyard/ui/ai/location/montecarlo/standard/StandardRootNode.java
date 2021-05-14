@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.MoveConverter;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.NodeUCTComparator;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;

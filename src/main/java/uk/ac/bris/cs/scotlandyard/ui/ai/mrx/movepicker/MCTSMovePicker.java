@@ -18,7 +18,6 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
     private final MoveConverter converter;
     private final Long endTimeMillis;
     private final Double doubleThreshold;
-    private final Double doubleOffset;
     private final Long timeoutOffset;
     private Boolean addedDoubles;
     private Pair<Long, TimeUnit> simTime;
@@ -26,7 +25,6 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
         this.converter = new MoveConverter(board.getAvailableMoves());
         this.endTimeMillis = endTimeMillis;
         this.doubleThreshold = constants.getDouble("monteCarlo.mctsDoubleThreshold", 3.0);
-        this.doubleOffset = constants.getDouble("double.minOffset", 0.2);
         this.timeoutOffset = constants.getLong("monteCarlo.timeoutOffsetMillis", (long) 300);
         this.addedDoubles = false;
 

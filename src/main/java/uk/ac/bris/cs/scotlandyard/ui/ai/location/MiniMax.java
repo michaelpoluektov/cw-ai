@@ -32,12 +32,10 @@ import java.util.concurrent.TimeUnit;
 
 public class MiniMax implements LocationPicker {
     private final Board board;
-    private final Toml constants;
     private final Integer steps;
     private final IntermediateScore[] intermediateScores;
-    public MiniMax(Board board, Toml constants, Integer steps, IntermediateScore... intermediateScores) {
+    public MiniMax(Board board, Integer steps, IntermediateScore... intermediateScores) {
         this.board = board;
-        this.constants = constants;
         this.steps = steps;
         this.intermediateScores = intermediateScores;
     }

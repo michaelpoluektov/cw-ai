@@ -1,7 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel.ParallelRootNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardRootNode;
 
 import java.util.Comparator;
