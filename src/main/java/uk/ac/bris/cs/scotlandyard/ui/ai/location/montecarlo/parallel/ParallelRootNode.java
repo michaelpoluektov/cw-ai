@@ -8,7 +8,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.NodeUCTComparator;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardRootNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.SmartMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.HeavyRolloutMCTS_AI;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Root node for the {@link SmartMonteCarlo} implementation.
+ * Root node for the {@link HeavyRolloutMCTS_AI} implementation.
  * @see StandardRootNode
  */
 

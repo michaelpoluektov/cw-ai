@@ -12,10 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Reduced version of the {@link MrXLocationScore} which does not contain or use the toml constants in the {@link Toml} file. We
- * do this to avoid delays in {@link ParallelNode} for the
- * Monte Carlo Simulation. By not accessing the {@link Toml} file within each simulation we can increase sampling fo the decision
- * tree.
+ * Reduced version of the {@link MrXLocationScore} which does not contain or use the Toml constants or any exponentials
+ * in an attempt to reduce runtime. It yet unclear weather the performance difference is actually significant.
  * @see ParallelNode
  *
  */

@@ -1,11 +1,13 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Could be used for a deeper N Step lookahead if most moves lead to a loss
+ */
 public class MrXWinnerScore implements IntermediateScore {
     private static MrXWinnerScore instance;
     private MrXWinnerScore() {}

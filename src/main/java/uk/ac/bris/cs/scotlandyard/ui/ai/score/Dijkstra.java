@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * This class holds our implementation of the dijkstra algorithm which has been optimised for undirected graphs. The
+ * This class holds our implementation of Dijkstra's algorithm which has been optimised for unweighted graphs. The
  * optimisation uses the fact that every edge has the same weight of 1 assigned to it. Therefore it does not need to
  * look at paths that travel through more nodes than the current best path.
  * We return a list of lists of integers. If the {@link Dijkstra} algorithm is called with Mrx, we return a list containing a
  * single list of the shortest distances to the detectives. If we call {@link Dijkstra} with detectives, we return a list
  * of lists of integers, each sublist containing the shortest distance from a particular detective to all the possible
- * locations MrX could be at given his latest reveal round. This feature was intended to be used for the detectives Ai.
+ * locations MrX could be at given his latest reveal round. This feature was intended to be used for the detectives AI.
  */
 
 public class Dijkstra {
@@ -24,6 +24,7 @@ public class Dijkstra {
     public Dijkstra(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph) {
         this.graph = graph;
     }
+
     public final List<List<Integer>> getDistances(ImmutableList<Integer> sources,
                                                ImmutableList<Integer> destinations) {
         final int nodeSize = graph.nodes().size();

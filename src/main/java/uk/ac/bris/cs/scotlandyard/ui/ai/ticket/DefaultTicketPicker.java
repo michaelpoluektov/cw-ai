@@ -11,8 +11,18 @@ import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.stream.Stream;
 
+/**
+ * The default ticket picker pick the ticket in the following way:
+ * <p>For single moves:</p>
+ * <p>-- if the last round was a reveal round:</p>
+ *      <p>------ if MrX can be a move with a secret ticket, pick that move</p>
+ *      <p>------ otherwise, pick the move that uses the ticket MrX has the most of</p>
+ * <p>-- otherwise, if the last round wasn't a reveal round:</p>
+ *      <p>------ pick the move with the ticket MrX has the most of that is not a secret ticket</p>
+ *      <p>------ use a secret ticket if and only if that is the only available option</p>
+ * <p>Same applies to each ticket in the double moves</p>
+ */
 public class DefaultTicketPicker implements TicketPicker {
     private final Board.TicketBoard ticketBoard;
     private final Boolean isReveal;

@@ -25,10 +25,10 @@ import java.util.concurrent.TimeUnit;
  * lookahead for a game with 5 detectives).</p>
  * <p>- The default move and location picker.</p>
  */
-public class PruningNStep implements Ai {
+public class PruningNStep_AI implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull
-    @Override public String name() { return "Default pruning N-Step (D)"; }
+    @Override public String name() { return "Moriarty I - Pruning NStep"; }
 
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,

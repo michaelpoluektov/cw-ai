@@ -15,12 +15,12 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultMonteCarlo implements Ai {
+public class DefaultMCTS_AI implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull
     @Override
     public String name() {
-        return "MCTS with default move picker - (ND)";
+        return "Moriarty II - MCTS with light rollout, default move picker";
     }
 
     @Nonnull
