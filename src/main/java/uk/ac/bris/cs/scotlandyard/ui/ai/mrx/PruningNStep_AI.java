@@ -7,6 +7,7 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.BreadthFirstSearch;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXAvailableMovesScore;
@@ -34,7 +35,7 @@ public class PruningNStep_AI implements Ai {
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        IntermediateScore locationScore = new MrXLocationScore(constants, new Dijkstra(board.getSetup().graph));
+        IntermediateScore locationScore = new MrXLocationScore(constants, new BreadthFirstSearch(board.getSetup().graph));
         IntermediateScore availableMovesScore = new MrXAvailableMovesScore(constants);
         LocationPicker miniMax = new MiniMax(board,6, locationScore, availableMovesScore);
         TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);

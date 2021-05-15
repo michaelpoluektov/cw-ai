@@ -17,9 +17,10 @@ import java.util.stream.IntStream;
  * single list of the shortest distances to the detectives. If we call {@link Dijkstra} with detectives, we return a list
  * of lists of integers, each sublist containing the shortest distance from a particular detective to all the possible
  * locations MrX could be at given his latest reveal round. This feature was intended to be used for the detectives AI.
+ * @deprecated Use {@link BreadthFirstSearch}, it is about 5 times faster
  */
 
-public class Dijkstra implements DistanceMeasurer{
+@Deprecated public class Dijkstra implements DistanceMeasurer{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     public Dijkstra(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph) {
         this.graph = graph;
