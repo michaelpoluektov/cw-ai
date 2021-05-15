@@ -89,8 +89,9 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
      * Runs a single iteration of the MCTS algorithm.
      *
      * In order to manage access to potentially non thread safe variables, we use a {@link ReentrantLock}
-     * which prevents threads from simultaneously altering those variables. This should not have any considerable impact
-     * on performance, since the most time intensive operation to run is outside of the lock.
+     * which prevents threads from simultaneously altering those variables. This didn't affect performance until
+     * we replaced Dijkstra's algorithm with the much faster breadth-first search algorithm, the lock may now be the
+     * bottleneck.
      */
     private class RunnableSimulation implements Runnable {
         @Override
