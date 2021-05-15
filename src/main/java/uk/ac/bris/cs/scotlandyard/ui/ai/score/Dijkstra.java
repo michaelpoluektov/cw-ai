@@ -25,7 +25,7 @@ public class Dijkstra {
         this.graph = graph;
     }
 
-    public final List<List<Integer>> getDistances(ImmutableList<Integer> sources,
+    public List<List<Integer>> getDistances(ImmutableList<Integer> sources,
                                                ImmutableList<Integer> destinations) {
         final int nodeSize = graph.nodes().size();
         final List<List<Integer>> distances = new ArrayList<>(sources.size());
