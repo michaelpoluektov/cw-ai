@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.DistanceMeasurer;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
@@ -20,15 +21,15 @@ import static java.lang.Math.pow;
 public class MrXLocationScore implements IntermediateScore {
     private final Double locationScoreExp;
     private final Double locationScoreWeight;
-    private final Dijkstra dijkstra;
+    private final DistanceMeasurer distanceMeasurer;
 
     /**
-     * @param dijkstra Pass an instantiation of {@link Dijkstra} to get the shortest distance to the detectives
+     * @param distanceMeasurer Pass an instantiation of {@link Dijkstra} to get the shortest distance to the detectives
      */
-    public MrXLocationScore(Toml constants, Dijkstra dijkstra) {
+    public MrXLocationScore(Toml constants, DistanceMeasurer distanceMeasurer) {
         this.locationScoreExp = constants.getDouble("location.exp");
         this.locationScoreWeight = constants.getDouble("location.weight");
-        this.dijkstra = dijkstra;
+        this.distanceMeasurer = distanceMeasurer;
     }
 
     /**
@@ -42,7 +43,7 @@ public class MrXLocationScore implements IntermediateScore {
     public Double getScore(MiniBoard miniBoard) {
         final ImmutableList<Integer> mrXLocationList = ImmutableList.of(miniBoard.getMrXLocation());
         final List<Integer> distanceToSource =
-                dijkstra.getDistances(mrXLocationList, miniBoard.getDetectiveLocations()).get(0);
+                distanceMeasurer.getDistances(mrXLocationList, miniBoard.getDetectiveLocations()).get(0);
         Collections.sort(distanceToSource);
         List<Double> weightsList = distanceToSource.stream()
                 .map(value -> pow(locationScoreExp, -value)/(1 - pow(locationScoreExp, -1)))

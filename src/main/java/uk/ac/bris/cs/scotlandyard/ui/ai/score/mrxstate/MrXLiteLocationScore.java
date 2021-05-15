@@ -5,6 +5,7 @@ import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel.ParallelNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.DistanceMeasurer;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
@@ -18,16 +19,16 @@ import java.util.List;
  *
  */
 public class MrXLiteLocationScore implements IntermediateScore {
-    private final Dijkstra dijkstra;
-    public MrXLiteLocationScore(Dijkstra dijkstra) {
-        this.dijkstra = dijkstra;
+    private final DistanceMeasurer distanceMeasurer;
+    public MrXLiteLocationScore(DistanceMeasurer distanceMeasurer) {
+        this.distanceMeasurer = distanceMeasurer;
     }
     @Nonnull
     @Override
     public Double getScore(MiniBoard miniBoard) {
         final ImmutableList<Integer> mrXLocationList = ImmutableList.of(miniBoard.getMrXLocation());
         final List<Integer> distanceToSource =
-                dijkstra.getDistances(mrXLocationList, miniBoard.getDetectiveLocations()).get(0);
+                distanceMeasurer.getDistances(mrXLocationList, miniBoard.getDetectiveLocations()).get(0);
         Collections.sort(distanceToSource);
         final int nDetectives = distanceToSource.size();
         final int closestDistance = distanceToSource.get(0)-1;

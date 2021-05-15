@@ -11,11 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ImprovedDijkstra extends Dijkstra{
+public class BreadthFirstSearch implements DistanceMeasurer{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final Integer nodeSize;
-    public ImprovedDijkstra(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph) {
-        super(graph);
+    public BreadthFirstSearch(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph) {
         this.graph = graph;
         this.nodeSize = graph.nodes().size();
     }

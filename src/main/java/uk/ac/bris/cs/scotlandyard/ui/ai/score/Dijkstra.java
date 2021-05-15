@@ -19,13 +19,13 @@ import java.util.stream.IntStream;
  * locations MrX could be at given his latest reveal round. This feature was intended to be used for the detectives AI.
  */
 
-public class Dijkstra {
+public class Dijkstra implements DistanceMeasurer{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     public Dijkstra(ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph) {
         this.graph = graph;
     }
 
-    public List<List<Integer>> getDistances(ImmutableList<Integer> sources,
+    @Override public List<List<Integer>> getDistances(ImmutableList<Integer> sources,
                                                ImmutableList<Integer> destinations) {
         final int nodeSize = graph.nodes().size();
         final List<List<Integer>> distances = new ArrayList<>(sources.size());
