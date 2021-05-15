@@ -15,5 +15,5 @@ minOffset = 0.2
 [monteCarlo]
 timeoutOffsetMillis = 1000
 notificationFrequency = 100
-explorationConstant = 5.0
+explorationConstant = 1.41
 mctsDoubleThreshold = 5.0
