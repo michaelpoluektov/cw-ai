@@ -1,10 +1,8 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
-import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel.ParallelNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.DistanceMeasurer;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
@@ -35,11 +33,4 @@ public class MrXLiteLocationScore implements IntermediateScore {
         final int averageDistance = (distanceToSource.stream().reduce(0, Integer::sum) - nDetectives)/nDetectives;
         return (double) closestDistance + averageDistance;
     }
-
-    @Nonnull
-    @Override
-    public Double getWeight() {
-        return 1.0;
-    }
-
 }

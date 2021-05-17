@@ -11,6 +11,6 @@ public interface DistanceMeasurer {
      * @param destinations Detectives or possible MrX locations
      * @return List of lists containing distances from sources to destinations
      */
-    public List<List<Integer>> getDistances(ImmutableList<Integer> sources,
+    List<List<Integer>> getDistances(ImmutableList<Integer> sources,
                                             ImmutableList<Integer> destinations);
 }

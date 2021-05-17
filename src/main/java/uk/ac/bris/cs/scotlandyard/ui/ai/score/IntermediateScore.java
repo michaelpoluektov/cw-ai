@@ -17,5 +17,5 @@ public interface IntermediateScore {
     /**
      * @return The relative weight of the scoring function
      */
-    @Nonnull Double getWeight();
+    @Nonnull default Double getWeight() {return 1.0;}
 }

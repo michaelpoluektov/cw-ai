@@ -21,12 +21,6 @@ public class MrXWinnerScore implements IntermediateScore {
         }
     }
 
-    @Nonnull
-    @Override
-    public Double getWeight() {
-        return 1.0;
-    }
-
     public static MrXWinnerScore getInstance() {
         if(instance == null) instance = new MrXWinnerScore();
         return instance;
