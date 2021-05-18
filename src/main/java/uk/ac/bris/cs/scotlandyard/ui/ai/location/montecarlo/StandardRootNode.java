@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -50,16 +49,15 @@ public class StandardRootNode extends StandardNode implements RootNode {
      * selects moves from this point until it reaches the end of the decision tree and a winner is declared.
      * 4) Backpropagation. We propagate the result/score back up the tree. Every node that was passed through, before
      * rollout, will have its number of plays incremented by 1 and score changed accordingly to the result
-     * @param intermediateScores Scoring objects to be used in case of heavy rollout
      */
 
-    public void runSingleSimulation(IntermediateScore... intermediateScores) {
+    public void runSingleSimulation() {
         StandardNode selectedNode = selectNode();
         selectedNode.expand();
         if(!selectedNode.getChildren().isEmpty()) {
             StandardNode selectedChild = (StandardNode) selectedNode.getChildren().asList().get(0);
             selectedChild.backPropagatePlays();
-            Integer rolloutResult = selectedChild.rollout(intermediateScores);
+            Integer rolloutResult = selectedChild.rollout();
             selectedChild.backPropagateScore(rolloutResult, getRound());
         } else {
             MiniBoard.winner winner = selectedNode.getMiniBoard().getWinner();

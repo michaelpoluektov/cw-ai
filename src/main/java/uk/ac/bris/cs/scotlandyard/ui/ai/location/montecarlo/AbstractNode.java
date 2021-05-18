@@ -54,7 +54,7 @@ public abstract class AbstractNode {
 
     protected abstract void backPropagateScore(Integer round, Integer rootNodeRound);
 
-    protected abstract Integer rollout(IntermediateScore... intermediateScores);
+    protected abstract Integer rollout();
 
     protected abstract void expand();
 }

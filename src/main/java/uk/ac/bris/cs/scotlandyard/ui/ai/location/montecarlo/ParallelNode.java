@@ -100,7 +100,18 @@ public class ParallelNode extends AbstractNode {
      * @return The round of the termination node, return the final round + 1 if MrX win
      */
     @Override
-    protected Integer rollout(IntermediateScore... intermediateScores) {
+    protected Integer rollout() {
+        if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
+        MiniBoard rollingMiniBoard = getMiniBoard();
+        while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
+            ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();
+            rollingMiniBoard = availableMiniBoards.get(new Random().nextInt(availableMiniBoards.size()));
+        }
+        if(rollingMiniBoard.getWinner() == MiniBoard.winner.MRX) return getRoundSize()+1;
+        else return rollingMiniBoard.getRound();
+    }
+
+    protected Integer heavyRollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);
         MiniBoard rollingMiniBoard = getMiniBoard();

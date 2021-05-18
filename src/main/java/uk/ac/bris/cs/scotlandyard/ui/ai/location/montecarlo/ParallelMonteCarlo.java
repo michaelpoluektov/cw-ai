@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 
-public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
+public abstract class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
     private final IntermediateScore[] intermediateScores;
     private final Integer explorationFrequency;
     private final ParallelRootNode rootNode;
@@ -108,7 +108,7 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
             } finally {
                 lock.unlock();
             }
-            Integer rolloutResult = selectedNode.rollout(intermediateScores);
+            Integer rolloutResult = rolloutResult(selectedNode, intermediateScores);
             selectedNode.backPropagateScore(rolloutResult, rootNode.getRound());
         }
     }
@@ -116,4 +116,6 @@ public class ParallelMonteCarlo extends AbstractMonteCarlo implements LocationPi
     @Override public void addDestinations(ImmutableSet<Integer> destinations) {
         rootNode.addChildren(destinations);
     }
+
+    protected abstract Integer rolloutResult(ParallelNode node, IntermediateScore... intermediateScores);
 }

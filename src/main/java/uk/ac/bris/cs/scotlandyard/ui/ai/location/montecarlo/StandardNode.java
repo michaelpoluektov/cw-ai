@@ -67,12 +67,11 @@ public class StandardNode extends AbstractNode {
 
     /**
      * Standard implementation of the rollout method. This randomly selects a path to the bottom of the decision tree
-     * @param intermediateScore Ignored in this version of MCTS. This is considered a "light" playout.
      * @see ParallelNode for an implementation of a "heavy" playout.
      * @return Round at which the game has ended
      */
     @Override
-    protected Integer rollout(IntermediateScore... intermediateScore) {
+    protected Integer rollout() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
