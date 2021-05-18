@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -91,12 +89,8 @@ public class ParallelNode extends AbstractNode {
     }
 
     /**
-     *
-     * Unlike {@link StandardNode} the rollout procedure is not random and instead uses a 1 step lookahead AI to pick
-     * the path we rollout down the tree.
+     * Standard random rollout.
      * @throws UnsupportedOperationException If the node already has children.
-     * @param intermediateScores We pass the {@link MrXLiteLocationScore} to reduce the runtime of each simulation
-     *                           relative to {@link MrXLocationScore}.
      * @return The round of the termination node, return the final round + 1 if MrX win
      */
     @Override
@@ -111,6 +105,12 @@ public class ParallelNode extends AbstractNode {
         else return rollingMiniBoard.getRound();
     }
 
+    /**
+     * Unlike {@link #rollout()} the rollout procedure is not random and instead uses a 1 step lookahead AI to pick
+     * the path we rollout down the tree.
+     * @throws UnsupportedOperationException If the node already has children.
+     * @return The round of the termination node, return the final round + 1 if MrX win
+     */
     protected Integer heavyRollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);

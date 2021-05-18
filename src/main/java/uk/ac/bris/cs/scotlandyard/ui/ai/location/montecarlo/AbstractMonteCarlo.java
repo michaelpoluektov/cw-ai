@@ -2,6 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,10 +13,8 @@ import java.util.Set;
  * destination from the simulation.
  *
  * MCTS is a reinforcement learning algorithm well suited to adequately sample a game tree with a large branching
- * factor. See
- * <a href = https://medium.com/@quasimik/monte-carlo-tree-search-applied-to-letterpress-34f41c86e238>Medium</a> for
- * a good general description of the algorithm.
- * @see uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker
+ * factor. See <a href=https://en.wikipedia.org/wiki/Monte_Carlo_tree_search>Wikipedia</a> for more information.
+ * @see MCTSMovePicker
  * @see AbstractNode
  * @see RootNode
  */

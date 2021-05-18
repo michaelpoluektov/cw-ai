@@ -13,8 +13,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * This class is used for the "smart" Monte Carlo algorithm which is our latest AI implementation. It uses concurrent
- * computing the threads to maximise the number of simulations of the tree.
+ * This class is used for a pa algorithm which is our latest AI implementation. It uses concurrent
+ * computing to maximise the number of simulations in the tree.
  * Since the path a simulation takes down the tree is dependant on other simulations and the results they yield (number
  * of times we have played a node), the plays are backpropagated before allowing another thread to run a concurrent
  * simulation. This justifies the separation of the backpropagation of plays and score.
