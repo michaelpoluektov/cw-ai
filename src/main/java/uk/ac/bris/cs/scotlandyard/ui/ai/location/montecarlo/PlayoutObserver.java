@@ -1,7 +1,5 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardMonteCarlo;
-
 public interface PlayoutObserver {
     /**
      * Method called by a {@link StandardMonteCarlo} object (Observable) to notify it's observer of the current predicted

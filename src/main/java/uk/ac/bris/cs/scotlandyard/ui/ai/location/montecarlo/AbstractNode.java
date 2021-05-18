@@ -18,43 +18,43 @@ public abstract class AbstractNode {
     private final AbstractNode parent;
     private final Integer roundSize;
 
-    public AbstractNode(MiniBoard miniBoard, AbstractNode parent) {
+    protected AbstractNode(MiniBoard miniBoard, AbstractNode parent) {
         this.miniBoard = miniBoard;
         this.parent = parent;
         this.roundSize = miniBoard.getSetup().rounds.size();
     }
 
-    public abstract Double getAverageScore();
+    protected abstract Double getAverageScore();
 
-    public abstract Integer getPlays();
+    protected abstract Integer getPlays();
 
-    public final MiniBoard getMiniBoard() {
+    protected final MiniBoard getMiniBoard() {
         return miniBoard;
     }
 
-    public final Optional<AbstractNode> getParent() {
+    protected final Optional<AbstractNode> getParent() {
         return Optional.ofNullable(parent);
     }
 
-    public abstract ImmutableSet<AbstractNode> getChildren();
+    protected abstract ImmutableSet<AbstractNode> getChildren();
 
-    public Integer getRound() {
+    protected Integer getRound() {
         return miniBoard.getRound();
     }
 
-    public Integer getRoundSize() {
+    protected Integer getRoundSize() {
         return roundSize;
     }
 
-    public final Boolean isLeaf() {
+    protected final Boolean isLeaf() {
         return getChildren().isEmpty();
     }
 
-    public abstract void backPropagatePlays();
+    protected abstract void backPropagatePlays();
 
-    public abstract void backPropagateScore(Integer round, Integer rootNodeRound);
+    protected abstract void backPropagateScore(Integer round, Integer rootNodeRound);
 
-    public abstract Integer rollout(IntermediateScore... intermediateScores);
+    protected abstract Integer rollout(IntermediateScore... intermediateScores);
 
-    public abstract void expand();
+    protected abstract void expand();
 }

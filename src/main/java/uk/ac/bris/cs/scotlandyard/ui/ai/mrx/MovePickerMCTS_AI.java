@@ -5,7 +5,7 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.StandardMonteCarlo;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.DefaultTicketPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;

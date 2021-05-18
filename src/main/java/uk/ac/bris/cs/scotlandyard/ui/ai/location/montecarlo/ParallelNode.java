@@ -1,10 +1,8 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLiteLocationScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
@@ -30,21 +28,21 @@ public class ParallelNode extends AbstractNode {
         this.children = Collections.synchronizedSet(new HashSet<>());
     }
     @Override
-    public Double getAverageScore() {
+    protected Double getAverageScore() {
         return score.doubleValue()/plays.doubleValue();
     }
 
     @Override
-    public Integer getPlays() {
+    protected Integer getPlays() {
         return plays.get();
     }
 
-    public Integer getScore() {
+    protected Integer getScore() {
         return score.get();
     }
 
     @Override
-    public ImmutableSet<AbstractNode> getChildren() {
+    protected ImmutableSet<AbstractNode> getChildren() {
         return ImmutableSet.copyOf(children);
     }
 
@@ -77,14 +75,14 @@ public class ParallelNode extends AbstractNode {
         }
     }
 
-    public void backPropagatePlays() {
+    protected void backPropagatePlays() {
         incrementPlays();
         getParent().ifPresent(AbstractNode::backPropagatePlays);
     }
 
 
     @Override
-    public void backPropagateScore(Integer round, Integer rootNodeRound) {
+    protected void backPropagateScore(Integer round, Integer rootNodeRound) {
         if(getParent().isPresent()) {
             if(getParent().get().getMiniBoard().getMrXToMove()) incrementScore(round - rootNodeRound);
             else incrementScore(getRoundSize() + 1 - round);
@@ -102,7 +100,7 @@ public class ParallelNode extends AbstractNode {
      * @return The round of the termination node, return the final round + 1 if MrX win
      */
     @Override
-    public Integer rollout(IntermediateScore... intermediateScores) {
+    protected Integer rollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
         Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);
         MiniBoard rollingMiniBoard = getMiniBoard();
@@ -122,7 +120,7 @@ public class ParallelNode extends AbstractNode {
      * @throws UnsupportedOperationException If children already populated
      */
     @Override
-    public void expand() {
+    protected void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
             children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()

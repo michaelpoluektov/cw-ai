@@ -1,14 +1,10 @@
-package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard;
+package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractMonteCarlo;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.RootNode;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -20,14 +16,11 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
-    private final IntermediateScore[] intermediateScores;
     private final Integer explorationFrequency;
-    private final RootNode rootNode;
+    private final StandardRootNode rootNode;
     public StandardMonteCarlo(Board board,
-                              Toml constants,
-                              IntermediateScore... intermediateScores) {
+                              Toml constants) {
         this.rootNode = new StandardRootNode(board, constants);
-        this.intermediateScores = intermediateScores;
         this.explorationFrequency = constants.getLong("monteCarlo.explorationFrequency", (long) 100).intValue();
     }
 

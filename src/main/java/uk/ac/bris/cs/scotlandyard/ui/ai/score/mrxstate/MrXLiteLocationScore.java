@@ -2,7 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.parallel.ParallelNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.ParallelNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.DistanceMeasurer;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 

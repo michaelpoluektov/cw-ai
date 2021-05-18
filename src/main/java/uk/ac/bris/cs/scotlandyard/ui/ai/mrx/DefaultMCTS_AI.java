@@ -6,7 +6,7 @@ import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.standard.StandardMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.StandardMonteCarlo;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.DefaultTicketPicker;

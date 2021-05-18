@@ -30,7 +30,7 @@ public abstract class AbstractMonteCarlo implements LocationPicker {
         observers.remove(observer);
     }
 
-    public void notifyObservers(Integer simulations, Double bestScore, Long remainingTime) {
+    protected void notifyObservers(Integer simulations, Double bestScore, Long remainingTime) {
         for(PlayoutObserver observer : observers) {
             observer.respondToPlayout(simulations, bestScore, remainingTime, this);
         }
