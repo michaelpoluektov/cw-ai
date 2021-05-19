@@ -3,8 +3,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 import java.util.Comparator;
 
 /**
- * Provides a way to compare any node that implements {@link AbstractNode}. This is used in the selectNode method in
- * {@link StandardRootNode} and {@link ParallelRootNode}
+ * Provides a way to compare any node that implements {@link AbstractNode}.
  */
 
 public class NodeUCTComparator implements Comparator<AbstractNode> {

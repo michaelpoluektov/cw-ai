@@ -12,12 +12,10 @@ import java.util.*;
  */
 
 public class HeavyNode extends AbstractNode {
-    private final Double explorationConstant;
     protected HeavyNode(MiniBoard miniBoard,
                         AbstractNode parent,
-                        Double explorationConstant) {
-        super(miniBoard, parent, explorationConstant);
-        this.explorationConstant = explorationConstant;
+                        NodeUCTComparator comparator) {
+        super(miniBoard, parent, comparator);
     }
 
     @Override
@@ -36,7 +34,7 @@ public class HeavyNode extends AbstractNode {
     }
 
     @Override
-    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent) {
-        return new HeavyNode(miniBoard, parent, explorationConstant);
+    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
+        return new HeavyNode(miniBoard, parent, comparator);
     }
 }

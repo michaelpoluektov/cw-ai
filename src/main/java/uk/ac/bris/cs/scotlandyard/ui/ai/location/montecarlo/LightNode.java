@@ -4,15 +4,14 @@ import com.google.common.collect.ImmutableList;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
+import javax.swing.*;
 import java.util.Random;
 
 public class LightNode extends AbstractNode {
-    private final Double explorationConstant;
     protected LightNode(MiniBoard miniBoard,
                         AbstractNode parent,
-                        Double explorationConstant) {
-        super(miniBoard, parent, explorationConstant);
-        this.explorationConstant = explorationConstant;
+                        NodeUCTComparator comparator) {
+        super(miniBoard, parent, comparator);
     }
 
     /**
@@ -32,7 +31,8 @@ public class LightNode extends AbstractNode {
         else return rollingMiniBoard.getRound();
     }
 
-    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent) {
-        return new LightNode(miniBoard, parent, explorationConstant);
+    @Override
+    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
+        return new LightNode(miniBoard, parent, comparator);
     }
 }

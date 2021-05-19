@@ -9,17 +9,15 @@ public class TreeFactory {
     public static TreeSimulation<HeavyNode> newHeavyTree(Board board,
                                                          Toml constants,
                                                          IntermediateScore... intermediateScores) {
-        final HeavyNode rootNode = new HeavyNode(new MiniBoard(board),
-                null,
-                constants.getDouble("", 3.0));
+        NodeUCTComparator comparator = new NodeUCTComparator(constants.getDouble("", 3.0));
+        final HeavyNode rootNode = new HeavyNode(new MiniBoard(board), null, comparator);
         return new TreeSimulation<>(constants, rootNode, intermediateScores);
     }
     public static TreeSimulation<LightNode> newLightTree(Board board,
                                                          Toml constants,
                                                          IntermediateScore... intermediateScores) {
-        final LightNode rootNode = new LightNode(new MiniBoard(board),
-                null,
-                constants.getDouble("", 3.0));
+        NodeUCTComparator comparator = new NodeUCTComparator(constants.getDouble("", 3.0));
+        final LightNode rootNode = new LightNode(new MiniBoard(board), null, comparator);
         return new TreeSimulation<>(constants, rootNode, intermediateScores);
     }
 }

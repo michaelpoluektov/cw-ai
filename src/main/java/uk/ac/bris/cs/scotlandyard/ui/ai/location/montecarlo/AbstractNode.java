@@ -20,12 +20,12 @@ public abstract class AbstractNode {
     private final AtomicInteger score;
     private final AtomicBoolean pending;
 
-    protected AbstractNode(MiniBoard miniBoard, AbstractNode parent, Double explorationConstant) {
+    protected AbstractNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
         this.miniBoard = miniBoard;
         this.parent = parent;
         this.roundSize = miniBoard.getSetup().rounds.size();
         this.children = new ArrayList<>();
-        this.comparator = new NodeUCTComparator(explorationConstant);
+        this.comparator = comparator;
         this.plays = new AtomicInteger();
         this.score = new AtomicInteger();
         this.pending = new AtomicBoolean(false);
@@ -116,7 +116,7 @@ public abstract class AbstractNode {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
             children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()
-                    .map(newMiniBoard -> getNewNode(newMiniBoard, this))
+                    .map(newMiniBoard -> getNewNode(newMiniBoard, this, comparator))
                     .collect(Collectors.toSet()));
         }
     }
@@ -158,10 +158,10 @@ public abstract class AbstractNode {
         else {
             destinations.stream()
                     .map(getMiniBoard()::advanceMrX)
-                    .map(advancedMiniBoard -> getNewNode(advancedMiniBoard, this))
+                    .map(advancedMiniBoard -> getNewNode(advancedMiniBoard, this, comparator))
                     .forEach(children::add);
         }
     }
 
-    protected abstract AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent);
+    protected abstract AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator);
 }
