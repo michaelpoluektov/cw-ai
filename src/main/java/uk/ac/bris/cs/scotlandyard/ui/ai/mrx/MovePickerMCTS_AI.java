@@ -27,7 +27,7 @@ public class MovePickerMCTS_AI implements Ai {
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final TreeSimulation<LightNode> monteCarlo = TreeFactory.newLightTree(board, constants);
+        final TreeSimulation<LightNode> monteCarlo = TreeFactory.newLightTree(board, constants, 4);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);

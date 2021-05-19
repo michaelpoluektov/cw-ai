@@ -31,7 +31,7 @@ public class HeavyRolloutMCTS_AI implements Ai {
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
         final IntermediateScore locationScore = new MrXLiteLocationScore(new BreadthFirstSearch(board.getSetup().graph));
-        final TreeSimulation<HeavyNode> monteCarlo = TreeFactory.newHeavyTree(board, constants, locationScore);
+        final TreeSimulation<HeavyNode> monteCarlo = TreeFactory.newHeavyTree(board, constants, 4, locationScore);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);

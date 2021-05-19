@@ -27,7 +27,7 @@ public class DefaultMCTS_AI implements Ai {
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final LocationPicker standardMonteCarlo = TreeFactory.newLightTree(board, constants);
+        final LocationPicker standardMonteCarlo = TreeFactory.newLightTree(board, constants, 1);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MovePicker<LocationPicker> defaultMovePicker = new DefaultMovePicker(board, endTimeMillis, constants);
         return defaultMovePicker.pickMove(standardMonteCarlo, defaultTicketPicker);

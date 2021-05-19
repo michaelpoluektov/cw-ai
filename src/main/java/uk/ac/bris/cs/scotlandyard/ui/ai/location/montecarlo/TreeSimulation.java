@@ -8,16 +8,27 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
     private final Integer notifyFrequency;
     private final T rootNode;
     private final Set<PlayoutObserver> observers = new HashSet<>();
+    private final Integer coreNumber;
+    private final ReentrantLock lock = new ReentrantLock();
     private final IntermediateScore[] intermediateScores;
-    protected TreeSimulation(Toml constants, T rootNode, IntermediateScore... intermediateScores) {
+    protected TreeSimulation(Toml constants,
+                             String configPrefix,
+                             T rootNode,
+                             Integer coreNumber,
+                             IntermediateScore... intermediateScores) {
         this.notifyFrequency = constants.getLong("", 100L).intValue();
         this.rootNode = rootNode;
+        this.coreNumber = coreNumber;
         this.intermediateScores = intermediateScores;
     }
 
@@ -48,16 +59,15 @@ public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
         long endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
+        final ExecutorService executor = new ThreadPoolExecutor(1,
+                coreNumber,
+                0,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(coreNumber),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+        RunnableSimulation runnableSimulation = new RunnableSimulation();
         while(currentTime < endTime) {
-            AbstractNode selectedNode = rootNode.select();
-            selectedNode.expand();
-            if(!selectedNode.getChildren().isEmpty()) {
-                selectedNode = selectedNode.getChildren()
-                        .asList()
-                        .get(new Random().nextInt(selectedNode.getChildren().size()));
-            }
-            Integer result = selectedNode.rollout(intermediateScores);
-            selectedNode.backPropagate(result, rootNode.getRound());
+            executor.execute(runnableSimulation);
             simulations++;
             currentTime = System.currentTimeMillis();
             if(simulations % notifyFrequency == 0) {
@@ -78,5 +88,27 @@ public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
                 + " with score "
                 + bestEntry.getValue());
         return bestEntry;
+    }
+
+    private class RunnableSimulation implements Runnable {
+        @Override
+        public void run() {
+            AbstractNode selectedNode;
+            lock.lock();
+            try {
+                selectedNode = rootNode.select();
+                selectedNode.expand();
+                if(!selectedNode.getChildren().isEmpty()) {
+                    selectedNode = selectedNode.getChildren()
+                            .asList()
+                            .get(new Random().nextInt(selectedNode.getChildren().size()));
+                }
+                selectedNode.backPropagatePlays();
+            } finally {
+                lock.unlock();
+            }
+            Integer rolloutResult = selectedNode.rollout(intermediateScores);
+            selectedNode.backPropagateScore(rolloutResult, rootNode.getRound());
+        }
     }
 }

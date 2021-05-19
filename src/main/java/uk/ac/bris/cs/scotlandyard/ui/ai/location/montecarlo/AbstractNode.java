@@ -5,7 +5,6 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ public abstract class AbstractNode {
     private final NodeUCTComparator comparator;
     private final AtomicInteger plays;
     private final AtomicInteger score;
-    private final AtomicBoolean pending;
 
     protected AbstractNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
         this.miniBoard = miniBoard;
@@ -28,11 +26,6 @@ public abstract class AbstractNode {
         this.comparator = comparator;
         this.plays = new AtomicInteger();
         this.score = new AtomicInteger();
-        this.pending = new AtomicBoolean(false);
-    }
-
-    protected final Boolean isPending() {
-        return pending.get();
     }
 
     protected final Double getAverageScore() {
@@ -100,14 +93,17 @@ public abstract class AbstractNode {
         }
     }
 
-    protected final void backPropagate(Integer round, Integer rootNodeRound) {
+    protected void backPropagatePlays() {
         incrementPlays();
+        getParent().ifPresent(AbstractNode::backPropagatePlays);
+    }
+
+    protected final void backPropagateScore(Integer round, Integer rootNodeRound) {
         if(getParent().isPresent()) {
             if(getParent().get().getMiniBoard().getMrXToMove()) incrementScore(round - rootNodeRound);
             else incrementScore(getRoundSize() + 1 - round);
-            getParent().get().backPropagate(round, rootNodeRound);
+            getParent().get().backPropagateScore(round, rootNodeRound);
         }
-        pending.set(false);
     }
 
     protected abstract Integer rollout(IntermediateScore... intermediateScores);
@@ -121,35 +117,11 @@ public abstract class AbstractNode {
         }
     }
 
-    private void backPropagateLock() {
-        if(getParent().isPresent()) {
-            if(getParent().get().getChildren().stream().allMatch(AbstractNode::isPending)) {
-                getParent().get().pending.set(true);
-                getParent().get().backPropagateLock();
-            }
-        }
-    }
-
     protected final AbstractNode select() {
         if(isLeaf()) {
-            if(pending.compareAndSet(false, true)) {
-                backPropagateLock();
-                return this;
-            } else {
-                if(getParent().isPresent()) return getParent().get().select();
-                else throw new IllegalStateException("Root node is a leaf for some reason!");
-            }
+            return this;
         } else {
-            Optional<AbstractNode> maxChild = getChildren().stream().filter(node -> !isPending()).max(comparator);
-            if(maxChild.isPresent()) {
-                return maxChild.get().select();
-            } else {
-                if(getParent().isPresent()) {
-                    return getParent().get().select();
-                } else {
-                    return select();
-                }
-            }
+            return Collections.max(getChildren(), comparator).select();
         }
     }
 
