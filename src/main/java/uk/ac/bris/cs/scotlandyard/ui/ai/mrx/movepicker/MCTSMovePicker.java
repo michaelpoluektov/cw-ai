@@ -5,16 +5,16 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveConverter;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractMonteCarlo;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.AbstractNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.PlayoutObserver;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeSimulation;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutObserver {
+public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserver {
     private final MoveConverter converter;
     private final Long endTimeMillis;
     private final Double doubleThreshold;
@@ -31,7 +31,7 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
     }
     @Nonnull
     @Override
-    public Move pickMove(AbstractMonteCarlo locationPicker, TicketPicker ticketPicker) {
+    public Move pickMove(TreeSimulation locationPicker, TicketPicker ticketPicker) {
         simTime = new Pair<>(endTimeMillis - System.currentTimeMillis() - timeoutOffset, TimeUnit.MILLISECONDS);
         Map.Entry<Integer, Double> bestDestination =
                 locationPicker.getBestDestination(converter.getSingleMoveDestinations(), simTime);
@@ -45,11 +45,11 @@ public class MCTSMovePicker implements MovePicker<AbstractMonteCarlo>, PlayoutOb
      * @param bestScore Best predicted score of the children {@link AbstractNode} (representing game states)
      * @param remainingTime Remaining time (in milliseconds) until a move has to be returned
      * @param observable Reference to the observable object
-     * @see AbstractMonteCarlo
+     * @see TreeSimulation
      */
 
     @Override
-    public void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, AbstractMonteCarlo observable) {
+    public void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, TreeSimulation observable) {
         if(!addedDoubles && remainingTime < simTime.right().toMillis(simTime.left())/3 && bestScore < doubleThreshold) {
             addedDoubles = true;
             System.out.println("BEST SINGLE SCORE IS "+bestScore+", ADDING DOUBLE MOVES");

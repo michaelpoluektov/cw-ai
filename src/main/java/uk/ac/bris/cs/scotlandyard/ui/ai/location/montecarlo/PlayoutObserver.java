@@ -9,5 +9,5 @@ public interface PlayoutObserver {
      * @param remainingTime Remaining time (in milliseconds) until a move has to be returned
      * @param observable Reference to the observable object
      */
-    void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, AbstractMonteCarlo observable);
+    void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, TreeSimulation observable);
 }

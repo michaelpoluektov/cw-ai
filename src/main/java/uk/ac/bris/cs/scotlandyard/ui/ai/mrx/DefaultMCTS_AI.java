@@ -6,7 +6,7 @@ import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.StandardMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeFactory;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.DefaultTicketPicker;
@@ -27,7 +27,7 @@ public class DefaultMCTS_AI implements Ai {
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final LocationPicker standardMonteCarlo = new StandardMonteCarlo(board, constants);
+        final LocationPicker standardMonteCarlo = TreeFactory.newLightTree(board, constants);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MovePicker<LocationPicker> defaultMovePicker = new DefaultMovePicker(board, endTimeMillis, constants);
         return defaultMovePicker.pickMove(standardMonteCarlo, defaultTicketPicker);

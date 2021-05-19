@@ -2,7 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 
 import com.google.common.collect.ImmutableList;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.ParallelNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.HeavyNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.DistanceMeasurer;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Reduced version of the {@link MrXLocationScore} which does not contain or use the Toml constants or any exponentials
  * in an attempt to reduce runtime. It yet unclear weather the performance difference is actually significant.
- * @see ParallelNode
+ * @see HeavyNode
  *
  */
 public class MrXLiteLocationScore implements IntermediateScore {

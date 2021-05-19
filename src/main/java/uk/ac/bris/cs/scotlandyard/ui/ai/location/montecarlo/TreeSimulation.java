@@ -3,36 +3,42 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
-import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/**
- * The standard Monte Carlo uses random moves in stage 3) for the MCTS algorithm.
- * @see AbstractMonteCarlo for details of the algorithm.
- */
-
-public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPicker {
-    private final Integer explorationFrequency;
-    private final StandardRootNode rootNode;
-    public StandardMonteCarlo(Board board,
-                              Toml constants) {
-        this.rootNode = new StandardRootNode(board, constants);
-        this.explorationFrequency = constants.getLong("monteCarlo.explorationFrequency", (long) 100).intValue();
+public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
+    private final Integer notifyFrequency;
+    private final T rootNode;
+    private final Set<PlayoutObserver> observers = new HashSet<>();
+    private final IntermediateScore[] intermediateScores;
+    protected TreeSimulation(Toml constants, T rootNode, IntermediateScore... intermediateScores) {
+        this.notifyFrequency = constants.getLong("", 100L).intValue();
+        this.rootNode = rootNode;
+        this.intermediateScores = intermediateScores;
     }
 
-    /**
-     * Responsible for simulating the decision tree. While the current time is less than the end time we will continue
-     * simulation.
-     * <p>- The explorationFrequency is used to notify the {@link uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker}
-     * observer every {@link #explorationFrequency} simulations.</p>
-     * @param destinations ImmutableSet of all available destinations
-     * @param simulationTime Maximum time to be used to return a result
-     * @see AbstractMonteCarlo
-     */
+    public void addPlayoutObserver(PlayoutObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removePlayoutObserver(PlayoutObserver observer) {
+        observers.remove(observer);
+    }
+
+    protected void notifyObservers(Integer simulations, Double bestScore, Long remainingTime) {
+        for(PlayoutObserver observer : observers) {
+            observer.respondToPlayout(simulations, bestScore, remainingTime, this);
+        }
+    }
+
+    public void addDestinations(ImmutableSet<Integer> destinations) {
+        rootNode.addChildren(destinations);
+    }
+
     @Nonnull
     @Override
     public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
@@ -43,10 +49,18 @@ public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPi
         long currentTime = System.currentTimeMillis();
         int simulations = 0;
         while(currentTime < endTime) {
-            rootNode.runSingleSimulation();
+            AbstractNode selectedNode = rootNode.select();
+            selectedNode.expand();
+            if(!selectedNode.getChildren().isEmpty()) {
+                selectedNode = selectedNode.getChildren()
+                        .asList()
+                        .get(new Random().nextInt(selectedNode.getChildren().size()));
+            }
+            Integer result = selectedNode.rollout(intermediateScores);
+            selectedNode.backPropagate(result, rootNode.getRound());
             simulations++;
             currentTime = System.currentTimeMillis();
-            if(simulations % explorationFrequency == 0) {
+            if(simulations % notifyFrequency == 0) {
                 Double maxScore = Collections.max(rootNode.getChildren(),
                         (Comparator.comparingDouble(AbstractNode::getAverageScore))).getAverageScore();
                 notifyObservers(simulations, maxScore, endTime-currentTime);
@@ -64,10 +78,5 @@ public class StandardMonteCarlo extends AbstractMonteCarlo implements LocationPi
                 + " with score "
                 + bestEntry.getValue());
         return bestEntry;
-    }
-
-    @Override
-    public void addDestinations(ImmutableSet<Integer> destinations) {
-        rootNode.addChildren(destinations);
     }
 }

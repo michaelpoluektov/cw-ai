@@ -5,8 +5,9 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.HeavyPMC;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.ParallelMonteCarlo;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.HeavyNode;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeFactory;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeSimulation;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.BreadthFirstSearch;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
@@ -30,7 +31,7 @@ public class HeavyRolloutMCTS_AI implements Ai {
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
         final IntermediateScore locationScore = new MrXLiteLocationScore(new BreadthFirstSearch(board.getSetup().graph));
-        final ParallelMonteCarlo monteCarlo = new HeavyPMC(board, constants, locationScore);
+        final TreeSimulation<HeavyNode> monteCarlo = TreeFactory.newHeavyTree(board, constants, locationScore);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);
