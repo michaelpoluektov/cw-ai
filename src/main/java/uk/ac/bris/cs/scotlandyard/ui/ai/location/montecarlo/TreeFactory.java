@@ -14,10 +14,9 @@ public class TreeFactory {
         return new TreeSimulation<>(constants, rootNode, intermediateScores);
     }
     public static TreeSimulation<LightNode> newLightTree(Board board,
-                                                         Toml constants,
-                                                         IntermediateScore... intermediateScores) {
+                                                         Toml constants) {
         NodeUCTComparator comparator = new NodeUCTComparator(constants.getDouble("", 3.0));
         final LightNode rootNode = new LightNode(new MiniBoard(board), null, comparator);
-        return new TreeSimulation<>(constants, rootNode, intermediateScores);
+        return new TreeSimulation<>(constants, rootNode);
     }
 }
