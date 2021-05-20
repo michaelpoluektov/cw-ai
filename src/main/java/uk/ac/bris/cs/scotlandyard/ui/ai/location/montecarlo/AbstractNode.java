@@ -157,6 +157,11 @@ public abstract class AbstractNode {
     /**
      * Externally add children to root node. Used to initialise children with only available moves (including tickets)
      * and externally add children representing double moves.
+     *
+     * <p>This is separate from {@link #expand()} because a {@link MiniBoard} can not access double move destinations.
+     * {@link #expand()} would also potentially add game states that can not be reached due to insufficient tickets,
+     * which is unacceptable for the direct children of the root node since otherwise we could get our AI to output an
+     * illegal move.</p>
      * @param destinations destinations of the moves, corresponding to MrX's location in the added nodes.
      */
     protected final void addChildren(ImmutableSet<Integer> destinations) {
