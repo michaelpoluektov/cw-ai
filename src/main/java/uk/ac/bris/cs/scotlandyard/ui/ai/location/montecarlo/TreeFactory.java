@@ -23,7 +23,7 @@ public class TreeFactory {
         final HeavyNode rootNode = new HeavyNode(new MiniBoard(board), null, comparator);
         return new TreeSimulation(constants, rootNode, coreNumber, intermediateScores);
     }
-    
+
     public static TreeSimulation newLightTree(Board board,
                                               Toml constants,
                                               Integer coreNumber) {

@@ -12,6 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TreeSimulation implements LocationPicker {
@@ -19,8 +20,10 @@ public class TreeSimulation implements LocationPicker {
     private final AbstractNode rootNode;
     private final Set<PlayoutObserver> observers = new HashSet<>();
     private final Integer coreNumber;
+    private final AtomicInteger simulations = new AtomicInteger(); // Atomic in anticipation of full concurrency
     private final ReentrantLock lock = new ReentrantLock();
     private final IntermediateScore[] intermediateScores;
+    private long endTime;
     protected TreeSimulation(Toml constants,
                              AbstractNode rootNode,
                              Integer coreNumber,
@@ -55,26 +58,20 @@ public class TreeSimulation implements LocationPicker {
                                              Pair<Long, TimeUnit> simulationTime) {
         addDestinations(destinations);
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
-        long endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
+        endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();
-        int simulations = 0;
         final ExecutorService executor = new ThreadPoolExecutor(1,
                 coreNumber,
                 0,
                 TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(coreNumber),
-                new ThreadPoolExecutor.CallerRunsPolicy());
+                new ThreadPoolExecutor.DiscardPolicy());
         RunnableSimulation runnableSimulation = new RunnableSimulation();
         while(currentTime < endTime) {
             executor.execute(runnableSimulation);
-            simulations++;
             currentTime = System.currentTimeMillis();
-            if(simulations % notifyFrequency == 0) {
-                Double maxScore = Collections.max(rootNode.getChildren(),
-                        (Comparator.comparingDouble(AbstractNode::getAverageScore))).getAverageScore();
-                notifyObservers(simulations, maxScore, endTime-currentTime);
-            }
         }
+        executor.shutdown();
         for(AbstractNode child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
         }
@@ -96,6 +93,14 @@ public class TreeSimulation implements LocationPicker {
                             .get(new Random().nextInt(selectedNode.getChildren().size()));
                 }
                 selectedNode.backPropagatePlays();
+                // I know, it's useless for it to be atomic right now but one day...
+                simulations.set(simulations.get() + 1);
+                // Notify observers every notifyFrequency simulations
+                if(simulations.get() % notifyFrequency == 0) {
+                    Double maxScore = Collections.max(rootNode.getChildren(),
+                            (Comparator.comparingDouble(AbstractNode::getAverageScore))).getAverageScore();
+                    notifyObservers(simulations.get(), maxScore, endTime-System.currentTimeMillis());
+                }
             } finally {
                 lock.unlock();
             }
