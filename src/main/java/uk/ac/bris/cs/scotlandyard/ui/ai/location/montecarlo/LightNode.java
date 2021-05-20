@@ -9,9 +9,8 @@ import java.util.Random;
 
 public class LightNode extends AbstractNode {
     protected LightNode(MiniBoard miniBoard,
-                        AbstractNode parent,
-                        NodeUCTComparator comparator) {
-        super(miniBoard, parent, comparator);
+                        AbstractNode parent) {
+        super(miniBoard, parent);
     }
 
     /**
@@ -32,7 +31,7 @@ public class LightNode extends AbstractNode {
     }
 
     @Override
-    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
-        return new LightNode(miniBoard, parent, comparator);
+    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent) {
+        return new LightNode(miniBoard, parent);
     }
 }

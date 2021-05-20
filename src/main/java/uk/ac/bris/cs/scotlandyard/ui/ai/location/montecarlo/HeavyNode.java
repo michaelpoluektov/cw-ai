@@ -17,9 +17,8 @@ import java.util.*;
 
 @Beta public class HeavyNode extends AbstractNode {
     protected HeavyNode(MiniBoard miniBoard,
-                        AbstractNode parent,
-                        NodeUCTComparator comparator) {
-        super(miniBoard, parent, comparator);
+                        AbstractNode parent) {
+        super(miniBoard, parent);
     }
 
     /**
@@ -43,7 +42,7 @@ import java.util.*;
     }
 
     @Override
-    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
-        return new HeavyNode(miniBoard, parent, comparator);
+    protected AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent) {
+        return new HeavyNode(miniBoard, parent);
     }
 }

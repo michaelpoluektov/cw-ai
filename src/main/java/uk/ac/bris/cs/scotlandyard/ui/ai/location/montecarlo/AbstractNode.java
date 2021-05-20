@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * stages. We are backpropagating the plays first in order to avoid multiple threads selecting the same node.
  *
  * A concrete subclass must implement the {@link #rollout(IntermediateScore...)} method, which is used to rank a given
- * node in the tree, as well as the {@link #getNewNode(MiniBoard, AbstractNode, NodeUCTComparator)}, returning a new
+ * node in the tree, as well as the {@link #getNewNode(MiniBoard, AbstractNode)}, returning a new
  * instance of that concrete node.
  */
 
@@ -24,16 +24,14 @@ public abstract class AbstractNode {
     private final AbstractNode parent;
     private final Integer roundSize;
     private final List<AbstractNode> children;
-    private final NodeUCTComparator comparator;
     private final AtomicInteger plays;
     private final AtomicInteger score;
 
-    protected AbstractNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator) {
+    protected AbstractNode(MiniBoard miniBoard, AbstractNode parent) {
         this.miniBoard = miniBoard;
         this.parent = parent;
         this.roundSize = miniBoard.getSetup().rounds.size();
         this.children = new ArrayList<>();
-        this.comparator = comparator;
         this.plays = new AtomicInteger();
         this.score = new AtomicInteger();
     }
@@ -137,20 +135,8 @@ public abstract class AbstractNode {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
             children.addAll(getMiniBoard().getAdvancedMiniBoards().stream()
-                    .map(newMiniBoard -> getNewNode(newMiniBoard, this, comparator))
+                    .map(newMiniBoard -> getNewNode(newMiniBoard, this))
                     .collect(Collectors.toSet()));
-        }
-    }
-
-    /**
-     * Currently not thread recursive way to select a node using the UCT function.
-     * @return Selected node to be expanded & rolled out from
-     */
-    protected final AbstractNode select() {
-        if(isLeaf()) {
-            return this;
-        } else {
-            return Collections.max(getChildren(), comparator).select();
         }
     }
 
@@ -169,7 +155,7 @@ public abstract class AbstractNode {
         else {
             destinations.stream()
                     .map(getMiniBoard()::advanceMrX)
-                    .map(advancedMiniBoard -> getNewNode(advancedMiniBoard, this, comparator))
+                    .map(advancedMiniBoard -> getNewNode(advancedMiniBoard, this))
                     .forEach(children::add);
         }
     }
@@ -177,8 +163,7 @@ public abstract class AbstractNode {
     /**
      * @param miniBoard MiniBoard wrapped by node
      * @param parent Parent node
-     * @param comparator UCT comparator with corresponding exploration constant
      * @return New instance of the concrete implementation.
      */
-    protected abstract AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator);
+    protected abstract AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent);
 }

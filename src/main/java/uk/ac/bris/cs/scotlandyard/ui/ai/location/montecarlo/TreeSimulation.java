@@ -52,6 +52,7 @@ public class TreeSimulation implements LocationPicker {
     private final Integer threadNumber;
     private final AtomicInteger simulations = new AtomicInteger(); // Atomic in anticipation of full concurrency
     private final ReentrantLock lock = new ReentrantLock();
+    private final NodeUCTComparator comparator;
     private final IntermediateScore[] intermediateScores;
     private long endTime; // end time is reassigned on each call to getScoredMap
 
@@ -67,10 +68,12 @@ public class TreeSimulation implements LocationPicker {
     protected TreeSimulation(Toml constants,
                              AbstractNode rootNode,
                              Integer threadNumber,
+                             NodeUCTComparator comparator,
                              IntermediateScore... intermediateScores) {
         this.notifyFrequency = constants.getLong("monteCarlo.notificationFrequency").intValue();
         this.rootNode = rootNode;
         this.threadNumber = threadNumber;
+        this.comparator = comparator;
         this.intermediateScores = intermediateScores;
     }
 
@@ -137,6 +140,17 @@ public class TreeSimulation implements LocationPicker {
         return scoredDestinations;
     }
 
+    private AbstractNode select() {
+        AbstractNode selectedNode = rootNode;
+        while(true) {
+            if(selectedNode.isLeaf()) return selectedNode;
+            else selectedNode = selectedNode.getChildren()
+                    .stream()
+                    .max(comparator)
+                    .orElse(selectedNode.getParent().orElse(selectedNode));
+        }
+    }
+
     /**
      * Runnable class represents task to be performed by each thread.
      * @see Runnable
@@ -151,7 +165,7 @@ public class TreeSimulation implements LocationPicker {
             AbstractNode selectedNode;
             lock.lock();
             try {
-                selectedNode = rootNode.select();
+                selectedNode = select();
                 selectedNode.expand();
                 if(!selectedNode.getChildren().isEmpty()) {
                     selectedNode = selectedNode.getChildren()

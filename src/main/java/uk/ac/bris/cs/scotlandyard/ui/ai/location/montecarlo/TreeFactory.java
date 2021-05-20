@@ -20,8 +20,8 @@ public class TreeFactory {
         final String configPrefix = "monteCarlo.heavy.";
         final Double expConstant = constants.getDouble(configPrefix+"explorationConstant");
         final NodeUCTComparator comparator = new NodeUCTComparator(expConstant);
-        final HeavyNode rootNode = new HeavyNode(new MiniBoard(board), null, comparator);
-        return new TreeSimulation(constants, rootNode, coreNumber, intermediateScores);
+        final HeavyNode rootNode = new HeavyNode(new MiniBoard(board), null);
+        return new TreeSimulation(constants, rootNode, coreNumber, comparator, intermediateScores);
     }
 
     public static TreeSimulation newLightTree(Board board,
@@ -30,7 +30,7 @@ public class TreeFactory {
         final String configPrefix = "monteCarlo.light.";
         final Double expConstant = constants.getDouble(configPrefix+"explorationConstant");
         final NodeUCTComparator comparator = new NodeUCTComparator(expConstant);
-        final LightNode rootNode = new LightNode(new MiniBoard(board), null, comparator);
-        return new TreeSimulation(constants, rootNode, coreNumber);
+        final LightNode rootNode = new LightNode(new MiniBoard(board), null);
+        return new TreeSimulation(constants, rootNode, coreNumber, comparator);
     }
 }
