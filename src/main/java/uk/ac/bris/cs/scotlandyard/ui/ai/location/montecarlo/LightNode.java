@@ -15,9 +15,9 @@ public class LightNode extends AbstractNode {
     }
 
     /**
-     * Standard implementation of the rollout method. This randomly selects a path to the bottom of the decision tree
-     * @see HeavyNode for an implementation of a "heavy" playout.
-     * @return Round at which the game has ended
+     * Standard implementation of the rollout method. Randomly selects a path to the bottom of the decision tree, until
+     * a terminal state has been reached.
+     * @see HeavyNode
      */
     @Override
     protected Integer rollout(IntermediateScore... intermediateScores) {
