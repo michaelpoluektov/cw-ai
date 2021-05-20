@@ -1,12 +1,12 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 
 import com.google.common.collect.ImmutableSet;
+import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
+import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 
 /**
- * We instantiate this class with the set of all available moves returned from the available move function in the
- * {@link uk.ac.bris.cs.scotlandyard.model.Board} and {@link MiniBoard} classes. From the instantiation we can easily
- * access single and double move destinations allowing us to deal with them separately a {@link uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker}
+ * Provides simple a simple conversion between a set of available moves and their destinations.
  */
 
 public class MoveConverter {
@@ -32,6 +32,9 @@ public class MoveConverter {
                 .collect(ImmutableSet.toImmutableSet());
     }
 
+    /**
+     * Does not automatically filter out double moves in case a single move with the provided destination exists. 
+     */
     public ImmutableSet<Move> getMovesWithDestination(Integer destination) {
         return availableMoves.stream()
                 .filter(move -> move.visit(new MoveDestinationVisitor()).equals(destination))

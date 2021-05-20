@@ -14,6 +14,10 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * AI agent using the default "light" version of MCTS and the corresponding move picker.
+ * @see TreeSimulation
+ */
 public class MovePickerMCTS_AI implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull

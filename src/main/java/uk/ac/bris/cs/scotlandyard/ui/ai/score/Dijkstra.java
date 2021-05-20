@@ -13,11 +13,11 @@ import java.util.stream.IntStream;
  * This class holds our implementation of Dijkstra's algorithm which has been optimised for unweighted graphs. The
  * optimisation uses the fact that every edge has the same weight of 1 assigned to it. Therefore it does not need to
  * look at paths that travel through more nodes than the current best path.
- * We return a list of lists of integers. If the {@link Dijkstra} algorithm is called with Mrx, we return a list containing a
+ * We return a list of lists of integers. If the {@link Dijkstra} algorithm is called with MrX, we return a list containing a
  * single list of the shortest distances to the detectives. If we call {@link Dijkstra} with detectives, we return a list
  * of lists of integers, each sublist containing the shortest distance from a particular detective to all the possible
  * locations MrX could be at given his latest reveal round. This feature was intended to be used for the detectives AI.
- * @deprecated Use {@link BreadthFirstSearch}, it is about 5 times faster
+ * @deprecated Use {@link BreadthFirstSearch}, it is at least 5 times faster
  */
 
 @Deprecated public class Dijkstra implements DistanceMeasurer{

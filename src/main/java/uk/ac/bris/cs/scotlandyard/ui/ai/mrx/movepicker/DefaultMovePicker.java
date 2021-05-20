@@ -7,6 +7,8 @@ import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MoveConverter;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
+import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeSimulation;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 
 import javax.annotation.Nonnull;
@@ -14,6 +16,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The default move picker picks a move by first passing all the single locations to the location picker, then
+ * if the best score is below a certain threshold passing all the double locations to the same location picker and
+ * comparing the results. This can theoretically be used for both location pickers currently implemented in this version
+ * ({@link MiniMax} and {@link TreeSimulation}, as displayed in the Moriarty I & II agents), however it is recommended
+ * to use {@link MCTSMovePicker} for optimal results with {@link TreeSimulation}.
+ */
 public class DefaultMovePicker implements MovePicker<LocationPicker> {
     private final Board board;
     private final Long endTimeMillis;

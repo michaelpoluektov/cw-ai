@@ -5,6 +5,9 @@ import uk.ac.bris.cs.scotlandyard.model.ScotlandYard;
 
 import java.util.Comparator;
 
+/**
+ * Compares tickets based by their count in the {@link Board.TicketBoard} provided in the constructor.
+ */
 public class TicketComparator implements Comparator<ScotlandYard.Ticket> {
     private final Board.TicketBoard ticketBoard;
     protected TicketComparator(Board.TicketBoard ticketBoard) {

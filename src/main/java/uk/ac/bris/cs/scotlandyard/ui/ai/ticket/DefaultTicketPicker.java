@@ -15,12 +15,16 @@ import java.util.Comparator;
 /**
  * The default ticket picker pick the ticket in the following way:
  * <p>For single moves:</p>
- * <p>-- if the last round was a reveal round:</p>
- *      <p>------ if MrX can be a move with a secret ticket, pick that move</p>
- *      <p>------ otherwise, pick the move that uses the ticket MrX has the most of</p>
- * <p>-- otherwise, if the last round wasn't a reveal round:</p>
- *      <p>------ pick the move with the ticket MrX has the most of that is not a secret ticket</p>
- *      <p>------ use a secret ticket if and only if that is the only available option</p>
+ * <ul>
+ * <li>If the last round was a reveal round: <ul>
+ *     <li>If MrX can be a move with a secret ticket, pick that move</li>
+ *     <li>Otherwise, pick the move that uses the ticket MrX has the most of</li>
+ * </ul></li>
+ * <li>Otherwise, if the last round wasn't a reveal round:<ul>
+ *      <li>Pick the move with the ticket MrX has the most of that is not a secret ticket</li>
+ *      <li>Use a secret ticket if and only if that is the only available option</li>
+ * </ul></li>
+ * </ul>
  * <p>Same applies to each ticket in the double moves</p>
  */
 public class DefaultTicketPicker implements TicketPicker {

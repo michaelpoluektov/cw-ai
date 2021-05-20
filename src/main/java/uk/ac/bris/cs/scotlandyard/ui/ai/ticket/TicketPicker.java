@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 public interface TicketPicker {
     /**
      * @param moves ImmutableSet of all available moves, usually with pre-filtered locations
-     * @return Best Move based on Tickets
+     * @return Best {@link Move} based on tickets
      */
     @Nonnull Move getBestMoveByTickets(ImmutableSet<Move> moves);
 }

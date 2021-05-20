@@ -44,8 +44,6 @@ public class MiniMax implements LocationPicker {
      * optimising them with pruning, but enables us to compute their scores in parallel, which makes up for the
      * performance loss. This also allows us to manually input a set of destinations, which prevents MrX from picking an
      * illegal move and rank single and double moves separately.
-     * @param destinations ImmutableSet of all available destinations
-     * @return {@link Map.Entry} with the best destination and score based on the minimax algorithm.
      */
 
     @Nonnull

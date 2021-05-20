@@ -15,6 +15,9 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Move picker to be used exclusively by Monte Carlo Tree Search, allowing us to dynamically add double move destinations.
+ */
 public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserver {
     private final MoveConverter converter;
     private final Long endTimeMillis;
@@ -61,7 +64,7 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
     }
 
     /**
-     * If the best single move is less than the double threshold, and we have spent 2/3's of the total time simulating,
+     * If the best single move is less than the double threshold, and we have spent a certain proportion of the total time simulating,
      * then we add the double move destinations into the simulation for the final period of time.
      * @param simulations Amount of simulations ran to produce the result
      * @param bestScore Best predicted score of the children {@link AbstractNode} (representing game states)

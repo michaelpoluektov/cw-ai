@@ -8,6 +8,7 @@ import uk.ac.bris.cs.scotlandyard.model.Move;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.LocationPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeFactory;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker;
+import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.DefaultTicketPicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
@@ -15,6 +16,13 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.ticket.TicketPicker;
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @deprecated Uses the default move picker as opposed to the the MCTS move picker optimised for the task.
+ * @see MCTSMovePicker
+ * @see MovePickerMCTS_AI
+ */
+
+@Deprecated
 public class DefaultMCTS_AI implements Ai {
     private final Toml constants = new Toml().read(getClass().getResourceAsStream("/constants.toml"));
     @Nonnull

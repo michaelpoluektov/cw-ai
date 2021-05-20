@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Simple implementation of the breadth first search algorithm to implement {@link DistanceMeasurer}.
+ */
 public class BreadthFirstSearch implements DistanceMeasurer{
     private final ImmutableValueGraph<Integer, ImmutableSet<ScotlandYard.Transport>> graph;
     private final Integer nodeSize;
