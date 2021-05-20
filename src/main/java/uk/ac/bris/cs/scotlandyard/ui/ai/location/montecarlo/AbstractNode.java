@@ -8,6 +8,16 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+/**
+ * Class representing an abstract node for the Monte Carlo Tree Search algorithm. Currently, only rollout and
+ * backpropagation phases are thread safe, so a lock must be used to manage access to the selection and expansion
+ * stages. We are backpropagating the plays first in order to avoid multiple threads selecting the same node.
+ *
+ * A concrete subclass must implement the {@link #rollout(IntermediateScore...)} method, which is used to rank a given
+ * node in the tree, as well as the {@link #getNewNode(MiniBoard, AbstractNode, NodeUCTComparator)}, returning a new
+ * instance of that concrete node.
+ */
+
 public abstract class AbstractNode {
 
     private final MiniBoard miniBoard;
@@ -98,6 +108,7 @@ public abstract class AbstractNode {
         getParent().ifPresent(AbstractNode::backPropagatePlays);
     }
 
+    // The root node's score is never modified or accessed
     protected final void backPropagateScore(Integer round, Integer rootNodeRound) {
         if(getParent().isPresent()) {
             if(getParent().get().getMiniBoard().getMrXToMove()) incrementScore(round - rootNodeRound);
@@ -106,8 +117,22 @@ public abstract class AbstractNode {
         }
     }
 
+    /**
+     * The rollout result is meant to be a prediction over how many total rounds is MrX expected to survive for. This
+     * prediction can either be made by a playout sequence (random -- labeled "light" playout, or calculated -- labeled
+     * "heavy playout") or directly by a heuristic function.
+     * @param intermediateScores Heuristic functions to use in the rollout process, can be empty
+     * @return The round at which MrX is expected to be captured. 25 if MrX is expected to win.
+     */
     protected abstract Integer rollout(IntermediateScore... intermediateScores);
 
+
+    /**
+     * Not thread safe, access must be managed.
+     *
+     * <p>Expands a leaf node with child nodes, representing the possible game states after a move is executed. Game states
+     * obtained by the {@link MiniBoard#getAdvancedMiniBoards()} method.</p>
+     */
     protected void expand() {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not populate tree node!");
         if(getMiniBoard().getWinner() == MiniBoard.winner.NONE) {
@@ -117,6 +142,10 @@ public abstract class AbstractNode {
         }
     }
 
+    /**
+     * Currently not thread recursive way to select a node using the UCT function.
+     * @return Selected node to be expanded & rolled out from
+     */
     protected final AbstractNode select() {
         if(isLeaf()) {
             return this;
@@ -125,6 +154,11 @@ public abstract class AbstractNode {
         }
     }
 
+    /**
+     * Externally add children to root node. Used to initialise children with only available moves (including tickets)
+     * and externally add children representing double moves.
+     * @param destinations destinations of the moves, corresponding to MrX's location in the added nodes.
+     */
     protected final void addChildren(ImmutableSet<Integer> destinations) {
         if(getParent().isPresent()) throw new UnsupportedOperationException("Can not add children to non root node!");
         else {
@@ -135,5 +169,11 @@ public abstract class AbstractNode {
         }
     }
 
+    /**
+     * @param miniBoard MiniBoard wrapped by node
+     * @param parent Parent node
+     * @param comparator UCT comparator with corresponding exploration constant
+     * @return New instance of the concrete implementation.
+     */
     protected abstract AbstractNode getNewNode(MiniBoard miniBoard, AbstractNode parent, NodeUCTComparator comparator);
 }
