@@ -28,7 +28,7 @@ public class MovePickerMCTS_AI implements Ai {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
         final TreeSimulation monteCarlo = TreeFactory.newLightTree(board, constants, 4);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
-        final String prefix = "monteCarlo.light";
+        final String prefix = "monteCarlo.light.";
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants, prefix);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);
         return monteCarloMovePicker.pickMove(monteCarlo, defaultTicketPicker);

@@ -5,7 +5,6 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.HeavyNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeFactory;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeSimulation;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
@@ -33,7 +32,7 @@ public class HeavyRolloutMCTS_AI implements Ai {
         final IntermediateScore locationScore = new MrXLiteLocationScore(new BreadthFirstSearch(board.getSetup().graph));
         final TreeSimulation monteCarlo = TreeFactory.newHeavyTree(board, constants, 4, locationScore);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
-        final String prefix = "monteCarlo.heavy";
+        final String prefix = "monteCarlo.heavy.";
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants, prefix);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);
         return monteCarloMovePicker.pickMove(monteCarlo, defaultTicketPicker);

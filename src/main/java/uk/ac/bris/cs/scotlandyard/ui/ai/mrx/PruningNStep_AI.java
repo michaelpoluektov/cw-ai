@@ -8,7 +8,6 @@ import uk.ac.bris.cs.scotlandyard.ui.ai.location.MiniMax;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.DefaultMovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.BreadthFirstSearch;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXAvailableMovesScore;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate.MrXLocationScore;
