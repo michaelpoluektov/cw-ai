@@ -13,6 +13,7 @@ public interface LocationPicker {
      * @param destinations ImmutableSet of all available destinations
      * @return {@link Map.Entry} with best destination as key and it's score as value
      */
-    @Nonnull Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
-                                                           Pair<Long, TimeUnit> simulationTime);
+    @Nonnull
+    Map<Integer, Double> getScoredMap(ImmutableSet<Integer> destinations,
+                                      Pair<Long, TimeUnit> simulationTime);
 }

@@ -1,5 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker;
 
+import com.google.common.collect.ImmutableSet;
 import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
@@ -21,11 +22,11 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
     private final Long timeoutOffset;
     private Boolean addedDoubles;
     private Pair<Long, TimeUnit> simTime;
-    public MCTSMovePicker(Board board, Long endTimeMillis, Toml constants) {
+    public MCTSMovePicker(Board board, Long endTimeMillis, Toml constants, String prefix) {
         this.converter = new MoveConverter(board.getAvailableMoves());
         this.endTimeMillis = endTimeMillis;
-        this.doubleThreshold = constants.getDouble("monteCarlo.mctsDoubleThreshold", 3.0);
-        this.timeoutOffset = constants.getLong("monteCarlo.timeoutOffsetMillis", (long) 300);
+        this.doubleThreshold = constants.getDouble(prefix+"doubleThreshold", 5.0);
+        this.timeoutOffset = constants.getLong("monteCarlo.timeoutOffsetMillis", 1000L);
         this.addedDoubles = false;
 
     }
@@ -33,9 +34,26 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
     @Override
     public Move pickMove(TreeSimulation locationPicker, TicketPicker ticketPicker) {
         simTime = new Pair<>(endTimeMillis - System.currentTimeMillis() - timeoutOffset, TimeUnit.MILLISECONDS);
-        Map.Entry<Integer, Double> bestDestination =
-                locationPicker.getBestDestination(converter.getSingleMoveDestinations(), simTime);
-        return ticketPicker.getBestMoveByTickets(converter.getMovesWithDestination(bestDestination.getKey()));
+        ImmutableSet<Integer> singleDestinations = converter.getSingleMoveDestinations();
+        Map<Integer, Double> locMap = locationPicker.getScoredMap(singleDestinations, simTime);
+        Map.Entry<Integer, Double> bestSingle = locMap.entrySet().stream()
+                .filter(entry -> singleDestinations.contains(entry.getKey()))
+                .max(Map.Entry.comparingByValue())
+                .orElseThrow();
+        Map.Entry<Integer, Double> bestDouble = locMap.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .orElseThrow();
+        System.out.println("Single: "
+                        +bestSingle.getKey()
+                        +" ["+String.format("%.2f", bestSingle.getValue())
+                        +"], any: " +bestDouble.getKey()
+                        +" ["+String.format("%.2f", bestDouble.getValue())
+                        +"]");
+        Integer bestDestination;
+        if(bestSingle.getValue() * 1.6 > bestDouble.getValue()) bestDestination = bestSingle.getKey();
+        else bestDestination = bestDouble.getKey();
+        System.out.println("Going to "+bestDestination);
+        return ticketPicker.getBestMoveByTickets(converter.getMovesWithDestination(bestDestination));
     }
 
     /**

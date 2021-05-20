@@ -1,7 +1,6 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai.location;
 
 import com.google.common.collect.ImmutableSet;
-import com.moandjiezana.toml.Toml;
 import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This class implements the {@link LocationPicker} interface, and implements the {@link #getBestDestination(ImmutableSet, Pair)}
+ * This class implements the {@link LocationPicker} interface, and implements the {@link #getScoredMap(ImmutableSet, Pair)}
  * method using the MiniMax algorithm, which iterates through the entire game tree N moves ahead of the given game
  * state, and expects each player to pick the best move they have available. It is optimised using Alpha-Beta pruning.
  * For more information, check out <a href="https://en.wikipedia.org/wiki/Minimax">MiniMax</a>,
@@ -51,17 +50,15 @@ public class MiniMax implements LocationPicker {
 
     @Nonnull
     @Override
-    public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
-                                                         Pair<Long, TimeUnit> simulationTime) {
+    public Map<Integer, Double> getScoredMap(ImmutableSet<Integer> destinations,
+                                             Pair<Long, TimeUnit> simulationTime) {
         Map<Integer, Double> scoredDestinations = Collections.synchronizedMap(new HashMap<>());
         MiniBoard miniBoard = new MiniBoard(board);
         System.out.print("Rating destinations: ");
         destinations.parallelStream()
                 .forEach(destination -> addRankedDestination(scoredDestinations, miniBoard, destination));
-        Map.Entry<Integer, Double> bestEntry =
-                Collections.max(scoredDestinations.entrySet(), Map.Entry.comparingByValue());
-        System.out.println("\nBest destination is " + bestEntry.getKey() + " with score " + bestEntry.getValue());
-        return bestEntry;
+        System.out.println();
+        return scoredDestinations;
     }
 
     /**
@@ -90,7 +87,7 @@ public class MiniMax implements LocationPicker {
      * @param miniBoard MiniBoard representing the current state
      * @param depth Depth to run the algorithm at, treats each detective move as a depth of 1 (i.e. 2 step lookahead for
      * a game with 5 detectives would be a depth of 5, since the first move of MrX is simulated in
-     * {@link #getBestDestination(ImmutableSet, Pair)}).
+     * {@link #getScoredMap(ImmutableSet, Pair)}).
      * @param alpha Alpha cut-off point for pruning
      * @param beta Beta cut-off point for pruning
      * @return The score of a given board after looking ahead 'depth' steps

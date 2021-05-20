@@ -5,7 +5,6 @@ import io.atlassian.fugue.Pair;
 import uk.ac.bris.cs.scotlandyard.model.Ai;
 import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
-import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.LightNode;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeFactory;
 import uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo.TreeSimulation;
 import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MCTSMovePicker;
@@ -27,9 +26,10 @@ public class MovePickerMCTS_AI implements Ai {
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final TreeSimulation<LightNode> monteCarlo = TreeFactory.newLightTree(board, constants, 4);
+        final TreeSimulation monteCarlo = TreeFactory.newLightTree(board, constants, 4);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
-        final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants);
+        final String prefix = "monteCarlo.light";
+        final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants, prefix);
         monteCarlo.addPlayoutObserver(monteCarloMovePicker);
         return monteCarloMovePicker.pickMove(monteCarlo, defaultTicketPicker);
     }

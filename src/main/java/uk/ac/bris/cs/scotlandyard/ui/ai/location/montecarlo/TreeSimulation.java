@@ -14,19 +14,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
+public class TreeSimulation implements LocationPicker {
     private final Integer notifyFrequency;
-    private final T rootNode;
+    private final AbstractNode rootNode;
     private final Set<PlayoutObserver> observers = new HashSet<>();
     private final Integer coreNumber;
     private final ReentrantLock lock = new ReentrantLock();
     private final IntermediateScore[] intermediateScores;
     protected TreeSimulation(Toml constants,
-                             String configPrefix,
-                             T rootNode,
+                             AbstractNode rootNode,
                              Integer coreNumber,
                              IntermediateScore... intermediateScores) {
-        this.notifyFrequency = constants.getLong("", 100L).intValue();
+        this.notifyFrequency = constants.getLong("monteCarlo.notificationFrequency", 100L).intValue();
         this.rootNode = rootNode;
         this.coreNumber = coreNumber;
         this.intermediateScores = intermediateScores;
@@ -52,8 +51,8 @@ public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
 
     @Nonnull
     @Override
-    public Map.Entry<Integer, Double> getBestDestination(ImmutableSet<Integer> destinations,
-                                                         Pair<Long, TimeUnit> simulationTime) {
+    public Map<Integer, Double> getScoredMap(ImmutableSet<Integer> destinations,
+                                             Pair<Long, TimeUnit> simulationTime) {
         addDestinations(destinations);
         HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         long endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
@@ -79,15 +78,8 @@ public class TreeSimulation<T extends AbstractNode> implements LocationPicker {
         for(AbstractNode child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
         }
-        Map.Entry<Integer, Double> bestEntry =
-                Collections.max(scoredDestinations.entrySet(), Map.Entry.comparingByValue());
-        System.out.println("Ran "
-                + simulations
-                + " simulations, best destination is: "
-                + bestEntry.getKey()
-                + " with score "
-                + bestEntry.getValue());
-        return bestEntry;
+        System.out.println("Ran " + simulations + " simulations");
+        return scoredDestinations;
     }
 
     private class RunnableSimulation implements Runnable {
