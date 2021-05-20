@@ -25,7 +25,7 @@ public class TreeSimulation implements LocationPicker {
                              AbstractNode rootNode,
                              Integer coreNumber,
                              IntermediateScore... intermediateScores) {
-        this.notifyFrequency = constants.getLong("monteCarlo.notificationFrequency", 100L).intValue();
+        this.notifyFrequency = constants.getLong("monteCarlo.notificationFrequency").intValue();
         this.rootNode = rootNode;
         this.coreNumber = coreNumber;
         this.intermediateScores = intermediateScores;

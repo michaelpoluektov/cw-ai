@@ -1,5 +1,7 @@
 title = "Scoring constants"
 
+timeoutOffsetMillis = 1000
+
 [availableMoves]
 weight = 3.0
 exp = 1.15
@@ -13,17 +15,16 @@ threshold = 0.4
 minOffset = 0.2
 
 [monteCarlo]
-timeoutOffsetMillis = 1000
 notificationFrequency = 100
+doubleOffsetFactor = 1.6
+doubleTimeDivider = 2.0
 
     [monteCarlo.light]
     explorationConstant = 3.0
     doubleThreshold = 5.0
-    doubleMinOffset = 3.0
 
     [monteCarlo.heavy]
     explorationConstant = 3.0
     doubleThreshold = 5.0
-    doubleMinOffset = 3.0
 
 

@@ -23,9 +23,9 @@ public class DefaultMovePicker implements MovePicker<LocationPicker> {
     public DefaultMovePicker(Board board, Long endTimeMillis, Toml constants) {
         this.board = board;
         this.endTimeMillis = endTimeMillis;
-        this.doubleThreshold = constants.getDouble("double.threshold", 0.4);
-        this.doubleOffset = constants.getDouble("double.minOffset", 0.2);
-        this.timeoutOffsetMillis = constants.getLong("monteCarlo.timeoutOffsetMillis", (long) 300);
+        this.doubleThreshold = constants.getDouble("double.threshold");
+        this.doubleOffset = constants.getDouble("double.minOffset");
+        this.timeoutOffsetMillis = constants.getLong("timeoutOffsetMillis");
     }
     @Nonnull
     @Override

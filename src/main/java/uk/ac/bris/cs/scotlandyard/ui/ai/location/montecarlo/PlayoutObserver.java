@@ -2,7 +2,7 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.location.montecarlo;
 
 public interface PlayoutObserver {
     /**
-     * Method called by a {@link StandardMonteCarlo} object (Observable) to notify it's observer of the current predicted
+     * Method called by a object (Observable) to notify it's observer of the current predicted
      * results.
      * @param simulations Amount of simulations ran to produce the result
      * @param bestScore Best predicted score of the children {@link AbstractNode}s (representing game states)

@@ -19,14 +19,18 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
     private final MoveConverter converter;
     private final Long endTimeMillis;
     private final Double doubleThreshold;
+    private final Double doubleTimeDivider;
+    private final Double doubleOffsetFactor;
     private final Long timeoutOffset;
     private Boolean addedDoubles;
     private Pair<Long, TimeUnit> simTime;
     public MCTSMovePicker(Board board, Long endTimeMillis, Toml constants, String prefix) {
         this.converter = new MoveConverter(board.getAvailableMoves());
         this.endTimeMillis = endTimeMillis;
-        this.doubleThreshold = constants.getDouble(prefix+"doubleThreshold", 5.0);
-        this.timeoutOffset = constants.getLong("monteCarlo.timeoutOffsetMillis", 1000L);
+        this.doubleThreshold = constants.getDouble(prefix+"doubleThreshold");
+        this.doubleTimeDivider = constants.getDouble("monteCarlo.doubleTimeDivider");
+        this.doubleOffsetFactor = constants.getDouble("monteCarlo.doubleOffsetFactor");
+        this.timeoutOffset = constants.getLong("timeoutOffsetMillis");
         this.addedDoubles = false;
 
     }
@@ -50,7 +54,7 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
                         +" ["+String.format("%.2f", bestDouble.getValue())
                         +"]");
         Integer bestDestination;
-        if(bestSingle.getValue() * 1.6 > bestDouble.getValue()) bestDestination = bestSingle.getKey();
+        if(bestSingle.getValue() * doubleOffsetFactor > bestDouble.getValue()) bestDestination = bestSingle.getKey();
         else bestDestination = bestDouble.getKey();
         System.out.println("Going to "+bestDestination);
         return ticketPicker.getBestMoveByTickets(converter.getMovesWithDestination(bestDestination));
@@ -68,7 +72,9 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
 
     @Override
     public void respondToPlayout(Integer simulations, Double bestScore, Long remainingTime, TreeSimulation observable) {
-        if(!addedDoubles && remainingTime < simTime.right().toMillis(simTime.left())/3 && bestScore < doubleThreshold) {
+        if(!addedDoubles
+                && remainingTime < simTime.right().toMillis(simTime.left())/doubleTimeDivider
+                && bestScore < doubleThreshold) {
             addedDoubles = true;
             System.out.println("BEST SINGLE SCORE IS "+bestScore+", ADDING DOUBLE MOVES");
             observable.addDestinations(converter.getDoubleMoveDestinations());
