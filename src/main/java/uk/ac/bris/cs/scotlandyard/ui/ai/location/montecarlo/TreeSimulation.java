@@ -147,7 +147,7 @@ public class TreeSimulation implements LocationPicker {
             else selectedNode = selectedNode.getChildren()
                     .stream()
                     .max(comparator)
-                    .orElse(selectedNode.getParent().orElse(selectedNode));
+                    .orElseThrow();
         }
     }
 
