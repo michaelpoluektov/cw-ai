@@ -24,7 +24,7 @@ public class BreadthFirstSearch implements DistanceMeasurer{
 
     @Override public final List<List<Integer>> getDistances(ImmutableList<Integer> sources,
                                                   ImmutableList<Integer> destinations) {
-        List<List<Integer>> distances = new ArrayList<>();
+        final List<List<Integer>> distances = new ArrayList<>();
         for(Integer source : sources) {
             final List<Integer> distanceToSource = new ArrayList<>(Collections.nCopies(nodeSize, Integer.MAX_VALUE));
             distanceToSource.set(source - 1, 0);

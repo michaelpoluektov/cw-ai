@@ -118,7 +118,7 @@ public class TreeSimulation implements LocationPicker {
     public Map<Integer, Double> getScoredMap(ImmutableSet<Integer> destinations,
                                              Pair<Long, TimeUnit> simulationTime) {
         addDestinations(destinations);
-        HashMap<Integer, Double> scoredDestinations = new HashMap<>();
+        final HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();
         final ExecutorService executor = new ThreadPoolExecutor(1,
@@ -127,7 +127,7 @@ public class TreeSimulation implements LocationPicker {
                 TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(threadNumber),
                 new ThreadPoolExecutor.DiscardPolicy());
-        RunnableSimulation runnableSimulation = new RunnableSimulation();
+        final RunnableSimulation runnableSimulation = new RunnableSimulation();
         while(currentTime < endTime) {
             executor.execute(runnableSimulation);
             currentTime = System.currentTimeMillis();

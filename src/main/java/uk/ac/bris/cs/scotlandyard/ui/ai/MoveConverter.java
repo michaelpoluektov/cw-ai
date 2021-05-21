@@ -1,9 +1,7 @@
 package uk.ac.bris.cs.scotlandyard.ui.ai;
 
 import com.google.common.collect.ImmutableSet;
-import uk.ac.bris.cs.scotlandyard.model.Board;
 import uk.ac.bris.cs.scotlandyard.model.Move;
-import uk.ac.bris.cs.scotlandyard.ui.ai.mrx.movepicker.MovePicker;
 
 /**
  * Provides simple a simple conversion between a set of available moves and their destinations.

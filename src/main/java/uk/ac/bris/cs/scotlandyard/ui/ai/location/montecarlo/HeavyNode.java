@@ -29,7 +29,7 @@ import java.util.*;
     @Override
     protected Integer rollout(IntermediateScore... intermediateScores) {
         if(!isLeaf()) throw new UnsupportedOperationException("Can not rollout from tree node!");
-        Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);
+        final Comparator<MiniBoard> comparator = new MiniBoard.ScoreComparator(intermediateScores);
         MiniBoard rollingMiniBoard = getMiniBoard();
         while(rollingMiniBoard.getWinner() == MiniBoard.winner.NONE) {
             ImmutableList<MiniBoard> availableMiniBoards = rollingMiniBoard.getAdvancedMiniBoards().asList();

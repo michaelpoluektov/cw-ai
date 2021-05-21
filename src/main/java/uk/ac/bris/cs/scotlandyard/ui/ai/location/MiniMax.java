@@ -50,8 +50,8 @@ public class MiniMax implements LocationPicker {
     @Override
     public Map<Integer, Double> getScoredMap(ImmutableSet<Integer> destinations,
                                              Pair<Long, TimeUnit> simulationTime) {
-        Map<Integer, Double> scoredDestinations = Collections.synchronizedMap(new HashMap<>());
-        MiniBoard miniBoard = new MiniBoard(board);
+        final Map<Integer, Double> scoredDestinations = Collections.synchronizedMap(new HashMap<>());
+        final MiniBoard miniBoard = new MiniBoard(board);
         System.out.print("Rating destinations: ");
         destinations.parallelStream()
                 .forEach(destination -> addRankedDestination(scoredDestinations, miniBoard, destination));
@@ -66,10 +66,10 @@ public class MiniMax implements LocationPicker {
      */
 
     private void addRankedDestination(Map<Integer, Double> map, MiniBoard miniBoard, Integer destination) {
-        Double score = runMiniMax(miniBoard.advanceMrX(destination),
-                steps,
-                Double.NEGATIVE_INFINITY,
-                Double.POSITIVE_INFINITY);
+        final Double score = runMiniMax(miniBoard.advanceMrX(destination),
+                    steps,
+                    Double.NEGATIVE_INFINITY,
+                    Double.POSITIVE_INFINITY);
         System.out.print(destination + " [" + String.format("%.2f", score) + "] ");
         map.put(destination, score);
     }
@@ -92,15 +92,15 @@ public class MiniMax implements LocationPicker {
      */
 
     private Double runMiniMax(MiniBoard miniBoard, Integer depth, Double alpha, Double beta){
-        MiniBoard.winner winner = miniBoard.getWinner();
+        final MiniBoard.winner winner = miniBoard.getWinner();
         if(winner == MiniBoard.winner.DETECTIVES) return 0.0;
         if(winner == MiniBoard.winner.MRX) return 1.0;
         if(depth == 0) return miniBoard.getMrXBoardScore(intermediateScores);
-        Boolean mrXToMove = miniBoard.getMrXToMove();
+        final Boolean mrXToMove = miniBoard.getMrXToMove();
         if(mrXToMove){
             double maxScore = Double.NEGATIVE_INFINITY;
             for(MiniBoard advancedMiniBoard : miniBoard.getAdvancedMiniBoards()) {
-                Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
+                final Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
                 if(maxScore < advancedScore) maxScore = advancedScore;
                 alpha = Double.max(alpha, advancedScore);
                 if(beta <= alpha) break;
@@ -110,7 +110,7 @@ public class MiniMax implements LocationPicker {
         else{
             double minScore = Double.POSITIVE_INFINITY;
             for(MiniBoard advancedMiniBoard : miniBoard.getAdvancedMiniBoards()) {
-                Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
+                final Double advancedScore = runMiniMax(advancedMiniBoard, depth - 1, alpha, beta);
                 if(minScore > advancedScore) minScore = advancedScore;
                 beta = Double.min(beta, advancedScore);
                 if(beta <= alpha) break;

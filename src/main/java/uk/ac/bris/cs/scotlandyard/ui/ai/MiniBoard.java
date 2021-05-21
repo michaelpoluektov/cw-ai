@@ -96,28 +96,28 @@ public class MiniBoard {
         this.mrXToMove = mrXToMove;
         this.round = round;
     }
-    public Integer getMrXLocation() {
+    public final Integer getMrXLocation() {
         return mrXLocation;
     }
     
-    public ImmutableList<Integer> getDetectiveLocations() {
+    public final ImmutableList<Integer> getDetectiveLocations() {
         return Stream.concat(unmovedDetectiveLocations.stream(), movedDetectiveLocations.stream())
                 .collect(ImmutableList.toImmutableList());
     }
 
-    public ImmutableList<Integer> getUnmovedDetectiveLocations() {
+    public final ImmutableList<Integer> getUnmovedDetectiveLocations() {
         return unmovedDetectiveLocations;
     }
 
-    public GameSetup getSetup() {
+    public final GameSetup getSetup() {
         return setup;
     }
     
-    public Boolean getMrXToMove() {
+    public final Boolean getMrXToMove() {
         return mrXToMove;
     }
 
-    public Integer getRound() {
+    public final Integer getRound() {
         return round;
     }
 
@@ -191,7 +191,7 @@ public class MiniBoard {
         NONE
     }
 
-    public winner getWinner() {
+    public final winner getWinner() {
         if(getDetectiveLocations().contains(mrXLocation) || getNodeDestinations(mrXLocation).size() == 0) {
             return winner.DETECTIVES;
         } else if(round == setup.rounds.size() && mrXToMove) return winner.MRX;

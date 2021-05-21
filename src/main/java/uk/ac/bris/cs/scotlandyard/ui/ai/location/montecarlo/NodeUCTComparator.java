@@ -24,8 +24,8 @@ public class NodeUCTComparator implements Comparator<AbstractNode> {
 
     private Double getUCTScore(AbstractNode node){
         if(node.getParent().isEmpty()) throw new IllegalArgumentException("Root node doesn't have a parent");
-        Double exploitation = node.getAverageScore();
-        Double exploration = explorationConstant * Math.sqrt(Math.log(node.getParent().get().getPlays())/node.getPlays());
+        final Double exploitation = node.getAverageScore();
+        final Double exploration = explorationConstant * Math.sqrt(Math.log(node.getParent().get().getPlays())/node.getPlays());
         return exploitation + exploration;
     }
     @Override

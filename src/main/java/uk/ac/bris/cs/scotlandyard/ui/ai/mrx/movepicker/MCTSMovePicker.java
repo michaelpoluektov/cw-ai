@@ -41,13 +41,13 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
     @Override
     public Move pickMove(TreeSimulation locationPicker, TicketPicker ticketPicker) {
         simTime = new Pair<>(endTimeMillis - System.currentTimeMillis() - timeoutOffset, TimeUnit.MILLISECONDS);
-        ImmutableSet<Integer> singleDestinations = converter.getSingleMoveDestinations();
-        Map<Integer, Double> locMap = locationPicker.getScoredMap(singleDestinations, simTime);
-        Map.Entry<Integer, Double> bestSingle = locMap.entrySet().stream()
+        final ImmutableSet<Integer> singleDestinations = converter.getSingleMoveDestinations();
+        final Map<Integer, Double> locMap = locationPicker.getScoredMap(singleDestinations, simTime);
+        final Map.Entry<Integer, Double> bestSingle = locMap.entrySet().stream()
                 .filter(entry -> singleDestinations.contains(entry.getKey()))
                 .max(Map.Entry.comparingByValue())
                 .orElseThrow();
-        Map.Entry<Integer, Double> bestDouble = locMap.entrySet().stream()
+        final Map.Entry<Integer, Double> bestDouble = locMap.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .orElseThrow();
         System.out.println("Single: "

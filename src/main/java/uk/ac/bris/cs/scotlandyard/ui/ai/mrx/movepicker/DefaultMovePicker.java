@@ -39,31 +39,31 @@ public class DefaultMovePicker implements MovePicker<LocationPicker> {
     @Nonnull
     @Override
     public Move pickMove(LocationPicker locationPicker, TicketPicker ticketPicker) {
-        Long simMillisTime = (endTimeMillis-System.currentTimeMillis()-timeoutOffsetMillis)/2;
-        Pair<Long, TimeUnit> simulationTime = new Pair<>(simMillisTime, TimeUnit.MILLISECONDS);
-        MoveConverter converter = new MoveConverter(board.getAvailableMoves());
-        ImmutableSet<Integer> singleMoveDestinations = converter.getSingleMoveDestinations();
+        final Long simMillisTime = (endTimeMillis-System.currentTimeMillis()-timeoutOffsetMillis)/2;
+        final Pair<Long, TimeUnit> simulationTime = new Pair<>(simMillisTime, TimeUnit.MILLISECONDS);
+        final MoveConverter converter = new MoveConverter(board.getAvailableMoves());
+        final ImmutableSet<Integer> singleMoveDestinations = converter.getSingleMoveDestinations();
         System.out.println("RATING SINGLE MOVES");
-        Map<Integer, Double> singleMap = locationPicker.getScoredMap(singleMoveDestinations, simulationTime);
-        Map.Entry<Integer, Double> bestSingleEntry =
+        final Map<Integer, Double> singleMap = locationPicker.getScoredMap(singleMoveDestinations, simulationTime);
+        final Map.Entry<Integer, Double> bestSingleEntry =
                 Collections.max(singleMap.entrySet(), Map.Entry.comparingByValue());
-        Double bestSingleValue = bestSingleEntry.getValue();
+        final Double bestSingleValue = bestSingleEntry.getValue();
         if(bestSingleValue < doubleThreshold){
-            ImmutableSet<Integer> doubleMoveDestinations = converter.getDoubleMoveDestinations();
+            final ImmutableSet<Integer> doubleMoveDestinations = converter.getDoubleMoveDestinations();
             if(!doubleMoveDestinations.isEmpty()) {
                 System.out.println("RATING DOUBLE MOVES");
-                Map<Integer, Double> doubleMap =
+                final Map<Integer, Double> doubleMap =
                         locationPicker.getScoredMap(doubleMoveDestinations, simulationTime);
-                Map.Entry<Integer, Double> bestDoubleEntry =
+                final Map.Entry<Integer, Double> bestDoubleEntry =
                         Collections.max(doubleMap.entrySet(), Map.Entry.comparingByValue());
-                Double bestDoubleValue = bestDoubleEntry.getValue();
+                final Double bestDoubleValue = bestDoubleEntry.getValue();
                 if(bestDoubleValue > bestSingleValue + doubleOffset || bestSingleValue == 0) {
-                    ImmutableSet<Move> doubleMoves = converter.getMovesWithDestination(bestDoubleEntry.getKey());
+                    final ImmutableSet<Move> doubleMoves = converter.getMovesWithDestination(bestDoubleEntry.getKey());
                     return ticketPicker.getBestMoveByTickets(doubleMoves);
                 }
             }
         }
-        ImmutableSet<Move> singleMoves = converter.getMovesWithDestination(bestSingleEntry.getKey());
+        final ImmutableSet<Move> singleMoves = converter.getMovesWithDestination(bestSingleEntry.getKey());
         return ticketPicker.getBestMoveByTickets(singleMoves);
     }
 }
