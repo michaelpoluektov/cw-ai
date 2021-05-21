@@ -24,7 +24,7 @@ import java.util.*;
     /**
      * Rollout using the "heavy" method. This takes significantly more time than any other rollout method, and therefore
      * can greatly benefit from multithreading.
-     * @param intermediateScores Heuristic functions to use in the rollout process, can be empty
+     * @param intermediateScores Heuristic functions to use in the rollout process, can not be empty for heavy rollout
      */
     @Override
     protected Integer rollout(IntermediateScore... intermediateScores) {

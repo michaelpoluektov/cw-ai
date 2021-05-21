@@ -33,6 +33,7 @@ public class PruningNStep_AI implements Ai {
     @Nonnull @Override public Move pickMove(
             @Nonnull Board board,
             Pair<Long, TimeUnit> timeoutPair) {
+        // MiniMax doesn't support a timeout at this point, but this is here in case it does later
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
         final IntermediateScore locationScore =
                 new MrXLocationScore(constants, new BreadthFirstSearch(board.getSetup().graph));

@@ -111,7 +111,8 @@ public class TreeSimulation implements LocationPicker {
      * Samples a game tree using the MCTS method and returns a map of destinations and corresponding average scores once
      * the given simulation time runs out.
      * @param destinations ImmutableSet of all available destinations
-     * @param simulationTime Maximum time to be used to return a result
+     * @param simulationTime Maximum time to be used to return a result, a minimum of 0.5 seconds overhead is
+     *                       recommended
      */
     @Nonnull
     @Override
@@ -121,6 +122,7 @@ public class TreeSimulation implements LocationPicker {
         final HashMap<Integer, Double> scoredDestinations = new HashMap<>();
         endTime = System.currentTimeMillis()+simulationTime.right().toMillis(simulationTime.left());
         long currentTime = System.currentTimeMillis();
+        // Discard policy means submitted tasks just don't get processed if all threads are busy
         final ExecutorService executor = new ThreadPoolExecutor(1,
                 threadNumber,
                 0,
@@ -128,10 +130,12 @@ public class TreeSimulation implements LocationPicker {
                 new ArrayBlockingQueue<>(threadNumber),
                 new ThreadPoolExecutor.DiscardPolicy());
         final RunnableSimulation runnableSimulation = new RunnableSimulation();
+        // Spam the ExecutorService with new tasks until timer runs out, if all threads are full they get discarded
         while(currentTime < endTime) {
             executor.execute(runnableSimulation);
             currentTime = System.currentTimeMillis();
         }
+        // shutdown() executes the remaining few (threadNumber) tasks in the queue, that's why the overhead is important
         executor.shutdown();
         for(AbstractNode child : rootNode.getChildren()){
             scoredDestinations.put(child.getMiniBoard().getMrXLocation(), child.getAverageScore());
@@ -140,6 +144,8 @@ public class TreeSimulation implements LocationPicker {
         return scoredDestinations;
     }
 
+    // a "while(true)" loop is used rather than "while(!selectedNode.isLeaf()) to ease potential transition to
+    // individually blocked nodes
     private AbstractNode select() {
         AbstractNode selectedNode = rootNode;
         while(true) {
@@ -164,6 +170,9 @@ public class TreeSimulation implements LocationPicker {
         public void run() {
             AbstractNode selectedNode;
             lock.lock();
+            // try & finally used here to prevent the whole simulation being blocked in case of an exception
+            // in the very rare case that a node gets expanded (again) before it's rollout starts, the operation would
+            // throw an exception
             try {
                 selectedNode = select();
                 selectedNode.expand();

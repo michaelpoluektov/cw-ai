@@ -102,6 +102,7 @@ public abstract class AbstractNode {
     }
 
     protected void backPropagatePlays() {
+        // This actually doesn't need to be atomic (yet)
         incrementPlays();
         getParent().ifPresent(AbstractNode::backPropagatePlays);
     }

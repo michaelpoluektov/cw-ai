@@ -29,6 +29,8 @@ public class MovePickerMCTS_AI implements Ai {
     @Nonnull
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
+        // Use all the threads, although it doesn't scale perfectly in this case (only about double the simulations
+        // for x4 the amount of threads)
         final Integer threadNumber = Runtime.getRuntime().availableProcessors();
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
         final TreeSimulation monteCarlo = TreeFactory.newLightTree(board, constants, threadNumber);

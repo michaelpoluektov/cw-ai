@@ -50,6 +50,9 @@ public class MiniMax implements LocationPicker {
     @Override
     public Map<Integer, Double> getScoredMap(ImmutableSet<Integer> destinations,
                                              Pair<Long, TimeUnit> simulationTime) {
+        // simulationTime is ignored, but for 6 steps even my 0.80hz dual core processor handles it in a few seconds
+        // in the worst case scenario...
+        // Could be used for variable lookahead size though
         final Map<Integer, Double> scoredDestinations = Collections.synchronizedMap(new HashMap<>());
         final MiniBoard miniBoard = new MiniBoard(board);
         System.out.print("Rating destinations: ");

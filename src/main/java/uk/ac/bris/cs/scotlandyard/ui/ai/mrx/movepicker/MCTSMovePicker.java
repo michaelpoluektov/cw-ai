@@ -56,6 +56,7 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
                         +"], any: " +bestDouble.getKey()
                         +" ["+String.format("%.2f", bestDouble.getValue())
                         +"]");
+        // Is it actually worth using a double move (even if it has been added)?
         Integer bestDestination;
         if(bestSingle.getValue() * doubleOffsetFactor > bestDouble.getValue()) bestDestination = bestSingle.getKey();
         else bestDestination = bestDouble.getKey();
@@ -79,7 +80,7 @@ public class MCTSMovePicker implements MovePicker<TreeSimulation>, PlayoutObserv
                 && remainingTime < simTime.right().toMillis(simTime.left())/doubleTimeDivider
                 && bestScore < doubleThreshold) {
             addedDoubles = true;
-            System.out.println("BEST SINGLE SCORE IS "+bestScore+", ADDING DOUBLE MOVES");
+            System.out.println("BEST SINGLE SCORE IS "+String.format("%.2f",bestScore)+", ADDING DOUBLE MOVES");
             observable.addDestinations(converter.getDoubleMoveDestinations());
         }
     }

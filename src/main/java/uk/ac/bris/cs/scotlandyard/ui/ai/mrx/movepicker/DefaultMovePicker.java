@@ -39,6 +39,7 @@ public class DefaultMovePicker implements MovePicker<LocationPicker> {
     @Nonnull
     @Override
     public Move pickMove(LocationPicker locationPicker, TicketPicker ticketPicker) {
+        // use half the time to pick the best single move, then half the time to pick the best double
         final Long simMillisTime = (endTimeMillis-System.currentTimeMillis()-timeoutOffsetMillis)/2;
         final Pair<Long, TimeUnit> simulationTime = new Pair<>(simMillisTime, TimeUnit.MILLISECONDS);
         final MoveConverter converter = new MoveConverter(board.getAvailableMoves());
@@ -48,6 +49,7 @@ public class DefaultMovePicker implements MovePicker<LocationPicker> {
         final Map.Entry<Integer, Double> bestSingleEntry =
                 Collections.max(singleMap.entrySet(), Map.Entry.comparingByValue());
         final Double bestSingleValue = bestSingleEntry.getValue();
+        // if the single move is found to be good enough, it is immediately returned, we don't go into this if statement
         if(bestSingleValue < doubleThreshold){
             final ImmutableSet<Integer> doubleMoveDestinations = converter.getDoubleMoveDestinations();
             if(!doubleMoveDestinations.isEmpty()) {
