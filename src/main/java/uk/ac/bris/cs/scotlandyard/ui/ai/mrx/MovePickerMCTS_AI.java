@@ -29,8 +29,9 @@ public class MovePickerMCTS_AI implements Ai {
     @Nonnull
     @Override
     public Move pickMove(@Nonnull Board board, Pair<Long, TimeUnit> timeoutPair) {
+        final Integer threadNumber = Runtime.getRuntime().availableProcessors();
         final Long endTimeMillis = timeoutPair.right().toMillis(timeoutPair.left())+System.currentTimeMillis();
-        final TreeSimulation monteCarlo = TreeFactory.newLightTree(board, constants, 4);
+        final TreeSimulation monteCarlo = TreeFactory.newLightTree(board, constants, threadNumber);
         final TicketPicker defaultTicketPicker = new DefaultTicketPicker(board);
         final String prefix = "monteCarlo.light.";
         final MCTSMovePicker monteCarloMovePicker = new MCTSMovePicker(board, endTimeMillis, constants, prefix);

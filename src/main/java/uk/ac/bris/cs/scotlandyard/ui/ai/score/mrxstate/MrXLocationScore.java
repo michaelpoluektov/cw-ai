@@ -3,7 +3,6 @@ package uk.ac.bris.cs.scotlandyard.ui.ai.score.mrxstate;
 import com.google.common.collect.ImmutableList;
 import com.moandjiezana.toml.Toml;
 import uk.ac.bris.cs.scotlandyard.ui.ai.MiniBoard;
-import uk.ac.bris.cs.scotlandyard.ui.ai.score.Dijkstra;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.DistanceMeasurer;
 import uk.ac.bris.cs.scotlandyard.ui.ai.score.IntermediateScore;
 
@@ -24,7 +23,7 @@ public class MrXLocationScore implements IntermediateScore {
     private final DistanceMeasurer distanceMeasurer;
 
     /**
-     * @param distanceMeasurer Pass an instantiation of {@link Dijkstra} to get the shortest distance to the detectives
+     * @param distanceMeasurer Pass a {@link DistanceMeasurer} to get the shortest distances to the detectives
      */
     public MrXLocationScore(Toml constants, DistanceMeasurer distanceMeasurer) {
         this.locationScoreExp = constants.getDouble("location.exp");
